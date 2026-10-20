@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | Vijay Bartan Bhandar</title>
+    <link rel="stylesheet" href="./customer-profile.css">
+    <script type="module" src="./customer-profile.js"></script>
+    <link rel="stylesheet" href="./payment-verification.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="./index.html">
+            <span class="brand-mark">✿</span>
+            <span>
+                <strong>VIJAY</strong>
+                <small>BARTAN BHANDAR</small>
+            </span>
+        </a>
+        <a class="home-link" href="./index.html">← Home</a>
+    </header>
+
+    <main class="shell">
+        <section class="hero">
+            <div>
+                <span class="eyebrow">CUSTOMER SPACE</span>
+                <h1>Your account,<br><em>all in one place.</em></h1>
+                <p>Manage your details and access your bookings.</p>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <span>✿</span><b>V</b>
+            </div>
+        </section>
+
+        <div id="pageNotice" class="notice" role="status"
+             aria-live="polite" hidden></div>
+
+        <section class="welcome-card">
+            <div class="avatar" id="avatar">V</div>
+            <div class="welcome-text">
+                <span class="muted-label">SIGNED-IN CUSTOMER</span>
+                <h2 id="profileName">Loading profile…</h2>
+                <p id="profileEmail">Please wait.</p>
+            </div>
+            <button id="logoutButton" class="button button-outline"
+                    type="button">Log out</button>
+        </section>
+
+        <section class="quick-grid">
+            <a class="quick-card" href="./customer-tracking.html">
+                <span class="quick-icon">▤</span>
+                <span>
+                    <strong>My Bookings</strong>
+                    <small>View or track a booking</small>
+                </span>
+                <b>→</b>
+            </a>
+
+            <a class="quick-card" href="./customer-tracking.html">
+                <span class="quick-icon">⌕</span>
+                <span>
+                    <strong>Track Booking</strong>
+                    <small>Check booking status</small>
+                </span>
+                <b>→</b>
+            </a>
+
+            <a class="quick-card" href="#details">
+                <span class="quick-icon">♙</span>
+                <span>
+                    <strong>My Details</strong>
+                    <small>View personal information</small>
+                </span>
+                <b>↓</b>
+            </a>
+        </section>
+
+        
+    <section class="details-card booking-history-card" id="bookingHistory">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">YOUR BOOKINGS</span>
+          <h2>Booking History</h2>
+        </div>
+        <a class="history-track-link" href="./customer-tracking.html">
+          Track booking →
+        </a>
+      </div>
+
+      <p class="history-intro">
+        Your bookings linked to this signed-in account appear here.
+      </p>
+
+      <div id="bookingHistoryNotice" class="history-message" role="status">
+        Loading your bookings…
+      </div>
+
+      <div id="bookingHistoryList" class="booking-history-list"></div>
+    </section>
+
+<section class="details-card" id="details">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">PERSONAL INFORMATION</span>
+                    <h2>My Details</h2>
+                </div>
+                <span class="secure-pill">🔒 Private account</span>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span>Full name</span>
+                    <strong id="detailName">—</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Email address</span>
+                    <strong id="detailEmail">—</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Mobile number</span>
+                    <strong id="detailMobile">—</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Account status</span>
+                    <strong id="detailStatus">Checking…</strong>
+                </div>
+            </div>
+
+            <p class="help-text">
+                Your account is linked to the email used during registration.
+                Contact Vijay Bartan Bhandar if your details need updating.
+            </p>
+        </section>
+
+        <footer>
+            © <span id="currentYear"></span> Vijay Bartan Bhandar
+        </footer>
+    </main>
+</body>
+</html>

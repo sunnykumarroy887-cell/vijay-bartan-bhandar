@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /admin-bartan.html
+Disallow: /admin-decoration.html
+Disallow: /admin-booking.html
+
+Sitemap: https://vijay-bartan-bhandar.netlify.app/sitemap.xml

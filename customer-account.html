@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Account | Vijay Bartan Bhandar</title>
+
+    <meta
+        name="description"
+        content="Create your customer account or log in to Vijay Bartan Bhandar."
+    >
+
+    <link rel="stylesheet" href="./customer-account.css">
+
+    <script type="module" src="./customer-account.js"></script>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <a href="./index.html" class="brand">
+            <span class="brand-icon">✿</span>
+
+            <span class="brand-text">
+                <strong>VIJAY</strong>
+                <small>BARTAN BHANDAR</small>
+            </span>
+        </a>
+
+        <a href="./index.html" class="home-link">
+            ← Home
+        </a>
+    </header>
+
+    <main class="page-container">
+
+        <section class="welcome-panel">
+            <div class="welcome-content">
+                <span class="eyebrow">WELCOME TO OUR FAMILY</span>
+
+                <h1>
+                    Your celebrations,<br>
+                    <span>our responsibility.</span>
+                </h1>
+
+                <p>
+                    Create your customer account to access your bookings
+                    and manage your rental enquiries conveniently.
+                </p>
+
+                <div class="benefit-list">
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Easy account access</span>
+                    </div>
+
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Booking and tracking access</span>
+                    </div>
+
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Convenient customer services</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="decoration decoration-one"></div>
+            <div class="decoration decoration-two"></div>
+            <div class="decoration decoration-three"></div>
+        </section>
+
+        <section class="account-panel">
+
+            <div class="account-heading">
+                <span class="section-label">CUSTOMER ACCOUNT</span>
+
+                <h2 id="formHeading">Welcome back!</h2>
+
+                <p id="formDescription">
+                    Log in to continue to your account.
+                </p>
+            </div>
+
+            <div class="account-tabs" role="tablist">
+
+                <button
+                    type="button"
+                    id="loginTab"
+                    class="account-tab active"
+                    role="tab"
+                    aria-selected="true"
+                >
+                    Login
+                </button>
+
+                <button
+                    type="button"
+                    id="signupTab"
+                    class="account-tab"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    Create Account
+                </button>
+
+            </div>
+
+            <div
+                id="notice"
+                class="notice"
+                role="status"
+                aria-live="polite"
+                hidden
+            ></div>
+
+            <form id="accountForm" novalidate>
+
+                <div class="form-field" id="nameField" hidden>
+                    <label for="customerName">Full Name</label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        name="full_name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        minlength="2"
+                        maxlength="100"
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                    >
+                </div>
+
+                <div class="form-field" id="mobileField" hidden>
+                    <label for="mobile">Mobile Number</label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        name="mobile"
+                        placeholder="10-digit mobile number"
+                        autocomplete="tel-national"
+                        inputmode="numeric"
+                        maxlength="10"
+                        pattern="[6-9][0-9]{9}"
+                    >
+
+                    <small class="field-help">
+                        Enter your 10-digit Indian mobile number.
+                    </small>
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        minlength="8"
+                        maxlength="72"
+                        required
+                    >
+
+                    <small class="field-help">
+                        Use at least 8 characters.
+                    </small>
+                </div>
+
+                <div class="form-field" id="confirmField" hidden>
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirm_password"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        maxlength="72"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    id="submitButton"
+                    class="submit-button"
+                >
+                    Login
+                </button>
+
+            </form>
+
+            <div class="account-footer">
+                <p id="switchText">
+                    New to Vijay Bartan Bhandar?
+                    <button type="button" id="switchToSignup">
+                        Create an account
+                    </button>
+                </p>
+
+                <p class="security-note">
+                    Your account information is handled through
+                    our authentication service.
+                </p>
+            </div>
+
+            <div class="guest-section">
+                <span class="guest-divider">OR</span>
+
+                <a
+                    href="./customer-booking.html"
+                    class="guest-button"
+                >
+                    Continue Without Login
+                </a>
+
+                <p>
+                    You can continue as a guest to submit a booking enquiry.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>
+            © <span id="currentYear"></span>
+            Vijay Bartan Bhandar. All rights reserved.
+        </p>
+    </footer>
+
+</body>
+</html>

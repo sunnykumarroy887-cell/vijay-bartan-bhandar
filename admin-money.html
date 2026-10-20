@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Amount Collection - Vijay Bartan Bhandar Admin"
+    >
+
+    <title>Amount Collection | Vijay Bartan Bhandar</title>
+
+    <!-- Existing Admin Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Amount Collection CSS -->
+    <link
+        rel="stylesheet"
+        href="./admin-money.css"
+    >
+    <link rel="stylesheet" href="./payment-verification.css">
+</head>
+
+<body>
+
+<!-- =====================================================
+     ADMIN HEADER
+===================================================== -->
+
+<header class="money-header">
+
+    <div class="money-header-left">
+
+        <a
+            href="admin.html"
+            class="back-btn"
+            aria-label="Back to Admin Dashboard"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <div class="header-title">
+
+            <span class="header-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </span>
+
+            <div>
+                <h1>Amount Collection</h1>
+
+                <p>
+                    Vijay Bartan Bhandar
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="money-header-actions">
+
+        <button
+            type="button"
+            id="refreshBtn"
+            class="header-action-btn"
+        >
+            <i class="fa-solid fa-rotate"></i>
+            <span>Refresh</span>
+        </button>
+
+        <button
+            type="button"
+            id="logoutBtn"
+            class="header-action-btn logout-btn"
+        >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="money-main">
+
+
+    <!-- =================================================
+         SUMMARY CARDS
+    ================================================= -->
+
+    <section class="summary-section">
+
+        <div class="summary-card">
+
+            <div class="summary-icon total-icon">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Total Booking Amount
+                </span>
+
+                <strong id="totalBookingAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon paid-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Total Amount Collected
+                </span>
+
+                <strong id="totalCollectedAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon advance-icon">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Total Advance
+                </span>
+
+                <strong id="totalAdvanceAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon pending-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Total Remaining
+                </span>
+
+                <strong id="totalRemainingAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon completed-icon">
+                <i class="fa-solid fa-check-double"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Fully Paid Bookings
+                </span>
+
+                <strong id="fullyPaidBookings">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon expense-icon">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Total Expenses
+                </span>
+
+                <strong id="totalExpenseAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card net-card">
+
+            <div class="summary-icon net-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <div class="summary-content">
+
+                <span>
+                    Net Balance
+                </span>
+
+                <strong id="netBalanceAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FILTER & SEARCH
+    ================================================= -->
+
+    <section class="control-section">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search customer name or booking number..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <select id="paymentStatusFilter">
+
+                <option value="all">
+                    All Payment Status
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="partial">
+                    Partial
+                </option>
+
+                <option value="paid">
+                    Paid
+                </option>
+
+            </select>
+
+
+            <select id="paymentTypeFilter">
+
+                <option value="all">
+                    All Payment Types
+                </option>
+
+                <option value="advance">
+                    Advance
+                </option>
+
+                <option value="additional">
+                    Remaining
+                </option>
+
+            </select>
+
+
+            <button
+                type="button"
+                id="clearFiltersBtn"
+                class="clear-filter-btn"
+            >
+                <i class="fa-solid fa-filter-circle-xmark"></i>
+                Clear
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         DATE FILTER
+    ================================================= -->
+
+    <section class="date-filter-section">
+
+        <div class="date-filter-title">
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            <strong>
+                Collection Date
+            </strong>
+
+        </div>
+
+
+        <div class="date-filter-controls">
+
+            <div class="date-field">
+
+                <label for="fromDate">
+                    From
+                </label>
+
+                <input
+                    type="date"
+                    id="fromDate"
+                >
+
+            </div>
+
+
+            <div class="date-field">
+
+                <label for="toDate">
+                    To
+                </label>
+
+                <input
+                    type="date"
+                    id="toDate"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                id="applyDateFilterBtn"
+                class="apply-date-btn"
+            >
+                <i class="fa-solid fa-check"></i>
+                Apply
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         COLLECTION TABLE
+    ================================================= -->
+
+    <section class="collection-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    PAYMENT COLLECTION
+                </span>
+
+                <h2>
+                    Customer Payment Details
+                </h2>
+
+                <p>
+                    Customer-wise total amount, advance,
+                    payment history and remaining amount.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="addPaymentBtn"
+                class="add-payment-btn"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Payment
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="collection-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Booking No.
+                        </th>
+
+                        <th>
+                            Booking Date
+                        </th>
+
+                        <th>
+                            Total Amount
+                        </th>
+
+                        <th>
+                            Advance
+                        </th>
+
+                        <th>
+                            Total Paid
+                        </th>
+
+                        <th>
+                            Remaining
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="collectionTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="9"
+                            class="loading-cell"
+                        >
+
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+
+                            Loading payment records...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- Empty State -->
+
+        <div
+            id="emptyState"
+            class="empty-state"
+            hidden
+        >
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+
+            <h3>
+                No Payment Records Found
+            </h3>
+
+            <p>
+                Search या filter बदलकर दोबारा check करें।
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         EXPENSE SECTION
+    ================================================= -->
+
+    <section class="expense-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    BUSINESS EXPENSES
+                </span>
+
+                <h2>
+                    Expense History
+                </h2>
+
+                <p>
+                    Business में हुए खर्चों का पूरा हिसाब रखें।
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="addExpenseBtn"
+                class="add-expense-btn"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Expense
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="expense-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Expense
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Payment Method
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="expenseTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="loading-cell"
+                        >
+
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+
+                            Loading expenses...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         PAYMENT HISTORY
+    ================================================= -->
+
+    <section
+        id="paymentHistorySection"
+        class="payment-history-section"
+        hidden
+    >
+
+        <div class="section-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    PAYMENT HISTORY
+                </span>
+
+                <h2 id="historyCustomerName">
+                    Customer Payment History
+                </h2>
+
+                <p id="historyBookingNumber">
+                    Booking Number
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closeHistoryBtn"
+                class="close-section-btn"
+            >
+                <i class="fa-solid fa-xmark"></i>
+                Close
+            </button>
+
+        </div>
+
+
+        <div class="payment-summary-box">
+
+            <div>
+
+                <span>
+                    Total Amount
+                </span>
+
+                <strong id="historyTotalAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Advance
+                </span>
+
+                <strong id="historyAdvanceAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total Paid
+                </span>
+
+                <strong id="historyPaidAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Remaining
+                </span>
+
+                <strong id="historyRemainingAmount">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="history-table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Payment Type
+                        </th>
+
+                        <th>
+                            Payment Method
+                        </th>
+
+                        <th>
+                            Reference / Note
+                        </th>
+                        <th>
+                            Verification
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="paymentHistoryBody">
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="loading-cell"
+                        >
+                            Loading history...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     ADD PAYMENT MODAL
+===================================================== -->
+
+<div
+    id="paymentModal"
+    class="modal"
+    hidden
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-icon">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </span>
+
+                <div>
+
+                    <h2>
+                        Add Payment
+                    </h2>
+
+                    <p>
+                        Customer payment record
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closePaymentModalBtn"
+                class="modal-close-btn"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="paymentForm">
+
+            <div class="form-group">
+
+                <label for="paymentBookingSelect">
+                    Booking / Customer
+                </label>
+
+                <select
+                    id="paymentBookingSelect"
+                    required
+                >
+
+                    <option value="">
+                        Select Booking
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="payment-info-preview">
+
+                <div>
+
+                    <span>
+                        Customer
+                    </span>
+
+                    <strong id="paymentCustomerPreview">
+                        —
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Total Amount
+                    </span>
+
+                    <strong id="paymentTotalPreview">
+                        ₹0
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Already Paid
+                    </span>
+
+                    <strong id="paymentPaidPreview">
+                        ₹0
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Remaining
+                    </span>
+
+                    <strong id="paymentRemainingPreview">
+                        ₹0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="paymentAmount">
+                        Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="paymentAmount"
+                        min="1"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="paymentType">
+                        Payment Type
+                    </label>
+
+                    <select
+                        id="paymentType"
+                        required
+                    >
+
+                        <option value="advance">
+                            Advance
+                        </option>
+
+                        <option value="additional">
+                            Remaining
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentDate">
+                    Payment Date
+                </label>
+
+                <input
+                    type="date"
+                    id="paymentDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentMethod">
+                    Payment Method
+                </label>
+
+                <select id="paymentMethod">
+
+                    <option value="cash">
+                        Cash
+                    </option>
+
+                    <option value="upi">
+                        UPI
+                    </option>
+
+                    <option value="bank">
+                        Bank Transfer
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group" id="paymentReferenceGroup">
+                <label for="paymentReference">UPI / Bank Transaction Reference (UTR)</label>
+                <input type="text" id="paymentReference" maxlength="120" placeholder="Required for online payments">
+                <small>Cash payments do not need online verification. UPI/Bank payments remain pending until verified.</small>
+            </div>
+
+            <div class="form-group">
+
+                <label for="paymentNote">
+                    Note
+                </label>
+
+                <textarea
+                    id="paymentNote"
+                    rows="3"
+                    placeholder="Optional payment note..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelPaymentBtn"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="savePaymentBtn"
+                    class="save-btn"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Save Payment
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADD / EDIT EXPENSE MODAL
+===================================================== -->
+
+<div
+    id="expenseModal"
+    class="modal"
+    hidden
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-icon expense-modal-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+
+                <div>
+
+                    <h2 id="expenseModalTitle">
+                        Add Expense
+                    </h2>
+
+                    <p>
+                        Business expense record
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closeExpenseModalBtn"
+                class="modal-close-btn"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="expenseForm">
+
+            <input
+                type="hidden"
+                id="expenseId"
+            >
+
+
+            <div class="form-group">
+
+                <label for="expenseName">
+                    Expense Name
+                </label>
+
+                <input
+                    type="text"
+                    id="expenseName"
+                    placeholder="e.g. Transport, Decoration Material"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="expenseAmount">
+                        Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="expenseAmount"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="expenseDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="expenseDate"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expensePaymentMethod">
+                    Payment Method
+                </label>
+
+                <select id="expensePaymentMethod">
+
+                    <option value="cash">
+                        Cash
+                    </option>
+
+                    <option value="upi">
+                        UPI
+                    </option>
+
+                    <option value="bank">
+                        Bank Transfer
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseDescription">
+                    Description
+                </label>
+
+                <textarea
+                    id="expenseDescription"
+                    rows="4"
+                    placeholder="Enter expense details..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelExpenseBtn"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="saveExpenseBtn"
+                    class="save-btn"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Save Expense
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+    role="alert"
+    aria-live="polite"
+>
+
+    <span id="toastIcon">
+        <i class="fa-solid fa-circle-check"></i>
+    </span>
+
+    <span id="toastMessage">
+        Done
+    </span>
+
+</div>
+
+
+<!-- =====================================================
+     LOADING OVERLAY
+===================================================== -->
+
+<div
+    id="pageLoader"
+    class="page-loader"
+    hidden
+>
+
+    <div class="loader-box">
+
+        <i class="fa-solid fa-spinner fa-spin"></i>
+
+        <span>
+            Loading...
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script
+    type="module"
+    src="./admin-money.js"
+></script>
+
+</body>
+</html>

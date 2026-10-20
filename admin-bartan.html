@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin - Bartan Management | Vijay Bartan Bhandar</title>
+
+    <link
+        rel="stylesheet"
+        href="./admin-bartan.css"
+    >
+
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div>
+            <div class="brand-small">
+                विजय बर्तन भंडार
+            </div>
+
+            <div class="page-title">
+                Bartan Management
+            </div>
+        </div>
+
+        <div class="top-actions">
+
+            <button
+                id="refreshButton"
+                class="btn secondary"
+                type="button"
+            >
+                Refresh
+            </button>
+
+            <button
+                id="logoutButton"
+                class="btn danger"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div
+            id="message"
+            class="message hidden"
+        ></div>
+
+
+        <!-- ==================================================
+             SUMMARY
+        =================================================== -->
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <span>Total Items</span>
+                <strong id="totalItems">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Total Stock</span>
+                <strong id="totalStock">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Currently Issued</span>
+                <strong id="totalIssued">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Available</span>
+                <strong id="totalAvailable">0</strong>
+            </div>
+
+            <div class="summary-card warning">
+                <span>Missing</span>
+                <strong id="totalMissing">0</strong>
+            </div>
+
+            <div class="summary-card danger-card">
+                <span>Damaged</span>
+                <strong id="totalDamaged">0</strong>
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             ADD BARTAN
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h2>Add New Bartan</h2>
+
+                    <p>
+                        Add a new item to the inventory.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form id="addBartanForm">
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="newName">
+                            Bartan Name
+                        </label>
+
+                        <input
+                            id="newName"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Enter bartan name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="newRate">
+                            Rate
+                        </label>
+
+                        <input
+                            id="newRate"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="newStock">
+                            Initial Stock
+                        </label>
+
+                        <input
+                            id="newStock"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value="0"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field button-field">
+
+                        <button
+                            type="submit"
+                            class="btn primary"
+                        >
+                            + Add Bartan
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- ==================================================
+             SEARCH
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="toolbar">
+
+                <div>
+
+                    <h2>Bartan Inventory</h2>
+
+                    <p>
+                        Manage rates, stock and availability.
+                    </p>
+
+                </div>
+
+
+                <div class="search-box">
+
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search bartan..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Bartan</th>
+                            <th>Rate</th>
+                            <th>Total</th>
+                            <th>Issued</th>
+                            <th>Available</th>
+                            <th>Missing</th>
+                            <th>Damaged</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="bartanTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="loading"
+                            >
+                                Loading inventory...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             STOCK HISTORY
+        =================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>Recent Stock Movement</h2>
+
+                    <p>
+                        Latest inventory changes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date</th>
+                            <th>Bartan</th>
+                            <th>Movement</th>
+                            <th>Quantity</th>
+                            <th>Note</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="movementTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="loading"
+                            >
+                                Loading history...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ======================================================
+         EDIT MODAL
+    ======================================================= -->
+
+    <div
+        id="editModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-card">
+
+            <div class="modal-header">
+
+                <h2>Edit Bartan</h2>
+
+                <button
+                    id="closeEditModal"
+                    class="close-button"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="editBartanForm">
+
+                <input
+                    id="editId"
+                    type="hidden"
+                >
+
+
+                <div class="field">
+
+                    <label for="editName">
+                        Bartan Name
+                    </label>
+
+                    <input
+                        id="editName"
+                        type="text"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="editRate">
+                        Rate
+                    </label>
+
+                    <input
+                        id="editRate"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label class="checkbox-label">
+
+                        <input
+                            id="editActive"
+                            type="checkbox"
+                        >
+
+                        <span>
+                            Active
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelEdit"
+                        class="btn secondary"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn primary"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         STOCK MODAL
+    ======================================================= -->
+
+    <div
+        id="stockModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-card">
+
+            <div class="modal-header">
+
+                <h2>Stock Adjustment</h2>
+
+                <button
+                    id="closeStockModal"
+                    class="close-button"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="stock-item-name">
+                <span>Item:</span>
+                <strong id="stockItemName">-</strong>
+            </div>
+
+
+            <form id="stockForm">
+
+                <input
+                    id="stockId"
+                    type="hidden"
+                >
+
+
+                <div class="field">
+
+                    <label for="stockChange">
+                        Quantity
+                    </label>
+
+                    <input
+                        id="stockChange"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="stockAction">
+                        Action
+                    </label>
+
+                    <select id="stockAction">
+
+                        <option value="add">
+                            Add Stock
+                        </option>
+
+                        <option value="remove">
+                            Remove Stock
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="stockNote">
+                        Note
+                    </label>
+
+                    <textarea
+                        id="stockNote"
+                        maxlength="500"
+                        placeholder="Reason for stock adjustment"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelStock"
+                        class="btn secondary"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn primary"
+                    >
+                        Save Stock
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script
+        type="module"
+        src="./admin-bartan.js"
+    ></script>
+
+</body>
+</html>
