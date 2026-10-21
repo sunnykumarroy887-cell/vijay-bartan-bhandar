@@ -121,6 +121,7 @@ function appendPaymentPanel(card, booking, settings) {
   const amountInput = document.createElement("input");
   amountInput.type = "number"; amountInput.min = "1"; amountInput.max = remaining.toFixed(2);
   amountInput.step = "0.01"; amountInput.required = true; amountInput.value = remaining.toFixed(2);
+  amountInput.setAttribute("aria-label", "Enter full or custom payment amount");
   const referenceLabel = makeText("label", "", "Transaction ID / UTR");
   const referenceInput = document.createElement("input");
   referenceInput.type = "text"; referenceInput.maxLength = 120;
@@ -128,10 +129,41 @@ function appendPaymentPanel(card, booking, settings) {
   const proofLabel = makeText("label", "", "Upload payment screenshot or PDF (max 2 MB)");
   const proofInput = document.createElement("input");
   proofInput.type = "file"; proofInput.accept = "image/jpeg,image/png,image/webp,application/pdf";
-  const hint = makeText("small", "payment-submit-hint", "Transaction ID ya file mein se kam-se-kam ek dena zaroori hai.");
+  const hint = makeText("small", "payment-submit-hint", "Agar screenshot/PDF upload karenge to Transaction ID optional hai. File upload nahi karenge to Transaction ID/UTR zaroor bharein.");
   const submit = document.createElement("button");
   submit.type = "submit"; submit.className = "phonepe-pay-button"; submit.textContent = "Submit payment for verification";
   form.append(amountLabel, amountInput, referenceLabel, referenceInput, proofLabel, proofInput, hint, submit);
+
+  // Keep the QR and UPI deep link in sync with the amount the customer chooses.
+  function updateCustomPaymentAmount() {
+    const customAmount = Number(amountInput.value);
+    const validAmount = Number.isFinite(customAmount) && customAmount > 0 && customAmount <= remaining;
+    amountInput.setCustomValidity(validAmount ? "" : `Enter an amount between ₹1 and ${money(remaining)}.`);
+    if (!validAmount) return;
+    const customParams = new URLSearchParams({
+      pa: upiId,
+      pn: businessName,
+      am: customAmount.toFixed(2),
+      cu: "INR",
+      tn: `Payment for ${bookingRef}`
+    });
+    const customUri = `upi://pay?${customParams.toString()}`;
+    qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(customUri)}`;
+    qr.alt = `UPI payment QR for ${bookingRef}, amount ${money(customAmount)}`;
+    payLink.href = customUri;
+    payLink.textContent = `Pay ${money(customAmount)} with PhonePe / UPI`;
+    payLink.setAttribute("aria-label", `Pay ${money(customAmount)} for ${bookingRef} with UPI`);
+  }
+  function updateProofRequirementHint() {
+    hint.textContent = proofInput.files?.length
+      ? "Screenshot/PDF selected — Transaction ID/UTR optional hai."
+      : "Screenshot/PDF upload nahi kiya hai, isliye Transaction ID/UTR bharna zaroori hai.";
+  }
+  amountInput.addEventListener("input", updateCustomPaymentAmount);
+  proofInput.addEventListener("change", updateProofRequirementHint);
+  updateCustomPaymentAmount();
+  updateProofRequirementHint();
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const { data: sessionData } = await supabase.auth.getSession();
