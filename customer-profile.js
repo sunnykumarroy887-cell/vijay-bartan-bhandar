@@ -32,6 +32,14 @@ function formatDate(value) {
   const parsed = new Date(value + (value.length === 10 ? "T00:00:00" : ""));
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
+function getRentalDays(startValue, endValue) {
+  if (!startValue || !endValue) return 1;
+  const start = new Date(String(startValue).slice(0, 10) + "T00:00:00Z");
+  const end = new Date(String(endValue).slice(0, 10) + "T00:00:00Z");
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 1;
+  return Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86400000) + 1);
+}
+
 function makeText(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -192,16 +200,19 @@ async function loadBookingHistory(user) {
       table.className = "booking-bartan-table";
       const header = document.createElement("div");
       header.className = "booking-bartan-row booking-bartan-header";
-      ["Bartan", "Qty", "Rate", "Amount"].forEach((label) => header.append(makeText("span", "", label)));
+      const rentalDays = getRentalDays(booking.event_date, booking.return_date);
+      ["Bartan", "Qty", "Days", "Rate/Day", "Total"].forEach((label) => header.append(makeText("span", "", label)));
       table.append(header);
       bookingItems.forEach((item) => {
         const row = document.createElement("div");
         row.className = "booking-bartan-row";
+        const itemTotal = Number(item.amount ?? 0) * rentalDays;
         row.append(
           makeText("span", "booking-bartan-name", item.item_name || "Bartan item"),
           makeText("span", "", String(item.quantity ?? 0)),
+          makeText("span", "", String(rentalDays)),
           makeText("span", "", money(item.locked_rate)),
-          makeText("span", "", money(item.amount))
+          makeText("span", "", money(itemTotal))
         );
         table.append(row);
       });
