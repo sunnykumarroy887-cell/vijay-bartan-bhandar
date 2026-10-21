@@ -2080,3 +2080,5 @@ a {
     }
 
 }
+
+#paymentProof{display:block;width:100%;max-width:100%;padding:10px;border:1px solid #d9dfd4;border-radius:10px;background:#fff}.view-payment-proof-btn{margin-top:5px;padding:6px 10px;border:1px solid #c7d9c8;border-radius:8px;background:#eef7ee;color:#215a42;font-weight:700;cursor:pointer}
