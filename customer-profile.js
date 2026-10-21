@@ -113,7 +113,65 @@ function appendPaymentPanel(card, booking, settings) {
   payLink.textContent = "Pay with PhonePe / UPI";
   payLink.setAttribute("aria-label", `Pay ${money(remaining)} for ${bookingRef} with UPI`);
   panel.append(payLink);
-  panel.append(makeText("p", "phonepe-verification-note", "Payment is not marked paid automatically. Keep your UPI transaction reference and contact the business for verification."));
+  panel.append(makeText("p", "phonepe-verification-note", "PhonePe se payment karne ke baad neeche Transaction ID/UTR ya screenshot/PDF submit karein. Admin verify karne ke baad hi payment received count hoga."));
+  const form = document.createElement("form");
+  form.className = "customer-payment-submit";
+  form.dataset.bookingId = String(booking.id);
+  const amountLabel = makeText("label", "", "Payment amount (₹)");
+  const amountInput = document.createElement("input");
+  amountInput.type = "number"; amountInput.min = "1"; amountInput.max = remaining.toFixed(2);
+  amountInput.step = "0.01"; amountInput.required = true; amountInput.value = remaining.toFixed(2);
+  const referenceLabel = makeText("label", "", "Transaction ID / UTR");
+  const referenceInput = document.createElement("input");
+  referenceInput.type = "text"; referenceInput.maxLength = 120;
+  referenceInput.placeholder = "PhonePe transaction ID / UTR";
+  const proofLabel = makeText("label", "", "Upload payment screenshot or PDF (max 2 MB)");
+  const proofInput = document.createElement("input");
+  proofInput.type = "file"; proofInput.accept = "image/jpeg,image/png,image/webp,application/pdf";
+  const hint = makeText("small", "payment-submit-hint", "Transaction ID ya file mein se kam-se-kam ek dena zaroori hai.");
+  const submit = document.createElement("button");
+  submit.type = "submit"; submit.className = "phonepe-pay-button"; submit.textContent = "Submit payment for verification";
+  form.append(amountLabel, amountInput, referenceLabel, referenceInput, proofLabel, proofInput, hint, submit);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user;
+    if (!user) { showNotice("Please sign in again to submit payment.", true); return; }
+    const file = proofInput.files?.[0] || null;
+    const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!referenceInput.value.trim() && !file) { showNotice("Transaction ID/UTR ya screenshot/PDF upload karein.", true); return; }
+    if (file && (!allowed.includes(file.type) || file.size > 2 * 1024 * 1024)) { showNotice("Sirf JPG, PNG, WEBP ya PDF file 2 MB tak upload karein.", true); return; }
+    const amount = Number(amountInput.value);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > remaining) { showNotice("Amount remaining balance se zyada nahi ho sakta.", true); return; }
+    submit.disabled = true; submit.textContent = "Submitting…";
+    let uploadedPath = null;
+    try {
+      let fileMeta = { name: null, mime: null };
+      if (file) {
+        const ext = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+        uploadedPath = user.id + "/" + booking.id + "/" + Date.now() + "-" + crypto.randomUUID() + "." + ext;
+        const up = await supabase.storage.from("payment-proofs").upload(uploadedPath, file, { contentType: file.type, upsert: false });
+        if (up.error) throw up.error;
+        fileMeta = { name: file.name.slice(0,255), mime: file.type };
+      }
+      const { error } = await supabase.rpc("customer_submit_online_payment", {
+        p_booking_id: Number(booking.id), p_amount: amount,
+        p_payment_reference: referenceInput.value.trim() || null,
+        p_payment_proof_path: uploadedPath,
+        p_payment_proof_name: fileMeta.name,
+        p_payment_proof_mime_type: fileMeta.mime
+      });
+      if (error) throw error;
+      showNotice("Payment details submitted. Admin verification pending hai; payment automatically received nahi maana gaya.");
+      await loadProfile();
+    } catch (error) {
+      if (uploadedPath) await supabase.storage.from("payment-proofs").remove([uploadedPath]).catch(() => {});
+      console.error("Customer payment submission failed:", error);
+      showNotice(error.message || "Payment details submit nahi ho paaye. Please try again.", true);
+      submit.disabled = false; submit.textContent = "Submit payment for verification";
+    }
+  });
+  panel.append(form);
   card.append(panel);
 }
 
