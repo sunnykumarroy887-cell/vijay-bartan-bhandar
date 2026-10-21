@@ -640,3 +640,13 @@ footer {
 .phonepe-pay-button:focus-visible { outline: 3px solid #d6b46c; outline-offset: 3px; }
 .phonepe-paid-note { color: #215a42; font-weight: 700; }
 @media(max-width:480px) { .booking-history-item { padding: 14px; } .booking-history-amounts { gap: 6px; } .booking-history-amount { padding: 9px 7px; } .booking-history-amount strong { font-size: 12px; } .booking-bartan-row { grid-template-columns: minmax(75px,2fr) 27px 32px minmax(50px,1fr) minmax(58px,1fr); gap: 4px; font-size: 11px; } }
+
+
+/* Customer PhonePe transaction submission */
+.customer-payment-submit{display:grid;gap:9px;margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fbfcf8}
+.customer-payment-submit label{font-size:13px;font-weight:700;color:var(--ink)}
+.customer-payment-submit input{width:100%;min-width:0;padding:12px;border:1px solid #d8dfd5;border-radius:10px;background:#fff;font:inherit;color:var(--ink)}
+.customer-payment-submit input[type=file]{font-size:12px}
+.customer-payment-submit button{border:0;cursor:pointer;text-align:center;width:100%;font:inherit;font-weight:700}
+.customer-payment-submit button:disabled{opacity:.65;cursor:wait}
+.payment-submit-hint{color:var(--muted)}
