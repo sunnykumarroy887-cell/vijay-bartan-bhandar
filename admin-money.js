@@ -1096,7 +1096,7 @@ async function savePayment(
             p_payment_type: paymentType.value,
             p_payment_method: paymentMethod.value,
             p_payment_note: paymentNote.value.trim() || null,
-            p_payment_reference: paymentReference?.value.trim() || null,
+            p_payment_reference: transactionReference || (proofFile ? "Proof attached" : null),
             p_payment_date: paymentDate.value || today()
         });
         if (error) throw error;
@@ -1104,6 +1104,7 @@ async function savePayment(
             const paymentId = paymentResult?.payment_id;
             if (!paymentId) throw new Error("Payment was saved but the proof could not be linked. Please contact support.");
             const { error: proofError } = await supabase.from("booking_payments").update({
+                payment_reference: transactionReference || null,
                 payment_proof_path: uploadedProofPath,
                 payment_proof_name: proofFile.name.slice(0, 255),
                 payment_proof_mime_type: proofFile.type
