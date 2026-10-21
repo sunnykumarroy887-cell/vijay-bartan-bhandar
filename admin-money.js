@@ -1052,9 +1052,15 @@ async function savePayment(
 
     const selectedMethod = String(paymentMethod.value || "cash").toLowerCase();
     const transactionReference = paymentReference?.value.trim() || "";
-    if (["upi", "bank", "other"].includes(selectedMethod) && !transactionReference) {
-        toastMessageShow("Enter the online transaction reference / UTR before saving.", "warning");
+    const proofFile = $("paymentProof")?.files?.[0] || null;
+    const allowedProofTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (["upi", "bank", "other"].includes(selectedMethod) && !transactionReference && !proofFile) {
+        toastMessageShow("Enter transaction reference / UTR or attach screenshot/PDF.", "warning");
         paymentReference?.focus();
+        return;
+    }
+    if (proofFile && (!allowedProofTypes.includes(proofFile.type) || proofFile.size > 2 * 1024 * 1024)) {
+        toastMessageShow("Only JPG, PNG, WEBP or PDF files up to 2 MB are allowed.", "warning");
         return;
     }
 
@@ -1076,45 +1082,34 @@ async function savePayment(
     );
 
 
+    let uploadedProofPath = null;
     try {
-
-        const {
-            error
-        } = await supabase.rpc(
-            "admin_add_booking_payment_v2",
-            {
-                p_booking_id:
-                    Number(
-                        currentPaymentBooking.booking_id
-                    ),
-
-                p_amount:
-                    amount,
-
-                p_payment_type:
-                    paymentType.value,
-
-                p_payment_method:
-                    paymentMethod.value,
-
-                p_payment_note:
-                    paymentNote.value.trim() ||
-                    null,
-
-                p_payment_reference:
-                    paymentReference?.value.trim() || null,
-
-                p_payment_date:
-                    paymentDate.value || today()
-            }
-        );
-
-
-        if (error) {
-            throw error;
+        if (proofFile) {
+            const ext = proofFile.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+            uploadedProofPath = "admin-booking/" + currentPaymentBooking.booking_id + "/" + Date.now() + "-" + crypto.randomUUID() + "." + ext;
+            const uploadResult = await supabase.storage.from("payment-proofs").upload(uploadedProofPath, proofFile, { contentType: proofFile.type, upsert: false });
+            if (uploadResult.error) throw uploadResult.error;
         }
-
-
+        const { data: paymentResult, error } = await supabase.rpc("admin_add_booking_payment_v2", {
+            p_booking_id: Number(currentPaymentBooking.booking_id),
+            p_amount: amount,
+            p_payment_type: paymentType.value,
+            p_payment_method: paymentMethod.value,
+            p_payment_note: paymentNote.value.trim() || null,
+            p_payment_reference: paymentReference?.value.trim() || null,
+            p_payment_date: paymentDate.value || today()
+        });
+        if (error) throw error;
+        if (uploadedProofPath) {
+            const paymentId = paymentResult?.payment_id;
+            if (!paymentId) throw new Error("Payment was saved but the proof could not be linked. Please contact support.");
+            const { error: proofError } = await supabase.from("booking_payments").update({
+                payment_proof_path: uploadedProofPath,
+                payment_proof_name: proofFile.name.slice(0, 255),
+                payment_proof_mime_type: proofFile.type
+            }).eq("id", paymentId);
+            if (proofError) throw proofError;
+        }
         closePaymentModal();
 
 
@@ -1128,6 +1123,9 @@ async function savePayment(
 
     }
     catch (error) {
+        if (uploadedProofPath) {
+            await supabase.storage.from("payment-proofs").remove([uploadedProofPath]).catch(() => {});
+        }
 
         console.error(
             "Payment save error:",
@@ -1373,6 +1371,7 @@ function renderPaymentHistory(
             </td>
             <td>
                 ${payment.payment_method === "cash" ? "Cash · Verification not required" : `<strong>${escapeHTML(payment.verification_status || "pending")}</strong>`}
+                ${payment.payment_proof_path ? `<div class="payment-proof-link" data-proof-path="${escapeHTML(payment.payment_proof_path)}"><button type="button" class="view-payment-proof-btn">View proof</button></div>` : ""}
                 ${["upi", "bank", "other"].includes(String(payment.payment_method || "").toLowerCase()) && String(payment.verification_status || "pending").toLowerCase() === "pending" ? `<div class="payment-verification-actions"><button type="button" class="verify-payment-btn" data-payment-id="${payment.payment_id}" data-action="verify">Verify</button><button type="button" class="reject-payment-btn" data-payment-id="${payment.payment_id}" data-action="reject">Reject</button></div>` : ""}
                 ${payment.verified_at ? `<small>Checked ${escapeHTML(formatDateTime(payment.verified_at))}</small>` : ""}
             </td>
@@ -2000,6 +1999,25 @@ closeExpenseModalBtn.addEventListener(
 );
 
 
+// View private proof with a short-lived signed URL.
+document.addEventListener("click", async (event) => {
+    const button = event.target.closest(".view-payment-proof-btn");
+    if (!button) return;
+    const wrapper = button.closest(".payment-proof-link");
+    const path = wrapper?.dataset.proofPath;
+    if (!path) return;
+    button.disabled = true;
+    try {
+        const { data, error } = await supabase.storage.from("payment-proofs").createSignedUrl(path, 300);
+        if (error) throw error;
+        if (!data?.signedUrl) throw new Error("Secure link could not be created.");
+        window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+        toastMessageShow(error.message || "Could not open payment proof.", "error");
+    } finally {
+        button.disabled = false;
+    }
+});
 // Online payment verification: status is changed only through admin-only RPCs.
 document.addEventListener("click", async (event) => {
     const button = event.target.closest(".verify-payment-btn, .reject-payment-btn");
