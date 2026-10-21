@@ -1886,88 +1886,124 @@ function closePaymentModal() {
 // ======================================================
 
 async function savePayment() {
+    if (!currentBooking) return;
 
-    if (!currentBooking) {
+    const amount = Number($("paymentAmount").value);
+    const paymentType = $("paymentType").value;
+    const paymentMethod = $("paymentMethod").value;
+    const note = $("paymentNote").value.trim() || null;
+    const reference = $("paymentReference").value.trim() || null;
+    const file = $("paymentProof").files?.[0] || null;
+    const maxBytes = 2 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        showToast("Enter a valid payment amount.", "error");
         return;
     }
 
-
-    const amount =
-        readNumber(
-            "paymentAmount"
-        );
-
-
-    const paymentType =
-        $("paymentType").value;
-
-
-    const paymentMethod =
-        $("paymentMethod").value;
-
-
-    const note =
-        $("paymentNote")
-            .value
-            .trim() || null;
-
-
-    if (amount <= 0) {
-
-        showToast(
-            "Enter a valid payment amount.",
-            "error"
-        );
-
+    if (["upi", "bank", "other"].includes(paymentMethod) && !reference) {
+        showToast("Transaction ID / UTR is required for UPI, Bank and Other payments.", "error");
+        $("paymentReference").focus();
         return;
     }
 
-
-    const {
-        error
-    } = await supabase.rpc(
-        "admin_add_booking_payment",
-        {
-            p_booking_id:
-                currentBooking.id,
-
-            p_amount:
-                amount,
-
-            p_payment_type:
-                paymentType,
-
-            p_payment_method:
-                paymentMethod,
-
-            p_payment_note:
-                note
+    if (file) {
+        if (file.size > maxBytes) {
+            showToast("File size must be 2 MB or less.", "error");
+            $("paymentProof").value = "";
+            return;
         }
-    );
-
-
-    if (error) {
-
-        showToast(
-            error.message,
-            "error"
-        );
-
-        return;
+        if (!allowedTypes.includes(file.type)) {
+            showToast("Only JPG, PNG, WEBP or PDF files are allowed.", "error");
+            $("paymentProof").value = "";
+            return;
+        }
     }
 
+    const saveButton = $("savePaymentBtn");
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+    let uploadedPath = null;
 
-    closePaymentModal();
+    try {
+        if (file) {
+            const extByType = {
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/webp": "webp",
+                "application/pdf": "pdf"
+            };
+            const safeName = String(file.name || "proof")
+                .replace(/[^a-zA-Z0-9._-]/g, "_")
+                .slice(-100);
+            uploadedPath = `admin-booking/${currentBooking.id}/${Date.now()}-${crypto.randomUUID()}.${extByType[file.type]}`;
 
+            const upload = await supabase.storage
+                .from("payment-proofs")
+                .upload(uploadedPath, file, {
+                    contentType: file.type,
+                    upsert: false
+                });
+            if (upload.error) throw upload.error;
+        }
 
-    showToast(
-        "Payment saved successfully.",
-        "success"
-    );
+        const localDate = (() => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        })();
 
+        const { data, error } = await supabase.rpc("admin_add_booking_payment_v2", {
+            p_booking_id: currentBooking.id,
+            p_amount: amount,
+            p_payment_type: paymentType,
+            p_payment_method: paymentMethod,
+            p_payment_note: note,
+            p_payment_reference: reference,
+            p_payment_date: localDate
+        });
 
-    await refreshAfterAction();
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        const paymentId = result?.payment_id;
 
+        if (!paymentId) {
+            throw new Error("Payment was recorded, but the database did not return its payment ID. Please check Payment History before retrying.");
+        }
+
+        if (uploadedPath) {
+            const { error: proofError } = await supabase
+                .from("booking_payments")
+                .update({
+                    payment_proof_path: uploadedPath,
+                    payment_proof_name: file.name,
+                    payment_proof_mime_type: file.type
+                })
+                .eq("id", paymentId);
+
+            if (proofError) {
+                console.error("Payment saved, proof metadata update failed:", proofError);
+                closePaymentModal();
+                showToast("Payment saved, but proof could not be linked. Check Storage/Payment History before retrying.", "error");
+                await refreshAfterAction();
+                return;
+            }
+        }
+
+        closePaymentModal();
+        showToast("Payment saved successfully.", "success");
+        await refreshAfterAction();
+    } catch (error) {
+        if (uploadedPath) {
+            const cleanup = await supabase.storage.from("payment-proofs").remove([uploadedPath]);
+            if (cleanup.error) console.warn("Could not remove unused payment proof:", cleanup.error);
+        }
+        console.error("Save payment failed:", error);
+        showToast(error.message || "Could not save payment.", "error");
+    } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Payment";
+    }
 }
 
 
