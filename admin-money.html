@@ -1014,6 +1014,11 @@
                 <input type="text" id="paymentReference" maxlength="120" placeholder="Required for online payments">
                 <small>Cash payments do not need online verification. UPI/Bank payments remain pending until verified.</small>
             </div>
+            <div class="form-group">
+                <label for="paymentProof">Transaction Screenshot / PDF (optional, max 2 MB)</label>
+                <input type="file" id="paymentProof" accept="image/jpeg,image/png,image/webp,application/pdf">
+                <small>JPG, PNG, WEBP या PDF. Online payments verify होने तक pending रहेंगे.</small>
+            </div>
 
             <div class="form-group">
 
