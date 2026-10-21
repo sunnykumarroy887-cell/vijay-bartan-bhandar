@@ -434,20 +434,22 @@ form?.addEventListener("submit", async (event) => {
     }
 });
 
-/* Restore an existing session. */
-
+/* Do not auto-redirect just because an old session exists.
+   This lets a customer enter another account's credentials on the same
+   browser/device. A successful sign-in replaces the current Supabase session. */
 async function checkSession() {
     try {
-        const { data, error } =
-            await supabase.auth.getSession();
-
+        const { data, error } = await supabase.auth.getSession();
         if (error) {
             console.error("Session check failed:", error);
             return;
         }
 
         if (data?.session?.user) {
-            openCustomerArea();
+            showMessage(
+                "Is browser mein ek account pehle se login hai. Dusre account mein jaane ke liye neeche uska email aur password daal kar Login karein. Ya pehle purane account se Log out karein.",
+                "info"
+            );
         }
     } catch (error) {
         console.error("Session initialization failed:", error);
