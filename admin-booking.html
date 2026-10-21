@@ -576,6 +576,20 @@
 
 
             <div class="field">
+                <label for="paymentReference">Transaction ID / UTR</label>
+                <input id="paymentReference" type="text" maxlength="200"
+                    placeholder="Enter UPI transaction ID / bank reference (required for UPI/Bank/Other)">
+                <small>Cash payment ke liye optional.</small>
+            </div>
+
+            <div class="field">
+                <label for="paymentProof">Payment Proof (Image/PDF, max 2 MB)</label>
+                <input id="paymentProof" type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf">
+                <small>Allowed: JPG, PNG, WEBP, PDF. Maximum size: 2 MB.</small>
+            </div>
+
+            <div class="field">
 
                 <label for="paymentNote">
                     Note
