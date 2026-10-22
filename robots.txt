@@ -7,4 +7,4 @@ Disallow: /admin-bartan.html
 Disallow: /admin-decoration.html
 Disallow: /admin-booking.html
 
-Sitemap: https://vijay-bartan-bhandar.netlify.app/sitemap.xml
+Sitemap: https://vijay-bartan-bhandar.vercel.app/sitemap.xml
