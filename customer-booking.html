@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="./customer-booking.css">
 </head>
 
-<body>
+<body data-service-type="both">
 
     <!-- BACKGROUND -->
     <div class="page-glow glow-one"></div>
@@ -114,7 +114,7 @@
 
                 <h1>
                     अपने कार्यक्रम की
-                    <span>Booking करें</span>
+                    <span>Combined Booking करें</span>
                 </h1>
 
                 <p>
@@ -183,17 +183,6 @@
 
             </div>
 
-
-            <!-- SERVICE TYPE SELECTION -->
-<section id="serviceTypeChooser" class="service-type-chooser" aria-labelledby="serviceTypeTitle">
- <div class="service-choice-heading"><span class="service-choice-eyebrow">START YOUR BOOKING</span><h2 id="serviceTypeTitle">आपको कौन-सी सेवा चाहिए?</h2><p>अपनी जरूरत के अनुसार एक विकल्प चुनें। उसी के अनुसार booking form खुलेगा।</p></div>
- <div class="service-choice-grid">
-  <button type="button" class="service-choice-card" data-service-choice="bartan" aria-pressed="false"><span class="service-choice-icon">🍽️</span><strong>Only Bartan Service</strong><span>केवल बर्तन किराये पर बुक करें</span><em>Choose Bartan →</em></button>
-  <button type="button" class="service-choice-card" data-service-choice="decoration" aria-pressed="false"><span class="service-choice-icon">🌸</span><strong>Only Decoration Service</strong><span>केवल सजावट की सेवा बुक करें</span><em>Choose Decoration →</em></button>
-  <button type="button" class="service-choice-card" data-service-choice="both" aria-pressed="false"><span class="service-choice-icon">✨</span><strong>Bartan + Decoration</strong><span>दोनों सेवाएँ एक साथ बुक करें</span><em>Choose Both Services →</em></button>
- </div>
- <p id="serviceChoiceHint" class="service-choice-hint" role="status">Booking शुरू करने के लिए ऊपर एक विकल्प चुनें।</p>
-</section>
 
             <form
                 id="customerBookingForm"
