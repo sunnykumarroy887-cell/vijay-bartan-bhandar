@@ -447,11 +447,15 @@ async function checkSession() {
             return;
         }
 
+        const currentAccountButton = $("currentAccountButton");
         if (data?.session?.user) {
+            if (currentAccountButton) currentAccountButton.hidden = false;
             showMessage(
-                "Is browser mein ek account pehle se login hai. Dusre account mein jaane ke liye neeche uska email aur password daal kar Login karein. Ya pehle purane account se Log out karein.",
+                "Is browser mein ek account pehle se login hai. My Current Account se apne account par ja sakte hain. Dusre account mein jaane ke liye neeche uska email aur password daal kar Login karein. Ya pehle purane account se Log out karein.",
                 "info"
             );
+        } else if (currentAccountButton) {
+            currentAccountButton.hidden = true;
         }
     } catch (error) {
         console.error("Session initialization failed:", error);
