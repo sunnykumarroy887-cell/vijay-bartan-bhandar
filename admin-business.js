@@ -1,1 +1,129 @@
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";const db=createClient("https://wkgkczrhgsmnmovyzuss.supabase.co","sb_publishable_3Yr8kc5vFc_dn3atjWJTWA_brY4Kl6E"),admin="540b68b8-044f-4ac5-bbd9-8014e31af801",n=document.getElementById("notice"),esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),money=v=>"₹"+Number(v||0).toLocaleString("en-IN");document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.tab)));const now=new Date();document.getElementById("month").value=now.toISOString().slice(0,7);document.getElementById("reportDate").value=now.toISOString().slice(0,10);const{data:{session}}=await db.auth.getSession();if(!session||session.user.id!==admin){n.textContent="Admin access required.";throw Error("Unauthorized")}const [br,cr,qr,dr]=await Promise.all([db.from("bookings").select("id,booking_number,customer_name,customer_mobile,event_date,return_date,decoration_required,final_total,advance,remaining,status,created_at").order("event_date"),db.from("booking_cancellation_requests").select("*").order("requested_at",{ascending:false}),db.from("discount_coupons").select("*").order("created_at",{ascending:false}),db.from("decorations").select("name,description,rate,image_url,is_active").order("display_order")]),bs=br.data||[];function calendar(){let m=document.getElementById("month").value,rows=bs.filter(b=>(b.event_date||"").startsWith(m));document.getElementById("stats").innerHTML=[["Bookings",rows.length],["Decoration",rows.filter(b=>b.decoration_required).length],["Active",rows.filter(b=>["confirmed","issued","return_pending"].includes(b.status)).length]].map(([k,v])=>'<article class="item">'+k+'<h2>'+v+'</h2></article>').join("");document.getElementById("calendar").innerHTML='<table class="table"><tr><th>Date</th><th>Customer</th><th>Service</th><th>Return</th><th>Status</th></tr>'+ (rows.map(b=>'<tr><td>'+esc(b.event_date)+'</td><td>'+esc(b.customer_name)+'<br>'+esc(b.customer_mobile)+'</td><td>'+(b.decoration_required?'Decoration + ':'')+'Bartan</td><td>'+esc(b.return_date||"—")+'</td><td>'+esc(b.status)+'</td></tr>').join("")||'<tr><td colspan="5">No bookings</td></tr>')+'</table>'}document.getElementById("month").onchange=calendar;calendar();const ch=document.getElementById("cancellations");if(cr.error)ch.textContent=cr.error.message;else{ch.innerHTML=(cr.data||[]).map(c=>'<article class="item"><h3>Booking #'+esc(c.booking_id)+' · '+esc(c.status)+'</h3><p>'+esc(c.reason)+'</p>'+(c.status==="pending"?'<button class="btn2" data-id="'+c.id+'" data-status="approved">Approve</button> <button class="btn2" data-id="'+c.id+'" data-status="rejected">Reject</button>':'<p>'+esc(c.admin_note||"")+'</p>')+'</article>').join("")||"No requests.";ch.querySelectorAll("[data-id]").forEach(b=>b.onclick=async()=>{let c=cr.data.find(x=>String(x.id)===b.dataset.id),note=prompt("Optional customer note")||"",u=await db.from("booking_cancellation_requests").update({status:b.dataset.status,admin_note:note,reviewed_at:new Date().toISOString(),reviewed_by:session.user.id}).eq("id",c.id).eq("status","pending");if(u.error){alert(u.error.message);return}if(b.dataset.status==="approved"){let z=await db.from("bookings").update({status:"cancelled"}).eq("id",c.booking_id).in("status",["pending","confirmed"]);if(z.error)alert("Request reviewed but booking status could not be changed: "+z.error.message)}location.reload()})}const qh=document.getElementById("coupons");function showCoupons(){if(qr.error){qh.textContent=qr.error.message;return}qh.innerHTML=(qr.data||[]).map(c=>'<article class="item"><strong>'+esc(c.code)+'</strong> · '+(c.is_active?"Active":"Inactive")+'<p>'+esc(c.description||"")+' · '+(c.discount_type==="percent"?esc(c.discount_value)+"%":money(c.discount_value))+' discount</p><button class="btn2" data-toggle="'+c.id+'">Toggle</button> <button class="btn2" data-delete="'+c.id+'">Delete</button></article>').join("")||"No coupons.";qh.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=async()=>{let c=qr.data.find(x=>String(x.id)===b.dataset.toggle),z=await db.from("discount_coupons").update({is_active:!c.is_active}).eq("id",c.id);if(z.error)alert(z.error.message);else location.reload()});qh.querySelectorAll("[data-delete]").forEach(b=>b.onclick=async()=>{if(confirm("Delete coupon?")){let z=await db.from("discount_coupons").delete().eq("id",b.dataset.delete);if(z.error)alert(z.error.message);else location.reload()}})}showCoupons();document.getElementById("couponForm").onsubmit=async e=>{e.preventDefault();let ex=document.getElementById("expiry").value,p={code:document.getElementById("code").value.trim().toUpperCase(),description:document.getElementById("desc").value.trim(),discount_type:document.getElementById("type").value,discount_value:Number(document.getElementById("value").value),minimum_amount:Number(document.getElementById("minimum").value||0),max_discount:document.getElementById("maxdiscount").value?Number(document.getElementById("maxdiscount").value):null,expires_at:ex?new Date(ex+"T23:59:59").toISOString():null,max_uses:document.getElementById("maxuses").value?Number(document.getElementById("maxuses").value):null,per_customer_limit:Number(document.getElementById("perlimit").value||1),is_active:document.getElementById("active").checked},z=await db.from("discount_coupons").insert(p);if(z.error)alert(z.error.message);else location.reload()};function report(){let d=document.getElementById("reportDate").value,r=bs.filter(b=>(b.created_at||"").slice(0,10)===d),sum=k=>r.reduce((a,b)=>a+Number(b[k]||0),0);document.getElementById("reportStats").innerHTML=[["Bookings",r.length],["Booking total",money(sum("final_total"))],["Advance",money(sum("advance"))],["Remaining",money(sum("remaining"))]].map(([a,b])=>'<article class="item">'+a+'<h2>'+b+'</h2></article>').join("");document.getElementById("reportRows").innerHTML=r.map(b=>'<p>'+esc(b.booking_number)+' · '+esc(b.customer_name)+' · '+money(b.final_total)+'</p>').join("")||"No bookings on this date."}document.getElementById("reportDate").onchange=report;document.getElementById("print").onclick=()=>window.print();report();document.getElementById("packages").innerHTML=dr.error?dr.error.message:(dr.data||[]).map(d=>'<article class="item">'+(d.image_url?'<img style="width:100%;height:130px;object-fit:cover" src="'+esc(d.image_url)+'" alt="">':"🌸")+'<h3>'+esc(d.name)+'</h3><p>'+esc(d.description||"")+'</p>'+money(d.rate)+' · '+(d.is_active?"Active":"Inactive")+'</article>').join("")||"No packages.";n.textContent="Admin tools loaded.";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const db = createClient("https://wkgkczrhgsmnmovyzuss.supabase.co", "sb_publishable_3Yr8kc5vFc_dn3atjWJTWA_brY4Kl6E");
+const ADMIN_ID = "540b68b8-044f-4ac5-bbd9-8014e31af801";
+const $ = id => document.getElementById(id);
+const notice = $("notice");
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = v => "₹" + Number(v || 0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const today = new Date();
+const dateISO = d => [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+const monthISO = d => dateISO(d).slice(0,7);
+const setNotice = (msg, bad=false) => { notice.textContent=msg; notice.classList.toggle("error",bad); };
+document.querySelectorAll("[data-tab]").forEach(btn => btn.addEventListener("click",()=>{
+ document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("selected",b===btn));
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+btn.dataset.tab));
+}));
+$("month").value=monthISO(today);
+$("reportFrom").value=monthISO(today)+"-01";
+$("reportTo").value=dateISO(today);
+const {data:{session}} = await db.auth.getSession();
+if(!session || session.user.id!==ADMIN_ID){setNotice("Admin access required.",true);throw new Error("Unauthorized admin access");}
+setNotice("Loading business data…");
+const [bookingRes,cancelRes,couponRes,decorRes,paymentRes] = await Promise.all([
+ db.from("bookings").select("id,booking_number,customer_name,customer_mobile,event_date,return_date,decoration_required,final_total,advance,remaining,status,created_at,decoration_charge,bartan_total").order("event_date"),
+ db.from("booking_cancellation_requests").select("*").order("requested_at",{ascending:false}),
+ db.from("discount_coupons").select("*").order("created_at",{ascending:false}),
+ db.from("decorations").select("id,name,category,description,rate,image_url,is_active,display_order").order("display_order"),
+ db.from("booking_payments").select("booking_id,amount,payment_type,payment_method,verification_status,created_at")
+]);
+if(bookingRes.error) throw bookingRes.error;
+const bookings=bookingRes.data||[], cancellations=cancelRes.data||[], coupons=couponRes.data||[], decorations=decorRes.data||[], payments=paymentRes.data||[];
+if(paymentRes.error) console.warn("Payment report data unavailable:",paymentRes.error.message);
+const paymentTotals=new Map();
+payments.forEach(p=>{
+ const key=String(p.booking_id), method=String(p.payment_method||"").toLowerCase(), status=String(p.verification_status||"pending").toLowerCase();
+ if(method!=="cash" && !["verified","not_required"].includes(status)) return;
+ const amount=Number(p.amount||0)*(String(p.payment_type||"").toLowerCase()==="refund"?-1:1);
+ paymentTotals.set(key,(paymentTotals.get(key)||0)+amount);
+});
+function serviceMatch(b,type){return type==="all"||(type==="decoration"?!!b.decoration_required:!b.decoration_required);}
+function statusMatch(b,status){return status==="all"||String(b.status||"").toLowerCase()===status;}
+function bookingLabel(b){return b.booking_number||("Booking #"+b.id);}
+function statCards(target,items){$(target).innerHTML=items.map(([label,value])=>'<article class="item"><span class="meta">'+esc(label)+'</span><h2>'+esc(value)+'</h2></article>').join("");}
+
+function renderCalendar(){
+ const month=$("month").value;if(!month)return;
+ const type=$("calendarType").value,status=$("calendarStatus").value;
+ const [year,mo]=month.split("-").map(Number),first=new Date(year,mo-1,1),days=new Date(year,mo,0).getDate();
+ const rows=bookings.filter(b=>(b.event_date||"").startsWith(month)&&serviceMatch(b,type)&&statusMatch(b,status));
+ const byDay=new Map();rows.forEach(b=>{const day=Number(String(b.event_date).slice(8,10));if(!byDay.has(day))byDay.set(day,[]);byDay.get(day).push(b);});
+ statCards("stats",[["Bookings this month",rows.length],["Decoration bookings",rows.filter(b=>b.decoration_required).length],["Active bookings",rows.filter(b=>["confirmed","issued","return_pending"].includes(b.status)).length],["Cancelled",rows.filter(b=>b.status==="cancelled").length]]);
+ const names=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];let out=names.map(x=>'<div class="calendar-weekday">'+x+'</div>').join("");
+ for(let i=0;i<first.getDay();i++)out+='<div class="calendar-day blank"></div>';
+ for(let d=1;d<=days;d++){
+  const list=byDay.get(d)||[],iso=year+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  out+='<div class="calendar-day '+(iso===dateISO(today)?"today":"")+'"><div class="calendar-day-number">'+d+'</div>'+(list.length?'<div class="calendar-count">'+list.length+' booking'+(list.length===1?"":"s")+'</div>':'')+(list.slice(0,2).map(b=>'<div class="calendar-dot-list">'+esc(b.customer_name||bookingLabel(b))+'</div>').join(""))+(list.length>2?'<div class="calendar-dot-list">+'+(list.length-2)+' more</div>':"")+'</div>';
+ }
+ $("calendar").innerHTML=out;
+ $("calendarList").innerHTML='<table class="table"><thead><tr><th>Event date</th><th>Booking</th><th>Customer</th><th>Service</th><th>Return</th><th>Status</th></tr></thead><tbody>'+(rows.map(b=>'<tr><td>'+esc(b.event_date||"—")+'</td><td>'+esc(bookingLabel(b))+'</td><td>'+esc(b.customer_name)+'<br>'+esc(b.customer_mobile)+'</td><td>'+ (b.decoration_required?"Decoration + Bartan":"Bartan")+'</td><td>'+esc(b.return_date||"—")+'</td><td><span class="badge '+(b.status==="cancelled"?"off":"")+'">'+esc(b.status)+'</span></td></tr>').join("")||'<tr><td colspan="6">No bookings match these filters.</td></tr>')+'</tbody></table>';
+}
+["month","calendarType","calendarStatus"].forEach(id=>$(id).addEventListener("change",renderCalendar));renderCalendar();
+
+function renderCancellations(){
+ const box=$("cancellations");
+ if(cancelRes.error){box.textContent="Could not load cancellation requests: "+cancelRes.error.message;return;}
+ box.innerHTML=cancellations.map(c=>'<article class="item"><h3>Booking #'+esc(c.booking_id)+' · '+esc(c.status)+'</h3><p>'+esc(c.reason||"No reason supplied")+'</p>'+(c.status==="pending"?'<button class="btn2" data-cancel="'+esc(c.id)+'" data-status="approved">Approve</button> <button class="btn2" data-cancel="'+esc(c.id)+'" data-status="rejected">Reject</button>':'<p>'+esc(c.admin_note||"")+'</p>')+'</article>').join("")||"No cancellation requests.";
+ box.querySelectorAll("[data-cancel]").forEach(btn=>btn.onclick=async()=>{
+  const c=cancellations.find(x=>String(x.id)===btn.dataset.cancel);if(!c)return;
+  const note=prompt("Optional note for customer")||"";
+  btn.disabled=true;
+  const u=await db.from("booking_cancellation_requests").update({status:btn.dataset.status,admin_note:note,reviewed_at:new Date().toISOString(),reviewed_by:session.user.id}).eq("id",c.id).eq("status","pending");
+  if(u.error){alert(u.error.message);btn.disabled=false;return;}
+  if(btn.dataset.status==="approved"){
+   const z=await db.from("bookings").update({status:"cancelled"}).eq("id",c.booking_id).in("status",["pending","confirmed"]);
+   if(z.error){alert("Request reviewed, but booking status was not changed: "+z.error.message);}
+  }
+  location.reload();
+ });
+}
+renderCancellations();
+
+function renderCoupons(){
+ const box=$("coupons");
+ if(couponRes.error){box.textContent="Could not load coupons: "+couponRes.error.message;return;}
+ box.innerHTML=coupons.map(c=>'<article class="item"><strong>'+esc(c.code)+'</strong> · <span class="badge '+(!c.is_active?"off":"")+'">'+(c.is_active?"Active":"Inactive")+'</span><p>'+esc(c.description||"")+' · '+(c.discount_type==="percent"?esc(c.discount_value)+"%":money(c.discount_value))+' discount</p><button class="btn2" data-toggle="'+esc(c.id)+'">Toggle status</button> <button class="btn2" data-delete="'+esc(c.id)+'">Delete</button></article>').join("")||"No coupons created yet.";
+ box.querySelectorAll("[data-toggle]").forEach(btn=>btn.onclick=async()=>{const c=coupons.find(x=>String(x.id)===btn.dataset.toggle);const z=await db.from("discount_coupons").update({is_active:!c.is_active}).eq("id",c.id);if(z.error)alert(z.error.message);else location.reload();});
+ box.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=async()=>{if(!confirm("Delete this coupon?"))return;const z=await db.from("discount_coupons").delete().eq("id",btn.dataset.delete);if(z.error)alert(z.error.message);else location.reload();});
+}
+renderCoupons();
+$("couponForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const ex=$("expiry").value,val=Number($("value").value),type=$("type").value;
+ if(!Number.isFinite(val)||val<=0||(type==="percent"&&val>100)){alert("Enter a valid discount value. Percent must be 1–100.");return;}
+ const payload={code:$("code").value.trim().toUpperCase(),description:$("desc").value.trim(),discount_type:type,discount_value:val,minimum_amount:Number($("minimum").value||0),max_discount:$("maxdiscount").value?Number($("maxdiscount").value):null,expires_at:ex?new Date(ex+"T23:59:59").toISOString():null,max_uses:$("maxuses").value?Number($("maxuses").value):null,per_customer_limit:Number($("perlimit").value||1),is_active:$("active").checked};
+ const btn=e.submitter;if(btn){btn.disabled=true;btn.textContent="Saving…";}
+ const z=await db.from("discount_coupons").insert(payload);
+ if(z.error){alert("Coupon was not saved: "+z.error.message);if(btn){btn.disabled=false;btn.textContent="Save Coupon";}}
+ else location.reload();
+});
+
+function reportRows(){
+ const from=$("reportFrom").value,to=$("reportTo").value,type=$("reportType").value,status=$("reportStatus").value;
+ return bookings.filter(b=>(!from||String(b.event_date||"")>=from)&&(!to||String(b.event_date||"")<=to)&&serviceMatch(b,type)&&statusMatch(b,status));
+}
+function renderReport(){
+ const rows=reportRows(),sum=k=>rows.reduce((n,b)=>n+Number(b[k]||0),0);
+ const received=rows.reduce((n,b)=>n+(paymentTotals.get(String(b.id))||0),0);
+ const pendingOnline=rows.reduce((n,b)=>n+payments.filter(p=>String(p.booking_id)===String(b.id)&&String(p.payment_method||"").toLowerCase()!=="cash"&&String(p.verification_status||"pending").toLowerCase()==="pending"&&String(p.payment_type||"").toLowerCase()!=="refund").reduce((s,p)=>s+Number(p.amount||0),0),0);
+ statCards("reportStats",[["Bookings",rows.length],["Booking value",money(sum("final_total"))],["Received / verified",money(received)],["Remaining balance",money(rows.reduce((n,b)=>n+Math.max(0,Number(b.final_total||0)-(paymentTotals.get(String(b.id))||0)),0))],["Pending online claims",money(pendingOnline)],["Decoration bookings",rows.filter(b=>b.decoration_required).length]]);
+ $("reportRows").innerHTML='<table class="table report-table"><thead><tr><th>Event date</th><th>Booking</th><th>Customer</th><th>Service</th><th>Status</th><th>Total</th><th>Received</th><th>Balance</th></tr></thead><tbody>'+(rows.map(b=>{const got=paymentTotals.get(String(b.id))||0;return '<tr><td>'+esc(b.event_date||"—")+'</td><td>'+esc(bookingLabel(b))+'</td><td>'+esc(b.customer_name||"")+'</td><td>'+(b.decoration_required?"Decoration + Bartan":"Bartan")+'</td><td>'+esc(b.status||"—")+'</td><td>'+money(b.final_total)+'</td><td>'+money(got)+'</td><td>'+money(Math.max(0,Number(b.final_total||0)-got))+'</td></tr>';}).join("")||'<tr><td colspan="8">No bookings match this report.</td></tr>')+'</tbody></table>';
+}
+["reportFrom","reportTo","reportType","reportStatus"].forEach(id=>$(id).addEventListener("change",renderReport));renderReport();
+$("print").onclick=()=>window.print();
+$("exportCsv").onclick=()=>{
+ const rows=reportRows(),head=["Event date","Booking","Customer","Mobile","Service","Status","Total","Received","Balance"];
+ const data=[head,...rows.map(b=>{const got=paymentTotals.get(String(b.id))||0;return [b.event_date,bookingLabel(b),b.customer_name,b.customer_mobile,b.decoration_required?"Decoration + Bartan":"Bartan",b.status,b.final_total,got,Math.max(0,Number(b.final_total||0)-got)];})];
+ const csv=data.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"})),a=document.createElement("a");a.href=url;a.download="business-report-"+dateISO(today)+".csv";a.click();URL.revokeObjectURL(url);
+};
+
+function renderPackages(){
+ const box=$("packages");
+ if(decorRes.error){box.textContent="Could not load packages: "+decorRes.error.message;return;}
+ const active=decorations.filter(d=>d.is_active).length;
+ statCards("packageStats",[["Total packages",decorations.length],["Active packages",active],["Inactive packages",decorations.length-active]]);
+ box.innerHTML=decorations.map(d=>'<article class="package-card">'+(d.image_url?'<img src="'+esc(d.image_url)+'" alt="'+esc(d.name)+'" loading="lazy">':'<div class="package-placeholder">🌸</div>')+'<div class="package-card-body"><span class="badge '+(!d.is_active?"off":"")+'">'+(d.is_active?"Active":"Inactive")+'</span><h3>'+esc(d.name)+'</h3><p class="meta">'+esc(d.category||"Decoration")+'</p><p>'+esc(d.description||"No description added.")+'</p><div class="package-price">'+money(d.rate)+'</div><p class="meta">Display order: '+esc(d.display_order??0)+'</p></div></article>').join("")||"No decoration packages found.";
+}
+renderPackages();
+setNotice("Business tools loaded. Reports use event dates; only verified/cash payments count as received.");
