@@ -483,7 +483,10 @@ function renderBookings() {
                 const matchesStatus = status === "all" || booking.status === status;
                 const hasBartan = Number(booking.bartan_total || 0) > 0 || Number(booking.bartan_count || 0) > 0;
                 const hasDecoration = booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0 || Number(booking.decoration_count || 0) > 0;
-                const resolvedType = booking.booking_type || (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
+                const storedType = String(booking.booking_type || "").toLowerCase();
+                const resolvedType = ["bartan", "decoration", "both"].includes(storedType)
+                    ? storedType
+                    : (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
                 const matchesType = bookingType === "all" || resolvedType === bookingType;
                 return matchesSearch && matchesStatus && matchesType;
 
