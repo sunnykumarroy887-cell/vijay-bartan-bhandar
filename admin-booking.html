@@ -172,6 +172,42 @@
 
             </div>
 
+            <div class="field">
+                <label for="paymentFilter">Payment Status</label>
+                <select id="paymentFilter">
+                    <option value="all">All Payments</option>
+                    <option value="due">Payment Due</option>
+                    <option value="partial">Partially Paid</option>
+                    <option value="paid">Fully Paid</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="eventDateFrom">Event Date From</label>
+                <input id="eventDateFrom" type="date">
+            </div>
+
+            <div class="field">
+                <label for="eventDateTo">Event Date To</label>
+                <input id="eventDateTo" type="date">
+            </div>
+
+            <div class="field">
+                <label for="bookingSort">Sort By</label>
+                <select id="bookingSort">
+                    <option value="newest">Recently Added</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="event_soon">Upcoming Event First</option>
+                    <option value="amount_high">Highest Amount</option>
+                    <option value="amount_low">Lowest Amount</option>
+                </select>
+            </div>
+
+            <div class="field filter-reset-wrap">
+                <label>&nbsp;</label>
+                <button type="button" id="resetFiltersBtn" class="btn secondary">Reset Filters</button>
+            </div>
+
         </div>
 
     </section>
