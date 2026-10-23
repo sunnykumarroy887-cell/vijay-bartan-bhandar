@@ -249,11 +249,11 @@
                             Image URL
                         </label>
 
-                        <input
-                            type="url"
-                            id="imageUrl"
-                            placeholder="https://example.com/image.jpg"
-                        >
+                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
+                        <label for="imageUpload" class="upload-label">Or upload photo from phone</label>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/webp,image/gif">
+                        <img id="imagePreview" class="upload-preview hidden" alt="Selected decoration preview">
+                        <small class="upload-help">JPG, PNG, WEBP or GIF · Maximum 5 MB</small>
 
                     </div>
 
@@ -535,10 +535,11 @@
                     Image URL
                 </label>
 
-                <input
-                    type="url"
-                    id="editImageUrl"
-                >
+                <input type="url" id="editImageUrl">
+                <label for="editImageUpload" class="upload-label">Or upload a replacement photo</label>
+                <input type="file" id="editImageUpload" accept="image/jpeg,image/png,image/webp,image/gif">
+                <img id="editImagePreview" class="upload-preview hidden" alt="Selected decoration preview">
+                <small class="upload-help">JPG, PNG, WEBP or GIF · Maximum 5 MB</small>
 
             </div>
 
