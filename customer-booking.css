@@ -2713,3 +2713,22 @@ button {
 .decoration-description{color:#64756b;line-height:1.55;margin:10px 0}
 .decoration-check{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:#e8efe9;color:#176344;font-weight:800}
 .decoration-item.is-selected .decoration-check{background:#176344;color:#fff}
+
+
+/* Three-way service selection */
+.service-type-chooser{max-width:1100px;margin:24px auto 28px;padding:clamp(18px,4vw,30px);border:1px solid #e8dfca;border-radius:24px;background:linear-gradient(145deg,#fffdf7,#f7fbf7);box-shadow:0 12px 35px rgba(34,65,48,.08)}
+.service-choice-heading{text-align:center;margin-bottom:22px}
+.service-choice-eyebrow{display:inline-block;font-size:.76rem;font-weight:800;letter-spacing:.14em;color:#a77a22;margin-bottom:8px}
+.service-choice-heading h2{margin:0 0 8px;color:#234b39;font-size:clamp(1.35rem,4vw,2rem)}
+.service-choice-heading p{margin:0;color:#66756b;line-height:1.6}
+.service-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.service-choice-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0;padding:20px 18px;text-align:left;border:1px solid #dce7dc;border-radius:18px;background:#fff;color:#294638;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.service-choice-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,70,48,.1)}
+.service-choice-card.selected{border:2px solid #27734d;background:#eff8f0;box-shadow:0 0 0 3px rgba(39,115,77,.1)}
+.service-choice-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#f6f0df;font-size:1.6rem}
+.service-choice-card strong{font-size:1rem;line-height:1.35}
+.service-choice-card>span:not(.service-choice-icon){color:#68776d;font-size:.9rem;line-height:1.5}
+.service-choice-card em{margin-top:auto;padding-top:8px;color:#26734c;font-size:.88rem;font-style:normal;font-weight:800}
+.service-choice-hint{margin:18px 0 0;padding:12px 14px;border-radius:12px;background:#edf5ee;color:#315b43;font-size:.92rem;line-height:1.5}
+#bartanServiceSection[hidden],#decorationServiceSection[hidden]{display:none!important}
+@media(max-width:720px){.service-choice-grid{grid-template-columns:1fr;gap:10px}.service-choice-card{display:grid;grid-template-columns:52px 1fr;align-items:center;column-gap:12px;padding:14px}.service-choice-icon{grid-row:span 3}.service-choice-card strong,.service-choice-card>span:not(.service-choice-icon),.service-choice-card em{grid-column:2}.service-choice-card em{padding-top:0}}
