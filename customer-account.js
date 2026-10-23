@@ -210,7 +210,9 @@ function openCustomerArea() {
     window.location.assign(
         next === "tracking"
             ? "./customer-tracking.html"
-            : "./customer-profile.html"
+            : next === "booking"
+                ? "./booking-options.html"
+                : "./customer-profile.html"
     );
 }
 
