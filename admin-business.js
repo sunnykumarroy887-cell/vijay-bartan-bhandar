@@ -71,8 +71,8 @@ function renderCalendar(){
  $("calendar").innerHTML=out;
  $("calendar").querySelectorAll("[data-calendar-date]").forEach(el=>{
   const activate=()=>showCalendarDate(el.dataset.calendarDate);
-  el.addEventListener("click",activate);
-  if(el.tagName!=="BUTTON")el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
+  if(el.tagName==="BUTTON")el.addEventListener("click",activate);
+  else el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
  });
  $("calendarList").innerHTML='<table class="table"><thead><tr><th>Event date</th><th>Booking</th><th>Customer</th><th>Service</th><th>Return</th><th>Status</th></tr></thead><tbody>'+(rows.map(b=>'<tr><td>'+esc(b.event_date||"—")+'</td><td>'+esc(bookingLabel(b))+'</td><td>'+esc(b.customer_name)+'<br>'+esc(b.customer_mobile)+'</td><td>'+(b.decoration_required?"Decoration + Bartan":"Bartan")+'</td><td>'+esc(b.return_date||"—")+'</td><td><span class="badge '+(b.status==="cancelled"?"off":"")+'">'+esc(b.status)+'</span></td></tr>').join("")||'<tr><td colspan="6">No bookings match these filters.</td></tr>')+'</tbody></table>';
 }
@@ -162,8 +162,8 @@ function renderDecorationMonthly(){
  };
  $("decorationCalendar").querySelectorAll("[data-decoration-date]").forEach(el=>{
   const activate=()=>showDate(el.dataset.decorationDate);
-  el.addEventListener("click",activate);
-  if(el.tagName!=="BUTTON")el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
+  if(el.tagName==="BUTTON")el.addEventListener("click",activate);
+  else el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
  });
  $("decorationReportCsv").onclick=()=>{
   const head=["Event date","Booking","Customer","Mobile","Return date","Status","Booking total","Decoration charge","Received","Balance"];
