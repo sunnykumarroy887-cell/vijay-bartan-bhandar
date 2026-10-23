@@ -169,6 +169,7 @@ function bindEvents() {
         "change",
         renderBookings
     );
+    $("bookingTypeFilter")?.addEventListener("change", renderBookings);
 
 
     $("closeModalBtn")?.addEventListener(
@@ -447,6 +448,7 @@ function renderBookings() {
     const status =
         $("statusFilter")
             ?.value || "all";
+    const bookingType = $("bookingTypeFilter")?.value || "all";
 
 
     const filtered =
@@ -478,15 +480,10 @@ function renderBookings() {
                     mobile.includes(search);
 
 
-                const matchesStatus =
-                    status === "all" ||
-                    booking.status === status;
-
-
-                return (
-                    matchesSearch &&
-                    matchesStatus
-                );
+                const matchesStatus = status === "all" || booking.status === status;
+                const hasDecoration = booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0 || Number(booking.decoration_count || 0) > 0;
+                const matchesType = bookingType === "all" || (bookingType === "decoration" ? hasDecoration : !hasDecoration);
+                return matchesSearch && matchesStatus && matchesType;
 
             }
         );
