@@ -54,6 +54,38 @@ const returnDate =
 const specialRequirement =
     document.getElementById("specialRequirement");
 
+// SERVICE TYPE CHOOSER
+let selectedServiceType = "";
+const serviceChooser = document.getElementById("serviceTypeChooser");
+const serviceChoiceHint = document.getElementById("serviceChoiceHint");
+const bartanServiceSection = document.getElementById("bartanServiceSection");
+const decorationServiceSection = document.getElementById("decorationServiceSection");
+function applyServiceType(type) {
+    if (!["bartan", "decoration", "both"].includes(type)) return;
+    selectedServiceType = type;
+    serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
+        const active = card.dataset.serviceChoice === type;
+        card.classList.toggle("selected", active);
+        card.setAttribute("aria-pressed", String(active));
+    });
+    if (bartanServiceSection) bartanServiceSection.hidden = type === "decoration";
+    if (decorationServiceSection) decorationServiceSection.hidden = type === "bartan";
+    if (decorationRequired) {
+        decorationRequired.checked = type !== "bartan";
+        decorationRequired.disabled = type !== "both";
+        decorationRequired.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (serviceChoiceHint) serviceChoiceHint.textContent = ({
+        bartan: "आपने केवल Bartan Service चुनी है। केवल बर्तनों का चयन करें।",
+        decoration: "आपने केवल Decoration Service चुनी है। सजावट का चयन करें।",
+        both: "आपने दोनों सेवाएँ चुनी हैं। बर्तन और सजावट दोनों चुनें।"
+    })[type];
+    form?.scrollIntoView({behavior:"smooth", block:"start"});
+}
+serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
+    card.addEventListener("click", () => applyServiceType(card.dataset.serviceChoice));
+});
+
 const decorationRequired =
     document.getElementById("decorationRequired");
 
@@ -1507,6 +1539,12 @@ async function handleSubmit(event) {
     clearErrors();
 
 
+    if (!selectedServiceType) {
+        showToast("कृपया पहले Bartan, Decoration या दोनों में से एक सेवा चुनें।", "error");
+        serviceChooser?.scrollIntoView({behavior:"smooth",block:"center"});
+        return;
+    }
+
     const validation =
         validateForm();
 
@@ -1571,12 +1609,17 @@ async function handleSubmit(event) {
 
 
         if (
-            selectedItems.length === 0 &&
-            selectedDecorationItems.length === 0
+            (selectedServiceType === "bartan" && selectedItems.length === 0) ||
+            (selectedServiceType === "decoration" && selectedDecorationItems.length === 0) ||
+            (selectedServiceType === "both" && (selectedItems.length === 0 || selectedDecorationItems.length === 0))
         ) {
 
             throw new Error(
-                "Please select at least one bartan or decoration"
+                selectedServiceType === "bartan"
+                    ? "कृपया कम से कम एक Bartan item चुनें।"
+                    : selectedServiceType === "decoration"
+                        ? "कृपया कम से कम एक Decoration service चुनें।"
+                        : "कृपया Bartan और Decoration दोनों में से items चुनें।"
             );
 
         }
@@ -1619,7 +1662,7 @@ async function handleSubmit(event) {
 
 
         const bartanPayload =
-            selectedItems.map(item => ({
+            (selectedServiceType === "decoration" ? [] : selectedItems).map(item => ({
 
                 id:
                     Number(item.id),
@@ -1631,8 +1674,7 @@ async function handleSubmit(event) {
 
 
         const decorationIds =
-            decorationRequired &&
-            !decorationRequired.checked
+            selectedServiceType === "bartan"
                 ? []
                 : selectedDecorationItems.map(
                     item => Number(item.id)
