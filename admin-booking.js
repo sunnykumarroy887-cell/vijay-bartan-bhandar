@@ -170,6 +170,20 @@ function bindEvents() {
         renderBookings
     );
     $("bookingTypeFilter")?.addEventListener("change", renderBookings);
+    $("paymentFilter")?.addEventListener("change", renderBookings);
+    $("eventDateFrom")?.addEventListener("change", renderBookings);
+    $("eventDateTo")?.addEventListener("change", renderBookings);
+    $("bookingSort")?.addEventListener("change", renderBookings);
+    $("resetFiltersBtn")?.addEventListener("click", () => {
+        ["searchInput", "bookingTypeFilter", "statusFilter", "paymentFilter", "eventDateFrom", "eventDateTo", "bookingSort"].forEach(id => {
+            const el = $(id);
+            if (!el) return;
+            if (id === "bookingSort") el.value = "newest";
+            else if (el.tagName === "SELECT") el.value = "all";
+            else el.value = "";
+        });
+        renderBookings();
+    });
 
 
     $("closeModalBtn")?.addEventListener(
@@ -449,9 +463,13 @@ function renderBookings() {
         $("statusFilter")
             ?.value || "all";
     const bookingType = $("bookingTypeFilter")?.value || "all";
+    const paymentFilter = $("paymentFilter")?.value || "all";
+    const dateFrom = $("eventDateFrom")?.value || "";
+    const dateTo = $("eventDateTo")?.value || "";
+    const sortBy = $("bookingSort")?.value || "newest";
 
 
-    const filtered =
+    let filtered =
         allBookings.filter(
             booking => {
 
@@ -488,10 +506,32 @@ function renderBookings() {
                     ? storedType
                     : (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
                 const matchesType = bookingType === "all" || resolvedType === bookingType;
-                return matchesSearch && matchesStatus && matchesType;
+                const remaining = Number(booking.remaining || 0);
+                const paid = Number(booking.advance || 0);
+                const total = Number(booking.final_total || 0);
+                const resolvedPayment = remaining <= 0 ? "paid" : paid > 0 ? "partial" : "due";
+                const matchesPayment = paymentFilter === "all" || resolvedPayment === paymentFilter;
+                const eventDay = String(booking.event_date || "").slice(0, 10);
+                const matchesDateFrom = !dateFrom || (eventDay && eventDay >= dateFrom);
+                const matchesDateTo = !dateTo || (eventDay && eventDay <= dateTo);
+                return matchesSearch && matchesStatus && matchesType && matchesPayment && matchesDateFrom && matchesDateTo;
 
             }
         );
+
+    filtered.sort((a, b) => {
+        const createdA = new Date(a.created_at || 0).getTime();
+        const createdB = new Date(b.created_at || 0).getTime();
+        const dateA = String(a.event_date || "9999-12-31");
+        const dateB = String(b.event_date || "9999-12-31");
+        const amountA = Number(a.final_total || 0);
+        const amountB = Number(b.final_total || 0);
+        if (sortBy === "oldest") return createdA - createdB;
+        if (sortBy === "event_soon") return dateA.localeCompare(dateB);
+        if (sortBy === "amount_high") return amountB - amountA;
+        if (sortBy === "amount_low") return amountA - amountB;
+        return createdB - createdA;
+    });
 
 
     if ($("bookingCountText")) {
