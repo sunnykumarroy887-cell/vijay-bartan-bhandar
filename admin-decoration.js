@@ -145,6 +145,28 @@ function getImageHtml(item) {
 
 
 // ======================================================
+async function uploadDecorationImage(file) {
+ if (!file) return "";
+ const allowed = ["image/jpeg","image/png","image/webp","image/gif"];
+ if (!allowed.includes(file.type)) throw new Error("Choose a JPG, PNG, WEBP or GIF image.");
+ if (file.size > 5 * 1024 * 1024) throw new Error("Image must be 5 MB or smaller.");
+ const { data: { session } } = await supabase.auth.getSession();
+ if (!session || session.user.id !== ADMIN_UID) throw new Error("Admin session expired. Please sign in again.");
+ const ext = ({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"})[file.type];
+ const path = "admin/" + Date.now() + "-" + crypto.randomUUID() + "." + ext;
+ const { error } = await supabase.storage.from("decoration-images").upload(path,file,{contentType:file.type,upsert:false,cacheControl:"3600"});
+ if (error) throw error;
+ return supabase.storage.from("decoration-images").getPublicUrl(path).data.publicUrl;
+}
+function bindImagePreview(inputId,previewId) {
+ const input=document.getElementById(inputId), preview=document.getElementById(previewId); if(!input||!preview)return;
+ input.addEventListener("change",()=>{const file=input.files&&input.files[0];if(!file){preview.src="";preview.classList.add("hidden");return;}
+ if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)||file.size>5*1024*1024){input.value="";preview.src="";preview.classList.add("hidden");showError("Choose a JPG, PNG, WEBP or GIF image up to 5 MB.");return;}
+ preview.src=URL.createObjectURL(file);preview.classList.remove("hidden");});
+}
+bindImagePreview("imageUpload","imagePreview");
+bindImagePreview("editImageUpload","editImagePreview");
+
 // ADMIN SECURITY
 // ======================================================
 
@@ -622,13 +644,8 @@ decorationForm.addEventListener(
             );
 
 
-        const imageUrl =
-            document
-                .getElementById(
-                    "imageUrl"
-                )
-                .value
-                .trim();
+        let imageUrl = document.getElementById("imageUrl").value.trim();
+        const selectedImage = document.getElementById("imageUpload").files[0];
 
 
         const displayOrder =
@@ -682,6 +699,8 @@ decorationForm.addEventListener(
         submitButton.textContent =
             "Adding...";
 
+
+        try { if (selectedImage) imageUrl = await uploadDecorationImage(selectedImage); } catch (uploadError) { submitButton.disabled=false; submitButton.textContent="+ Add Decoration"; showError(uploadError.message||"Image upload failed."); return; }
 
         const {
             error
@@ -910,13 +929,8 @@ editDecorationForm.addEventListener(
             );
 
 
-        const imageUrl =
-            document
-                .getElementById(
-                    "editImageUrl"
-                )
-                .value
-                .trim();
+        let imageUrl = document.getElementById("editImageUrl").value.trim();
+        const selectedImage = document.getElementById("editImageUpload").files[0];
 
 
         const displayOrder =
@@ -958,6 +972,8 @@ editDecorationForm.addEventListener(
         submitButton.textContent =
             "Saving...";
 
+
+        try { if (selectedImage) imageUrl = await uploadDecorationImage(selectedImage); } catch (uploadError) { submitButton.disabled=false; submitButton.textContent="Save Changes"; showError(uploadError.message||"Image upload failed."); return; }
 
         const {
             error
