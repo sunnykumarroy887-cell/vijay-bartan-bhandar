@@ -332,12 +332,12 @@ async function loadBookingHistory(user) {
       const table = document.createElement("div");
       table.className = "booking-bartan-table";
       const header = document.createElement("div");
-      header.className = "booking-bartan-row booking-bartan-header";
+      header.className = "booking-bartan-row booking-decoration-row booking-bartan-header";
       ["Decoration Service", "Rate", "Amount"].forEach(label => header.append(makeText("span", "", label)));
       table.append(header);
       bookingDecorations.forEach(decoration => {
         const row = document.createElement("div");
-        row.className = "booking-bartan-row";
+        row.className = "booking-bartan-row booking-decoration-row";
         row.append(makeText("span", "booking-bartan-name", decoration.decoration_name || "Decoration service"), makeText("span", "", money(decoration.locked_rate)), makeText("span", "", money(decoration.amount)));
         table.append(row);
       });
