@@ -55,7 +55,7 @@ const specialRequirement =
     document.getElementById("specialRequirement");
 
 // SERVICE TYPE CHOOSER
-let selectedServiceType = "";
+let selectedServiceType = document.body.dataset.serviceType || "both";
 const serviceChooser = document.getElementById("serviceTypeChooser");
 const serviceChoiceHint = document.getElementById("serviceChoiceHint");
 const bartanServiceSection = document.getElementById("bartanServiceSection");
@@ -228,6 +228,14 @@ document.addEventListener(
         setMinimumDates();
 
         setupEvents();
+
+        if (bartanServiceSection) bartanServiceSection.hidden = selectedServiceType === "decoration";
+        if (decorationServiceSection) decorationServiceSection.hidden = selectedServiceType === "bartan";
+        if (decorationRequired) {
+            decorationRequired.checked = selectedServiceType !== "bartan";
+            decorationRequired.disabled = selectedServiceType !== "both";
+            decorationRequired.dispatchEvent(new Event("change", { bubbles: true }));
+        }
 
         setupTrackingEvents();
 
