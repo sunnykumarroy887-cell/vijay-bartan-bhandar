@@ -234,7 +234,7 @@ async function loadBookingHistory(user) {
   }
 
   const bookingIds = bookings.map((booking) => booking.id);
-  const [{ data: allItems, error: itemsError }, { data: allPayments, error: paymentsError }, { data: allDecorations, error: decorationsError }, settings] = await Promise.all([
+  const [{ data: allItems, error: itemsError }, { data: allDecorations, error: decorationsError }, { data: allPayments, error: paymentsError }, settings] = await Promise.all([
     supabase.from("booking_items")
       .select("booking_id, item_name, quantity, locked_rate, amount")
       .in("booking_id", bookingIds),
