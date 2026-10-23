@@ -481,8 +481,10 @@ function renderBookings() {
 
 
                 const matchesStatus = status === "all" || booking.status === status;
+                const hasBartan = Number(booking.bartan_total || 0) > 0 || Number(booking.bartan_count || 0) > 0;
                 const hasDecoration = booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0 || Number(booking.decoration_count || 0) > 0;
-                const matchesType = bookingType === "all" || (bookingType === "decoration" ? hasDecoration : !hasDecoration);
+                const resolvedType = booking.booking_type || (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
+                const matchesType = bookingType === "all" || resolvedType === bookingType;
                 return matchesSearch && matchesStatus && matchesType;
 
             }
