@@ -656,3 +656,9 @@ footer {
 .booking-decoration-row { grid-template-columns: minmax(0, 2fr) minmax(64px, 1fr) minmax(72px, 1fr); gap: 10px; }
 .booking-decoration-row > span:not(:first-child) { text-align: right; white-space: nowrap; }
 @media (max-width: 420px) { .booking-decoration-row { grid-template-columns: minmax(0, 1.6fr) minmax(58px, 1fr) minmax(64px, 1fr); gap: 6px; font-size: 11px; } }
+
+
+/* New Booking shortcut */
+.new-booking-card { border-color: #d8c18a; background: linear-gradient(135deg, #fffdf6, #f6f0df); }
+.new-booking-card .quick-icon { background: #c49a35; color: #fff; }
+.new-booking-card:hover { border-color: #b88d26; box-shadow: 0 12px 28px rgba(184,141,38,.14); }
