@@ -234,9 +234,12 @@ async function loadBookingHistory(user) {
   }
 
   const bookingIds = bookings.map((booking) => booking.id);
-  const [{ data: allItems, error: itemsError }, { data: allPayments, error: paymentsError }, settings] = await Promise.all([
+  const [{ data: allItems, error: itemsError }, { data: allPayments, error: paymentsError }, { data: allDecorations, error: decorationsError }, settings] = await Promise.all([
     supabase.from("booking_items")
       .select("booking_id, item_name, quantity, locked_rate, amount")
+      .in("booking_id", bookingIds),
+    supabase.from("booking_decorations")
+      .select("booking_id, decoration_name, locked_rate, amount")
       .in("booking_id", bookingIds),
     supabase.from("booking_payments")
       .select("id, booking_id, amount, payment_type, payment_method, payment_note, payment_reference, created_at, verification_status, verified_at")
@@ -246,6 +249,13 @@ async function loadBookingHistory(user) {
   ]);
   if (itemsError) console.error("Booking items query failed:", itemsError);
   if (paymentsError) console.error("Customer payment history query failed:", paymentsError);
+
+  const decorationsByBooking = new Map();
+  for (const decoration of allDecorations || []) {
+    const key = String(decoration.booking_id);
+    if (!decorationsByBooking.has(key)) decorationsByBooking.set(key, []);
+    decorationsByBooking.get(key).push(decoration);
+  }
 
   const paymentsByBooking = new Map();
   for (const payment of allPayments || []) {
@@ -309,6 +319,31 @@ async function loadBookingHistory(user) {
       itemSection.append(table);
     }
     card.append(itemSection);
+
+    const decorationSection = document.createElement("section");
+    decorationSection.className = "booking-history-bartan";
+    decorationSection.append(makeText("h4", "", "Decoration Details"));
+    const bookingDecorations = decorationsByBooking.get(String(booking.id)) || [];
+    if (decorationsError) {
+      decorationSection.append(makeText("p", "", "Decoration details could not be loaded."));
+    } else if (!bookingDecorations.length) {
+      decorationSection.append(makeText("p", "", booking.decoration_required ? "Decoration was selected, but item details are unavailable." : "No decoration service in this booking."));
+    } else {
+      const table = document.createElement("div");
+      table.className = "booking-bartan-table";
+      const header = document.createElement("div");
+      header.className = "booking-bartan-row booking-bartan-header";
+      ["Decoration Service", "Rate", "Amount"].forEach(label => header.append(makeText("span", "", label)));
+      table.append(header);
+      bookingDecorations.forEach(decoration => {
+        const row = document.createElement("div");
+        row.className = "booking-bartan-row";
+        row.append(makeText("span", "booking-bartan-name", decoration.decoration_name || "Decoration service"), makeText("span", "", money(decoration.locked_rate)), makeText("span", "", money(decoration.amount)));
+        table.append(row);
+      });
+      decorationSection.append(table);
+    }
+    card.append(decorationSection);
 
     const bookingPayments = paymentsByBooking.get(String(booking.id)) || [];
     const collected = bookingPayments.reduce((sum, payment) => {
