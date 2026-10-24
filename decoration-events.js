@@ -168,28 +168,18 @@ form.addEventListener("submit", async (e) => {
       ...eventRows.map((v, i) => `Event ${i + 1}: ${v.event_name}, ${v.event_date}, ${v.event_time || "time not set"}, Venue: ${v.venue_address}, Design: ${v.design_name || "not selected"}, Needs: ${v.decoration_details}`)
     ].filter(Boolean).join("\n");
 
-    const { data, error } = await db.rpc("create_customer_booking_full", {
+    const { data, error } = await db.rpc("create_customer_decoration_booking", {
       p_customer_name: $("customerName").value.trim(),
       p_customer_mobile: $("customerMobile").value.trim(),
       p_customer_address: $("customerAddress").value.trim(),
       p_event_date: eventRows.map(v => v.event_date).sort()[0],
-      p_return_date: null,
-      p_bartan_items: [],
-      p_decoration_ids: [],
       p_notes: notes
     });
     if (error) throw error;
     const booking = Array.isArray(data) ? data[0] : data;
-    if (!booking?.id) throw new Error("Booking create hui ya nahi confirm nahi ho saka. Account ke bookings section mein check karein.");
+    if (!booking?.booking_id) throw new Error("Booking create hui ya nahi confirm nahi ho saka. Account ke bookings section mein check karein.");
+    booking.id = booking.booking_id;
     bookingNumber = String(booking.booking_number || booking.id);
-
-    // The existing RPC currently marks decoration_required based on selected package IDs.
-    // Mark this parent as decoration-only, owned by the signed-in customer, and keep it unpriced until admin quotation.
-    const { error: typeError } = await db.from("bookings").update({
-      decoration_required: true,
-      booking_type: "decoration"
-    }).eq("id", booking.id).eq("customer_user_id", user.id);
-    if (typeError) throw new Error("Booking #" + bookingNumber + " create hui, lekin Decoration type set nahi hua. Admin ko booking number batayein.");
 
     const rows = [];
     for (let i = 0; i < eventRows.length; i++) {
