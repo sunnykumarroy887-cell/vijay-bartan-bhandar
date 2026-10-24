@@ -488,7 +488,7 @@ async function loadBookingHistory(user) {
 
     const track = document.createElement("a");
     track.className = "history-track-link";
-    track.href = "./customer-tracking.html";
+    track.href = "./customer-tracking.html?booking=" + encodeURIComponent(String(booking.booking_number || booking.id));
     track.textContent = "Track this booking →";
     track.style.display = "inline-block";
     track.style.marginTop = "14px";
