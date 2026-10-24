@@ -21,7 +21,7 @@ const {data:{session}} = await db.auth.getSession();
 if(!session || session.user.id!==ADMIN_ID){setNotice("Admin access required.",true);throw new Error("Unauthorized admin access");}
 setNotice("Loading business data…");
 const [bookingRes,cancelRes,couponRes,decorRes,paymentRes] = await Promise.all([
- db.from("bookings").select("id,booking_number,customer_name,customer_mobile,event_date,return_date,decoration_required,final_total,advance,remaining,status,created_at,decoration_charge,bartan_total").order("event_date"),
+ db.from("bookings").select("id,booking_number,customer_name,customer_mobile,customer_address,event_date,return_date,decoration_required,booking_type,final_total,advance,remaining,status,created_at,decoration_charge,bartan_total,delivery_charge,discount,notes").order("event_date"),
  db.from("booking_cancellation_requests").select("*").order("requested_at",{ascending:false}),
  db.from("discount_coupons").select("*").order("created_at",{ascending:false}),
  db.from("decorations").select("id,name,category,description,rate,image_url,is_active,display_order").order("display_order"),
@@ -82,7 +82,15 @@ function renderCalendar(){
 function renderCancellations(){
  const box=$("cancellations");
  if(cancelRes.error){box.textContent="Could not load cancellation requests: "+cancelRes.error.message;return;}
- box.innerHTML=cancellations.map(c=>'<article class="item"><h3>Booking #'+esc(c.booking_id)+' · '+esc(c.status)+'</h3><p>'+esc(c.reason||"No reason supplied")+'</p>'+(c.status==="pending"?'<button class="btn2" data-cancel="'+esc(c.id)+'" data-status="approved">Approve</button> <button class="btn2" data-cancel="'+esc(c.id)+'" data-status="rejected">Reject</button>':'<p>'+esc(c.admin_note||"")+'</p>')+'</article>').join("")||"No cancellation requests.";
+ box.innerHTML=cancellations.map(c=>{
+  const b=bookings.find(x=>String(x.id)===String(c.booking_id));
+  const label=b?.booking_number||("Booking #"+c.booking_id);
+  const dateValue=b?.created_at?new Date(b.created_at).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"Date unavailable";
+  const eventDate=b?.event_date?new Date(b.event_date+"T00:00:00").toLocaleDateString("en-IN",{dateStyle:"medium"}):"—";
+  const service=b?(b.booking_type||((b.decoration_required)?"Decoration / Combined":"Bartan")):"Booking record unavailable";
+  const details=b?'<div class="grid" style="margin:12px 0"><p><strong>Booking date:</strong><br>'+esc(dateValue)+'</p><p><strong>Event date:</strong><br>'+esc(eventDate)+'</p><p><strong>Service:</strong><br>'+esc(service)+'</p><p><strong>Mobile:</strong><br>'+esc(b.customer_mobile||"—")+'</p><p><strong>Full address:</strong><br>'+esc(b.customer_address||"—")+'</p><p><strong>Return date:</strong><br>'+esc(b.return_date||"—")+'</p><p><strong>Total:</strong><br>'+money(b.final_total)+'</p><p><strong>Advance:</strong><br>'+money(b.advance)+'</p><p><strong>Remaining:</strong><br>'+money(b.remaining)+'</p><p><strong>Booking status:</strong><br>'+esc(b.status||"—")+'</p></div><p><strong>Booking notes/details:</strong><br>'+esc(b.notes||"No additional notes")+'</p>':'<p>Booking details could not be loaded. Booking ID: '+esc(c.booking_id)+'</p>';
+  return '<article class="item" style="padding:18px;margin:14px 0;border-radius:16px"><h3>'+esc(label)+' · '+esc(c.status)+'</h3><p><strong>Customer:</strong> '+esc(b?.customer_name||c.customer_name||"Name unavailable")+'</p>'+details+'<p><strong>Cancellation reason:</strong><br>'+esc(c.reason||"No reason supplied")+'</p>'+(c.status==="pending"?'<button class="btn2" data-cancel="'+esc(c.id)+'" data-status="approved">Approve</button> <button class="btn2" data-cancel="'+esc(c.id)+'" data-status="rejected">Reject</button>':'<p><strong>Admin note:</strong> '+esc(c.admin_note||"—")+'</p>');
+ }).join("")||"No cancellation requests.";
  box.querySelectorAll("[data-cancel]").forEach(btn=>btn.onclick=async()=>{
   const c=cancellations.find(x=>String(x.id)===btn.dataset.cancel);if(!c)return;
   const note=prompt("Optional note for customer")||"";
