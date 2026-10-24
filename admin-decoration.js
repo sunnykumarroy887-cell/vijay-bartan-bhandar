@@ -1202,15 +1202,21 @@ async function loadDecorationQuoteRequests() {
  const note=document.getElementById("decorationQuotesNotice");
  if(!root||!note)return;
  root.textContent="Loading…"; note.textContent="";
+ const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+ if (sessionError || !session || session.user.id !== ADMIN_UID) {
+  root.textContent = "Admin session not detected. Please log in again, then reopen Decoration Management.";
+  return;
+ }
  const {data:events,error}=await supabase.from("booking_events")
   .select("id,booking_id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls,quoted_amount,delivery_charge,discount,status")
-  .order("created_at",{ascending:false});
- if(error){root.textContent="Could not load requests: "+error.message;return;}
+  .order("event_date",{ascending:false});
+ if(error){root.textContent="Could not load decoration events: "+error.message+" (code: "+(error.code||"n/a")+")";return;}
+ const ids=[...new Set((events||[]).map(e=>e.booking_id))];
+ if(!ids.length){root.textContent="No decoration event records found in booking_events. Please verify the customer submission saved event rows.";return;}
+ const {data:bookings,error:be}=await supabase.from("bookings").select("id,booking_number,customer_name,customer_mobile,customer_address,customer_user_id,booking_type,decoration_required").in("id",ids);
+ if(be){root.textContent="Could not load related bookings: "+be.message+" (code: "+(be.code||"n/a")+")";return;}
  const pending=(events||[]).filter(e=>["pending","under_review","quotation_sent","awaiting_approval"].includes(String(e.status||"").toLowerCase()));
- if(!pending.length){root.textContent="No decoration quotation requests found.";return;}
- const ids=[...new Set(pending.map(e=>e.booking_id))];
- const {data:bookings,error:be}=await supabase.from("bookings").select("id,booking_number,customer_name,customer_mobile,customer_address,customer_user_id").in("id",ids);
- if(be){root.textContent="Could not load booking details: "+be.message;return;}
+ if(!pending.length){root.textContent="Event rows found, but no pending quotations. Existing event status: "+[...new Set((events||[]).map(e=>e.status))].join(", ");return;}
  const bm=new Map((bookings||[]).map(b=>[String(b.id),b]));
  root.replaceChildren();
  pending.forEach(e=>{
