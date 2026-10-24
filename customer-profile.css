@@ -676,3 +676,11 @@ footer {
 .profile-edit-actions{display:flex;gap:10px;flex-wrap:wrap}
 .profile-edit-actions button{min-height:46px}
 @media(max-width:430px){.profile-editor-card{padding:17px}.profile-editor-heading{align-items:flex-start}.profile-photo-preview{width:66px;height:66px;flex-basis:66px;border-radius:19px}}
+
+.profile-photo-card{display:flex;gap:18px;align-items:center;margin:20px 0;padding:20px;border:1px solid #e1e5dc;border-radius:20px;background:#fff}
+.profile-photo-copy{display:grid;gap:10px;width:100%}
+.profile-photo-copy strong{font-size:1.1rem}
+.profile-photo-copy small,.profile-photo-copy p{color:var(--muted);margin:0;line-height:1.5}
+.profile-photo-copy input{max-width:100%;padding:10px;border:1px solid #d8dfd5;border-radius:10px}
+.profile-photo-copy button{justify-self:start}
+.avatar.has-profile-photo{background-size:cover!important;background-position:center!important;color:transparent!important}
