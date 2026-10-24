@@ -218,7 +218,7 @@ async function loadBookingHistory(user) {
 
   const { data: bookings, error } = await supabase
     .from("bookings")
-    .select("id, booking_number, event_date, return_date, final_total, advance, remaining, status, created_at")
+    .select("id, booking_number, event_date, return_date, final_total, advance, remaining, status, created_at, decoration_required, booking_type")
     .eq("customer_user_id", user.id)
     .order("created_at", { ascending: false });
 
