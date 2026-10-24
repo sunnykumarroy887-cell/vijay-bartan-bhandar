@@ -17,9 +17,25 @@ function displayProfile(user, profile = {}) {
   const metadata = user.user_metadata || {};
   const name = profile.full_name || metadata.full_name || metadata.name || "Customer";
   const mobile = profile.mobile || metadata.mobile || "Not added";
+  const avatarUrl = profile.avatar_url || "";
   $("profileName").textContent = name;
   $("profileEmail").textContent = user.email || "Email not available";
   $("avatar").textContent = (name.trim().charAt(0) || "V").toUpperCase();
+  $("profilePhotoPreview").textContent = (name.trim().charAt(0) || "V").toUpperCase();
+  if (avatarUrl) {
+    supabase.storage.from("customer-avatars").createSignedUrl(avatarUrl, 3600).then(({data, error}) => {
+      if (!error && data?.signedUrl) {
+        for (const id of ["avatar", "profilePhotoPreview"]) {
+          const el = $(id); el.textContent = ""; el.style.backgroundImage = "url('" + data.signedUrl.replace(/'/g, "%27") + "')"; el.classList.add("has-profile-photo");
+        }
+      }
+    });
+  } else {
+    for (const id of ["avatar", "profilePhotoPreview"]) { const el = $(id); el.style.backgroundImage = ""; el.classList.remove("has-profile-photo"); }
+  }
+  $("editFullName").value = name;
+  $("editMobile").value = mobile === "Not added" ? "" : mobile;
+  $("profileEditForm").dataset.avatarPath = avatarUrl;
   $("detailName").textContent = name;
   $("detailEmail").textContent = user.email || "—";
   $("detailMobile").textContent = mobile;
@@ -531,7 +547,7 @@ async function loadProfile() {
   }
   let profile = {};
   const result = await supabase.from("customer_profiles")
-    .select("user_id, full_name, mobile")
+    .select("user_id, full_name, mobile, avatar_url")
     .eq("user_id", user.id)
     .maybeSingle();
   if (result.error) {
@@ -545,6 +561,50 @@ async function loadProfile() {
   displayProfile(user, profile);
   await loadBookingHistory(user);
 }
+
+
+$("cancelProfileEditButton")?.addEventListener("click", () => {
+  $("editFullName").value = $("detailName").textContent === "—" ? "" : $("detailName").textContent;
+  $("editMobile").value = $("detailMobile").textContent === "Not added" || $("detailMobile").textContent === "—" ? "" : $("detailMobile").textContent;
+  $("editAvatarFile").value = "";
+});
+$("profileEditForm")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("saveProfileButton");
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+  if (!user) { showNotice("Please sign in again to edit your profile.", true); return; }
+  const full_name = $("editFullName").value.trim();
+  const mobile = $("editMobile").value.trim();
+  const file = $("editAvatarFile").files?.[0];
+  if (!full_name || !mobile) { showNotice("Enter your full name and mobile number.", true); return; }
+  if (file && (!["image/jpeg","image/png","image/webp"].includes(file.type) || file.size > 2*1024*1024)) {
+    showNotice("Choose a JPG, PNG or WEBP photo smaller than 2 MB.", true); return;
+  }
+  button.disabled = true; button.textContent = "Saving…";
+  try {
+    let avatar_url = $("profileEditForm").dataset.avatarPath || null;
+    if (file) {
+      const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+      const path = user.id + "/avatar-" + Date.now() + "." + ext;
+      const { error: uploadError } = await supabase.storage.from("customer-avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadError) throw uploadError;
+      avatar_url = path;
+    }
+    const { error } = await supabase.from("customer_profiles").upsert({
+      user_id: user.id, full_name, mobile, avatar_url, updated_at: new Date().toISOString()
+    }, { onConflict: "user_id" });
+    if (error) throw error;
+    const { error: authError } = await supabase.auth.updateUser({ data: { full_name, mobile } });
+    if (authError) console.warn("Profile saved, auth metadata update failed:", authError.message);
+    showNotice("Profile details saved successfully.");
+    $("editAvatarFile").value = "";
+    await loadProfile();
+  } catch (error) {
+    console.error("Profile update failed:", error);
+    showNotice("Could not save profile: " + (error.message || "Please try again."), true);
+  } finally { button.disabled = false; button.textContent = "Save profile"; }
+});
 
 $("logoutButton")?.addEventListener("click", async (event) => {
   const button = event.currentTarget;
