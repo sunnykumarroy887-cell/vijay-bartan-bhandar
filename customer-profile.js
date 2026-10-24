@@ -33,7 +33,6 @@ function displayProfile(user, profile = {}) {
   } else {
     for (const id of ["avatar", "profilePhotoPreview"]) { const el = $(id); el.style.backgroundImage = ""; el.classList.remove("has-profile-photo"); }
   }
-  $("editFullName").value = name;
   $("editMobile").value = mobile === "Not added" ? "" : mobile;
   $("profileEditForm").dataset.avatarPath = avatarUrl;
   $("detailName").textContent = name;
@@ -564,7 +563,6 @@ async function loadProfile() {
 
 
 $("cancelProfileEditButton")?.addEventListener("click", () => {
-  $("editFullName").value = $("detailName").textContent === "—" ? "" : $("detailName").textContent;
   $("editMobile").value = $("detailMobile").textContent === "Not added" || $("detailMobile").textContent === "—" ? "" : $("detailMobile").textContent;
   $("editAvatarFile").value = "";
 });
@@ -574,10 +572,9 @@ $("profileEditForm")?.addEventListener("submit", async (event) => {
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user;
   if (!user) { showNotice("Please sign in again to edit your profile.", true); return; }
-  const full_name = $("editFullName").value.trim();
   const mobile = $("editMobile").value.trim();
   const file = $("editAvatarFile").files?.[0];
-  if (!full_name || !mobile) { showNotice("Enter your full name and mobile number.", true); return; }
+  if (!mobile) { showNotice("Enter your mobile number.", true); return; }
   if (file && (!["image/jpeg","image/png","image/webp"].includes(file.type) || file.size > 2*1024*1024)) {
     showNotice("Choose a JPG, PNG or WEBP photo smaller than 2 MB.", true); return;
   }
@@ -592,10 +589,10 @@ $("profileEditForm")?.addEventListener("submit", async (event) => {
       avatar_url = path;
     }
     const { error } = await supabase.from("customer_profiles").upsert({
-      user_id: user.id, full_name, mobile, avatar_url, updated_at: new Date().toISOString()
+      user_id: user.id, full_name: $("detailName").textContent.trim(), mobile, avatar_url, updated_at: new Date().toISOString()
     }, { onConflict: "user_id" });
     if (error) throw error;
-    const { error: authError } = await supabase.auth.updateUser({ data: { full_name, mobile } });
+    const { error: authError } = await supabase.auth.updateUser({ data: { mobile } });
     if (authError) console.warn("Profile saved, auth metadata update failed:", authError.message);
     showNotice("Profile details saved successfully.");
     $("editAvatarFile").value = "";
