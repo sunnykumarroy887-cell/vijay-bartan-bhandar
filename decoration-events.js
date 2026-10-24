@@ -89,6 +89,15 @@ function addEvent() {
     }
   });
   events.append(fragment);
+  const params = new URLSearchParams(window.location.search);
+  const selectedDesign = params.get("design");
+  const selectedCategory = params.get("category");
+  const latest = events.lastElementChild;
+  if (latest && selectedDesign) {
+    latest.querySelector(".event-design").value = selectedDesign;
+    const details = latest.querySelector(".event-details");
+    if (details && selectedCategory && !details.value) details.placeholder = "Selected package: " + selectedCategory + ". Add your event-specific requirements here.";
+  }
   renumber();
 }
 $("addEvent").addEventListener("click", addEvent);
