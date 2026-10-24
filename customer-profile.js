@@ -234,7 +234,7 @@ async function loadBookingHistory(user) {
   }
 
   const bookingIds = bookings.map((booking) => booking.id);
-  const [{ data: allItems, error: itemsError }, { data: allDecorations, error: decorationsError }, { data: allPayments, error: paymentsError }, settings] = await Promise.all([
+  const [{ data: allItems, error: itemsError }, { data: allDecorations, error: decorationsError }, { data: allPayments, error: paymentsError }, { data: allEvents, error: eventsError }, settings] = await Promise.all([
     supabase.from("booking_items")
       .select("booking_id, item_name, quantity, locked_rate, amount")
       .in("booking_id", bookingIds),
@@ -245,6 +245,10 @@ async function loadBookingHistory(user) {
       .select("id, booking_id, amount, payment_type, payment_method, payment_note, payment_reference, created_at, verification_status, verified_at")
       .in("booking_id", bookingIds)
       .order("created_at", { ascending: false }),
+    supabase.from("booking_events")
+      .select("id, booking_id, event_name, event_date, event_time, venue_address, decoration_details, design_name, reference_image_urls, quoted_amount, delivery_charge, discount, status")
+      .in("booking_id", bookingIds)
+      .order("event_date", { ascending: true }),
     loadBusinessPaymentSettings()
   ]);
   if (itemsError) console.error("Booking items query failed:", itemsError);
@@ -255,6 +259,13 @@ async function loadBookingHistory(user) {
     const key = String(decoration.booking_id);
     if (!decorationsByBooking.has(key)) decorationsByBooking.set(key, []);
     decorationsByBooking.get(key).push(decoration);
+  }
+
+  const eventsByBooking = new Map();
+  for (const event of allEvents || []) {
+    const key = String(event.booking_id);
+    if (!eventsByBooking.has(key)) eventsByBooking.set(key, []);
+    eventsByBooking.get(key).push(event);
   }
 
   const paymentsByBooking = new Map();
@@ -344,6 +355,59 @@ async function loadBookingHistory(user) {
       decorationSection.append(table);
     }
     card.append(decorationSection);
+
+    const eventSection = document.createElement("section");
+    eventSection.className = "booking-history-bartan";
+    eventSection.append(makeText("h4", "", "Decoration Events & Reference Images"));
+    const bookingEvents = eventsByBooking.get(String(booking.id)) || [];
+    if (eventsError) {
+      eventSection.append(makeText("p", "", "Event details could not be loaded right now."));
+    } else if (!bookingEvents.length) {
+      if (booking.booking_type === "decoration" || booking.decoration_required) {
+        eventSection.append(makeText("p", "", "No event details are attached to this booking yet."));
+      } else {
+        eventSection.append(makeText("p", "", "No separate decoration events."));
+      }
+    } else {
+      bookingEvents.forEach((event) => {
+        const eventCard = document.createElement("div");
+        eventCard.className = "booking-event-history";
+        eventCard.append(
+          makeText("h5", "", event.event_name || "Decoration event"),
+          makeText("p", "", `Date: ${formatDate(event.event_date)}${event.event_time ? " · Time: " + event.event_time.slice(0,5) : ""}`),
+          makeText("p", "", "Venue: " + (event.venue_address || "—")),
+          makeText("p", "", "Requirements: " + (event.decoration_details || "—")),
+          makeText("p", "", "Design: " + (event.design_name || "Custom / not selected")),
+          makeText("p", "", "Status: " + String(event.status || "pending").replaceAll("_", " ")),
+          makeText("p", "", "Quotation: " + money(Number(event.quoted_amount || 0) + Number(event.delivery_charge || 0) - Number(event.discount || 0)))
+        );
+        const urls = Array.isArray(event.reference_image_urls) ? event.reference_image_urls : [];
+        if (urls.length) {
+          const gallery = document.createElement("div");
+          gallery.className = "booking-event-image-gallery";
+          urls.forEach((url, index) => {
+            const link = document.createElement("a");
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            const image = document.createElement("img");
+            image.src = url;
+            image.alt = `Reference image ${index + 1} for ${event.event_name || "decoration event"}`;
+            image.loading = "lazy";
+            image.style.maxWidth = "150px";
+            image.style.maxHeight = "150px";
+            image.style.objectFit = "cover";
+            link.append(image);
+            gallery.append(link);
+          });
+          eventCard.append(gallery);
+        } else {
+          eventCard.append(makeText("p", "", "No reference images uploaded."));
+        }
+        eventSection.append(eventCard);
+      });
+    }
+    card.append(eventSection);
 
     const bookingPayments = paymentsByBooking.get(String(booking.id)) || [];
     const collected = bookingPayments.reduce((sum, payment) => {
