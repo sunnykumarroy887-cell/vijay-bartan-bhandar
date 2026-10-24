@@ -404,6 +404,33 @@ async function loadBookingHistory(user) {
         } else {
           eventCard.append(makeText("p", "", "No reference images uploaded."));
         }
+        if (["quotation_sent","awaiting_approval"].includes(String(event.status || "").toLowerCase())) {
+          const approvalBox = document.createElement("div");
+          approvalBox.style.cssText = "display:flex;gap:10px;flex-wrap:wrap;margin:10px 0";
+          const acceptBtn = makeText("button", "phonepe-pay-button", "Accept quotation");
+          acceptBtn.type = "button";
+          const changesBtn = makeText("button", "secondary-btn", "Request changes");
+          changesBtn.type = "button";
+          const respond = async (accept) => {
+            acceptBtn.disabled = true; changesBtn.disabled = true;
+            try {
+              const noteText = accept ? null : window.prompt("What changes would you like?") || "";
+              if (!accept && !noteText.trim()) { acceptBtn.disabled = false; changesBtn.disabled = false; return; }
+              const { error } = await supabase.rpc("customer_respond_decoration_quotation", { p_event_id: event.id, p_accept: accept, p_message: noteText });
+              if (error) throw error;
+              showNotice(accept ? "Quotation accepted. Your decoration booking is confirmed." : "Change request sent to Admin.");
+              await loadBookingHistory(user);
+            } catch (err) {
+              console.error("Quotation response failed:", err);
+              showNotice("Could not submit your response: " + (err.message || "Please try again."), true);
+              acceptBtn.disabled = false; changesBtn.disabled = false;
+            }
+          };
+          acceptBtn.addEventListener("click", () => respond(true));
+          changesBtn.addEventListener("click", () => respond(false));
+          approvalBox.append(acceptBtn, changesBtn);
+          eventCard.append(approvalBox);
+        }
         eventSection.append(eventCard);
       });
     }
