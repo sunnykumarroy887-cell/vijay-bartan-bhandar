@@ -21,6 +21,17 @@ function displayProfile(user, profile = {}) {
   $("profileName").textContent = name;
   $("profileEmail").textContent = user.email || "Email not available";
   $("avatar").textContent = (name.trim().charAt(0) || "V").toUpperCase();
+  $("avatar").style.backgroundImage = "";
+  $("avatar").classList.remove("has-profile-photo");
+  if (avatarUrl) {
+    supabase.storage.from("customer-avatars").createSignedUrl(avatarUrl, 3600).then(({data, error}) => {
+      if (!error && data?.signedUrl) {
+        $("avatar").textContent = "";
+        $("avatar").style.backgroundImage = "url('" + data.signedUrl.replace(/'/g, "%27") + "')";
+        $("avatar").classList.add("has-profile-photo");
+      }
+    });
+  }
   $("detailName").textContent = name;
   $("detailEmail").textContent = user.email || "—";
   $("detailMobile").textContent = mobile;
@@ -547,6 +558,39 @@ async function loadProfile() {
   await loadBookingHistory(user);
 }
 
+
+$("saveProfilePhoto")?.addEventListener("click", async () => {
+  const input = $("profilePhotoFile");
+  const file = input?.files?.[0];
+  const message = $("profilePhotoMessage");
+  const button = $("saveProfilePhoto");
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+  if (!user) { message.textContent = "Please sign in again."; return; }
+  if (!file) { message.textContent = "Please choose a photo first."; return; }
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
+    message.textContent = "Choose JPG, PNG or WEBP up to 2 MB."; return;
+  }
+  button.disabled = true; message.textContent = "Uploading photo…";
+  try {
+    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    const path = user.id + "/avatar-" + Date.now() + "." + ext;
+    const { error: uploadError } = await supabase.storage.from("customer-avatars").upload(path, file, { upsert: true, contentType: file.type });
+    if (uploadError) throw uploadError;
+    const { error: saveError } = await supabase.from("customer_profiles").upsert({
+      user_id: user.id, full_name: $("detailName").textContent.trim(),
+      mobile: $("detailMobile").textContent === "Not added" ? null : $("detailMobile").textContent,
+      avatar_url: path, updated_at: new Date().toISOString()
+    }, { onConflict: "user_id" });
+    if (saveError) throw saveError;
+    message.textContent = "Profile photo saved.";
+    input.value = "";
+    await loadProfile();
+  } catch (error) {
+    console.error("Profile photo upload failed:", error);
+    message.textContent = "Could not upload photo: " + (error.message || "Please try again.");
+  } finally { button.disabled = false; }
+});
 
 $("logoutButton")?.addEventListener("click", async (event) => {
   const button = event.currentTarget;
