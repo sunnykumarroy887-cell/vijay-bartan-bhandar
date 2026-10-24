@@ -177,8 +177,9 @@ form.addEventListener("submit", async (e) => {
     });
     if (error) throw error;
     const booking = Array.isArray(data) ? data[0] : data;
-    if (!booking?.booking_id) throw new Error("Booking create hui ya nahi confirm nahi ho saka. Account ke bookings section mein check karein.");
-    booking.id = booking.booking_id;
+    const createdBookingId = booking?.booking_id ?? booking?.id;
+    if (!createdBookingId) throw new Error("Booking create hui ya nahi confirm nahi ho saka. Account ke bookings section mein check karein.");
+    booking.id = createdBookingId;
     bookingNumber = String(booking.booking_number || booking.id);
 
     const rows = [];
