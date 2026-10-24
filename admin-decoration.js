@@ -1196,6 +1196,42 @@ logoutBtn.addEventListener(
 );
 
 
+
+async function loadDecorationQuoteRequests() {
+ const root=document.getElementById("decorationQuotesList");
+ const note=document.getElementById("decorationQuotesNotice");
+ if(!root||!note)return;
+ root.textContent="Loading…"; note.textContent="";
+ const {data:events,error}=await supabase.from("booking_events")
+  .select("id,booking_id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls,quoted_amount,delivery_charge,discount,status")
+  .order("created_at",{ascending:false});
+ if(error){root.textContent="Could not load requests: "+error.message;return;}
+ const pending=(events||[]).filter(e=>["pending","under_review","quotation_sent","awaiting_approval"].includes(String(e.status||"").toLowerCase()));
+ if(!pending.length){root.textContent="No decoration quotation requests found.";return;}
+ const ids=[...new Set(pending.map(e=>e.booking_id))];
+ const {data:bookings,error:be}=await supabase.from("bookings").select("id,booking_number,customer_name,customer_mobile,customer_address,customer_user_id").in("id",ids);
+ if(be){root.textContent="Could not load booking details: "+be.message;return;}
+ const bm=new Map((bookings||[]).map(b=>[String(b.id),b]));
+ root.replaceChildren();
+ pending.forEach(e=>{
+  const b=bm.get(String(e.booking_id)); if(!b)return;
+  const card=document.createElement("article"); card.style.cssText="border:1px solid #d9e5dc;border-radius:14px;padding:16px;margin:12px 0;background:#fff";
+  const title=document.createElement("h3"); title.textContent=(b.booking_number||("Booking #"+b.id))+" · "+e.event_name; card.append(title);
+  const details=document.createElement("p"); details.textContent="Customer: "+(b.customer_name||"—")+" · "+(b.customer_mobile||"—")+" · Date: "+e.event_date+" "+(e.event_time||""); card.append(details);
+  const venue=document.createElement("p"); venue.textContent="Venue: "+(e.venue_address||"—")+" · Design: "+(e.design_name||"Custom")+" · Status: "+e.status; card.append(venue);
+  const req=document.createElement("p"); req.textContent="Requirements: "+(e.decoration_details||"—"); card.append(req);
+  (Array.isArray(e.reference_image_urls)?e.reference_image_urls:[]).forEach(url=>{const a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener noreferrer";const img=document.createElement("img");img.src=url;img.alt="Customer reference image";img.loading="lazy";img.style.cssText="width:90px;height:90px;object-fit:cover;border-radius:8px;margin:4px";a.append(img);card.append(a);});
+  const form=document.createElement("form"); form.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px";
+  const fields=[];
+  [["Quotation amount",e.quoted_amount],["Delivery charge",e.delivery_charge],["Discount",e.discount]].forEach(([label,val])=>{const wrap=document.createElement("label");wrap.textContent=label;const input=document.createElement("input");input.type="number";input.min="0";input.step="0.01";input.required=label==="Quotation amount";input.value=Number(val||0);input.style.cssText="display:block;width:100%;padding:8px;box-sizing:border-box";wrap.append(input);form.append(wrap);fields.push(input);});
+  const msg=document.createElement("input");msg.type="text";msg.maxLength=1000;msg.placeholder="Quotation note / terms";msg.style.cssText="padding:8px";form.append(msg);
+  const btn=document.createElement("button");btn.type="submit";btn.className="primary-btn";btn.textContent=String(e.status)==="quotation_sent"?"Resend quotation":"Send quotation";form.append(btn);
+  form.addEventListener("submit",async ev=>{ev.preventDefault();btn.disabled=true;btn.textContent="Sending…";try{const {error}=await supabase.rpc("admin_set_decoration_quotation",{p_event_id:e.id,p_quoted_amount:Number(fields[0].value),p_delivery_charge:Number(fields[1].value),p_discount:Number(fields[2].value),p_message:msg.value.trim()});if(error)throw error;note.textContent="Quotation sent for "+(b.booking_number||b.id)+". Customer can review it in their profile.";await loadDecorationQuoteRequests();}catch(err){note.textContent="Quotation failed: "+(err.message||"Unknown error");}finally{btn.disabled=false;btn.textContent="Send quotation";}});
+  card.append(form);root.append(card);
+ });
+}
+document.getElementById("refreshQuotesBtn")?.addEventListener("click",loadDecorationQuoteRequests);
+
 // ======================================================
 // INITIALIZATION
 // ======================================================
@@ -1212,6 +1248,7 @@ async function init() {
 
 
     await loadDecorations();
+    await loadDecorationQuoteRequests();
 }
 
 
