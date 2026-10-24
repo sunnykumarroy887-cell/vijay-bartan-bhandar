@@ -662,3 +662,17 @@ footer {
 .new-booking-card { border-color: #d8c18a; background: linear-gradient(135deg, #fffdf6, #f6f0df); }
 .new-booking-card .quick-icon { background: #c49a35; color: #fff; }
 .new-booking-card:hover { border-color: #b88d26; box-shadow: 0 12px 28px rgba(184,141,38,.14); }
+
+
+.profile-editor-card{margin:24px 0;padding:22px;border:1px solid #e1e5dc;border-radius:24px;background:#fff;box-shadow:0 8px 24px rgba(24,63,45,.05)}
+.profile-editor-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.profile-editor-heading h2{margin:8px 0;font-size:1.5rem;color:var(--ink)}
+.profile-editor-heading p{margin:0;color:var(--muted);line-height:1.5}
+.profile-photo-preview{width:84px;height:84px;flex:0 0 84px;border-radius:24px;background:#edf5e9;color:#205b42;display:grid;place-items:center;font-size:2rem;font-weight:700;background-position:center;background-size:cover}
+.has-profile-photo{background-position:center!important;background-size:cover!important;color:transparent!important}
+.profile-edit-form{display:grid;gap:14px}
+.profile-edit-form label{display:grid;gap:7px;font-weight:600;color:var(--ink)}
+.profile-edit-form input{width:100%;min-width:0;box-sizing:border-box;padding:13px;border:1px solid #d8dfd5;border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
+.profile-edit-actions{display:flex;gap:10px;flex-wrap:wrap}
+.profile-edit-actions button{min-height:46px}
+@media(max-width:430px){.profile-editor-card{padding:17px}.profile-editor-heading{align-items:flex-start}.profile-photo-preview{width:66px;height:66px;flex-basis:66px;border-radius:19px}}
