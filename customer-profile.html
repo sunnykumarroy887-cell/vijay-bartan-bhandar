@@ -46,31 +46,6 @@
                     type="button">Log out</button>
         </section>
 
-        <section class="profile-editor-card" aria-labelledby="profileEditorTitle">
-            <div class="profile-editor-heading">
-                <div>
-                    <span class="muted-label">YOUR PERSONAL DETAILS</span>
-                    <h2 id="profileEditorTitle">Edit Profile</h2>
-                    <p>Update your name, mobile number and profile photo.</p>
-                </div>
-                <div class="profile-photo-preview" id="profilePhotoPreview">V</div>
-            </div>
-            <form id="profileEditForm" class="profile-edit-form">
-                <label>Mobile number
-                    <input id="editMobile" name="mobile" type="tel" maxlength="20" required autocomplete="tel" inputmode="tel">
-                </label>
-                <label>Profile photo (JPG, PNG or WEBP; max 2 MB)
-                    <input id="editAvatarFile" name="avatar" type="file" accept="image/jpeg,image/png,image/webp">
-                </label>
-                <div class="profile-edit-actions">
-                    <button id="saveProfileButton" class="button button-primary" type="submit">Save profile</button>
-                    <button id="cancelProfileEditButton" class="button button-outline" type="button">Reset changes</button>
-                </div>
-                <p class="help-text">Your profile photo is stored privately and only your signed-in account can access it.</p>
-            </form>
-        </section>
-
-
         <section class="quick-grid">
             <a class="quick-card new-booking-card" href="./booking-options.html">
                 <span class="quick-icon">＋</span>
