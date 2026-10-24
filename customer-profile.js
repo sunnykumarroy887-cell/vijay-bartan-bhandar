@@ -411,24 +411,47 @@ async function loadBookingHistory(user) {
           acceptBtn.type = "button";
           const changesBtn = makeText("button", "secondary-btn", "Request changes");
           changesBtn.type = "button";
+          const cancelBtn = makeText("button", "secondary-btn", "Cancel quotation");
+          cancelBtn.type = "button";
+          cancelBtn.style.cssText = "background:#fff0f0;color:#9f2424;border:1px solid #e7b5b5";
           const respond = async (accept) => {
-            acceptBtn.disabled = true; changesBtn.disabled = true;
+            acceptBtn.disabled = true; changesBtn.disabled = true; cancelBtn.disabled = true;
             try {
-              const noteText = accept ? null : window.prompt("What changes would you like?") || "";
-              if (!accept && !noteText.trim()) { acceptBtn.disabled = false; changesBtn.disabled = false; return; }
-              const { error } = await supabase.rpc("customer_respond_decoration_quotation", { p_event_id: event.id, p_accept: accept, p_message: noteText });
+              const noteText = accept ? null : window.prompt(accept === false ? "What changes would you like?" : "") || "";
+              if (!accept && !noteText.trim()) { acceptBtn.disabled = false; changesBtn.disabled = false; cancelBtn.disabled = false; return; }
+              const { data, error } = await supabase.rpc("customer_respond_decoration_quotation", { p_event_id: event.id, p_accept: accept, p_message: noteText });
               if (error) throw error;
-              showNotice(accept ? "Quotation accepted. Your decoration booking is confirmed." : "Change request sent to Admin.");
+              const result = Array.isArray(data) ? data[0] : data;
+              if (!result || result.event_status !== (accept ? "confirmed" : "under_review")) throw new Error("Server did not confirm the response. Please refresh and check the booking status.");
+              showNotice(accept ? "Quotation accepted successfully. Decoration booking is confirmed." : "Change request sent to Admin.");
               await loadBookingHistory(user);
             } catch (err) {
               console.error("Quotation response failed:", err);
               showNotice("Could not submit your response: " + (err.message || "Please try again."), true);
-              acceptBtn.disabled = false; changesBtn.disabled = false;
+              acceptBtn.disabled = false; changesBtn.disabled = false; cancelBtn.disabled = false;
+            }
+          };
+          const cancelQuotation = async () => {
+            if (!window.confirm("Cancel this decoration quotation/request? This cannot be undone.")) return;
+            const reason = window.prompt("Optional cancellation reason:") || "";
+            cancelBtn.disabled = true; acceptBtn.disabled = true; changesBtn.disabled = true;
+            try {
+              const { data, error } = await supabase.rpc("customer_cancel_decoration_quotation", { p_event_id: event.id, p_message: reason });
+              if (error) throw error;
+              const result = Array.isArray(data) ? data[0] : data;
+              if (!result || result.event_status !== "cancelled") throw new Error("Cancellation could not be confirmed. Refresh and check status.");
+              showNotice("Decoration quotation/request cancelled.");
+              await loadBookingHistory(user);
+            } catch (err) {
+              console.error("Quotation cancellation failed:", err);
+              showNotice("Could not cancel quotation: " + (err.message || "Please try again."), true);
+              cancelBtn.disabled = false; acceptBtn.disabled = false; changesBtn.disabled = false;
             }
           };
           acceptBtn.addEventListener("click", () => respond(true));
           changesBtn.addEventListener("click", () => respond(false));
-          approvalBox.append(acceptBtn, changesBtn);
+          cancelBtn.addEventListener("click", cancelQuotation);
+          approvalBox.append(acceptBtn, changesBtn, cancelBtn);
           eventCard.append(approvalBox);
         }
         eventSection.append(eventCard);
