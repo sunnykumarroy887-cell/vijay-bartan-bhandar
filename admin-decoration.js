@@ -1221,12 +1221,32 @@ async function loadDecorationQuoteRequests() {
  root.replaceChildren();
  pending.forEach(e=>{
   const b=bm.get(String(e.booking_id)); if(!b)return;
-  const card=document.createElement("article"); card.style.cssText="border:1px solid #d9e5dc;border-radius:14px;padding:16px;margin:12px 0;background:#fff";
-  const title=document.createElement("h3"); title.textContent=(b.booking_number||("Booking #"+b.id))+" · "+e.event_name; card.append(title);
-  const details=document.createElement("p"); details.textContent="Customer: "+(b.customer_name||"—")+" · "+(b.customer_mobile||"—")+" · Date: "+e.event_date+" "+(e.event_time||""); card.append(details);
-  const venue=document.createElement("p"); venue.textContent="Venue: "+(e.venue_address||"—")+" · Design: "+(e.design_name||"Custom")+" · Status: "+e.status; card.append(venue);
-  const req=document.createElement("p"); req.textContent="Requirements: "+(e.decoration_details||"—"); card.append(req);
-  (Array.isArray(e.reference_image_urls)?e.reference_image_urls:[]).forEach(url=>{const a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener noreferrer";const img=document.createElement("img");img.src=url;img.alt="Customer reference image";img.loading="lazy";img.style.cssText="width:90px;height:90px;object-fit:cover;border-radius:8px;margin:4px";a.append(img);card.append(a);});
+  const card=document.createElement("article");
+  card.style.cssText="border:1px solid #d9e5dc;border-radius:16px;padding:18px;margin:14px 0;background:#fff;box-shadow:0 4px 14px rgba(15,50,35,.06)";
+  const title=document.createElement("h3");
+  title.style.cssText="font-size:1.15rem;margin:0 0 12px;color:#174b36";
+  title.textContent=(b.booking_number||("Booking #"+b.id))+" · "+(e.event_name||"Decoration event");
+  card.append(title);
+  const badge=document.createElement("span");
+  badge.textContent=String(e.status||"pending").replaceAll("_"," ").toUpperCase();
+  badge.style.cssText="display:inline-block;background:#fff4d6;color:#775400;border-radius:20px;padding:5px 10px;font-size:.78rem;font-weight:700;margin-bottom:14px";
+  card.append(badge);
+  const customerBox=document.createElement("section");
+  customerBox.style.cssText="background:#f6faf7;border-radius:12px;padding:12px;margin:8px 0";
+  const customerTitle=document.createElement("h4"); customerTitle.textContent="Customer details"; customerTitle.style.margin="0 0 8px"; customerBox.append(customerTitle);
+  [[ "Customer name",b.customer_name ],["Mobile number",b.customer_mobile],["Full address",b.customer_address],["Booking type",b.booking_type||"decoration"]].forEach(([label,value])=>{
+   const p=document.createElement("p");p.style.cssText="margin:5px 0;overflow-wrap:anywhere";const strong=document.createElement("strong");strong.textContent=label+": ";p.append(strong,document.createTextNode(value||"—"));customerBox.append(p);
+  });
+  card.append(customerBox);
+  const eventBox=document.createElement("section"); eventBox.style.cssText="padding:10px 0";
+  const eventTitle=document.createElement("h4");eventTitle.textContent="Event details";eventTitle.style.margin="0 0 8px";eventBox.append(eventTitle);
+  [["Selected design / package",e.design_name||"Not selected"],["Event date",e.event_date||"—"],["Event time",e.event_time||"Not specified"],["Venue",e.venue_address||"—"],["Decoration requirements",e.decoration_details||"—"]].forEach(([label,value])=>{
+   const p=document.createElement("p");p.style.cssText="margin:6px 0;line-height:1.45;overflow-wrap:anywhere";const strong=document.createElement("strong");strong.textContent=label+": ";p.append(strong,document.createTextNode(value));eventBox.append(p);
+  });
+  const images=Array.isArray(e.reference_image_urls)?e.reference_image_urls:[];
+  if(images.length){const gallery=document.createElement("div");gallery.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0";images.forEach((url,i)=>{const link=document.createElement("a");link.href=url;link.target="_blank";link.rel="noopener noreferrer";const img=document.createElement("img");img.src=url;img.alt="Reference image "+(i+1);img.loading="lazy";img.style.cssText="width:100px;height:100px;object-fit:cover;border-radius:10px;border:1px solid #ddd";link.append(img);gallery.append(link)});eventBox.append(gallery)}
+  else {const p=document.createElement("p");p.textContent="No reference images attached.";p.style.color="#666";eventBox.append(p)}
+  card.append(eventBox);
   const form=document.createElement("form"); form.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px";
   const fields=[];
   [["Quotation amount",e.quoted_amount],["Delivery charge",e.delivery_charge],["Discount",e.discount]].forEach(([label,val])=>{const wrap=document.createElement("label");wrap.textContent=label;const input=document.createElement("input");input.type="number";input.min="0";input.step="0.01";input.required=label==="Quotation amount";input.value=Number(val||0);input.style.cssText="display:block;width:100%;padding:8px;box-sizing:border-box";wrap.append(input);form.append(wrap);fields.push(input);});
