@@ -695,7 +695,7 @@ function createBookingRow(
 // OPEN BOOKING DETAILS
 // ======================================================
 
-async function openBookingDetails(
+async async function openBookingDetails(
     bookingId
 ) {
 
