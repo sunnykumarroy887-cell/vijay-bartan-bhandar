@@ -45,7 +45,6 @@ async function loadGallery() {
         '<h2>' + name + '</h2>' +
         '<p>' + description + '</p>' +
         '<p><a href="./decoration-events.html?design=' + design + '&category=' + cat + '">Request this design →</a></p>' +
-        '<p><a href="./customer-booking.html">Bartan / Combined Booking →</a></p>' +
         '</article>';
     }).join("");
   } catch (error) {
