@@ -60,10 +60,127 @@ const serviceChooser = document.getElementById("serviceTypeChooser");
 const serviceChoiceHint = document.getElementById("serviceChoiceHint");
 const bartanServiceSection = document.getElementById("bartanServiceSection");
 const decorationServiceSection = document.getElementById("decorationServiceSection");
+function addCombinedDecorationEvent() {
+    if (!combinedEventsList || !combinedEventTemplate) return;
+    if (combinedEventsList.children.length >= MAX_COMBINED_EVENTS) {
+        showToast("Ek booking mein maximum 10 decoration events add kar sakte hain.", "error");
+        return;
+    }
+    const fragment = combinedEventTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".combined-event-card");
+    const dateInput = card.querySelector(".combined-event-date");
+    if (eventDate?.value) dateInput.min = eventDate.value;
+    else dateInput.min = new Date().toISOString().slice(0,10);
+    const typeSelect = card.querySelector(".combined-event-name");
+    const customWrap = card.querySelector(".combined-custom-wrap");
+    const customInput = card.querySelector(".combined-custom-name");
+    typeSelect.addEventListener("change", () => {
+        const custom = typeSelect.value === "Other (Custom)";
+        customWrap.hidden = !custom;
+        customInput.required = custom;
+        if (!custom) customInput.value = "";
+    });
+    card.querySelector(".combined-remove-event").addEventListener("click", () => {
+        if (combinedEventsList.children.length <= 1) {
+            showToast("Kam se kam ek decoration event rakhein.", "error");
+            return;
+        }
+        card.remove(); renumberCombinedEvents();
+    });
+    const imageInput = card.querySelector(".combined-event-images");
+    const preview = card.querySelector(".combined-event-preview");
+    imageInput.addEventListener("change", () => {
+        preview.replaceChildren();
+        const files = [...(imageInput.files || [])];
+        if (files.length > MAX_COMBINED_IMAGES) {
+            imageInput.value = "";
+            showToast("Har event ke liye maximum 3 photos select karein.", "error");
+            return;
+        }
+        for (const file of files) {
+            if (!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type) || file.size > MAX_COMBINED_IMAGE_BYTES) {
+                imageInput.value = ""; preview.replaceChildren();
+                showToast("Sirf JPG, PNG, WEBP ya GIF images, maximum 2 MB each.", "error");
+                return;
+            }
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file); img.alt = "Reference photo preview";
+            img.style.cssText = "width:84px;height:74px;object-fit:cover;border-radius:8px";
+            preview.append(img);
+        }
+    });
+    combinedEventsList.append(card);
+    renumberCombinedEvents();
+}
+function renumberCombinedEvents() {
+    if (!combinedEventsList) return;
+    [...combinedEventsList.children].forEach((card,index) => {
+        const title = card.querySelector(".combined-event-title");
+        if (title) title.textContent = "Decoration Event " + (index + 1);
+        const remove = card.querySelector(".combined-remove-event");
+        if (remove) remove.disabled = combinedEventsList.children.length <= 1;
+    });
+}
+function getCombinedDecorationEventPayloads() {
+    if (!combinedEventsList) return [];
+    return [...combinedEventsList.children].map(card => {
+        const selected = card.querySelector(".combined-event-name").value;
+        const custom = card.querySelector(".combined-custom-name").value.trim();
+        return {
+            card,
+            event_name: selected === "Other (Custom)" ? custom : selected,
+            event_date: card.querySelector(".combined-event-date").value,
+            event_time: card.querySelector(".combined-event-time").value || null,
+            venue_address: card.querySelector(".combined-event-venue").value.trim(),
+            decoration_details: card.querySelector(".combined-event-details").value.trim(),
+            design_name: card.querySelector(".combined-event-design").value.trim() || null,
+            files: [...(card.querySelector(".combined-event-images").files || [])]
+        };
+    });
+}
+async function saveCombinedDecorationEvents(bookingId, userId, eventRows) {
+    if (!eventRows.length) return;
+    const rows = [];
+    for (let i = 0; i < eventRows.length; i++) {
+        const event = eventRows[i], urls = [];
+        for (let j = 0; j < event.files.length; j++) {
+            const file = event.files[j];
+            if (!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type) || file.size > MAX_COMBINED_IMAGE_BYTES) {
+                throw new Error("Har event ki image JPG/PNG/WEBP/GIF aur 2 MB se chhoti honi chahiye.");
+            }
+            const ext = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g,"") || "bin";
+            const path = userId + "/" + bookingId + "/" + Date.now() + "-" + i + "-" + j + "." + ext;
+            const upload = await supabase.storage.from("decoration-images").upload(path,file,{contentType:file.type,upsert:false});
+            if (upload.error) throw new Error("Decoration reference image upload nahi hui: " + upload.error.message);
+            const {data} = supabase.storage.from("decoration-images").getPublicUrl(path);
+            urls.push(data.publicUrl);
+        }
+        rows.push({
+            booking_id: Number(bookingId),
+            event_name: event.event_name,
+            event_date: event.event_date,
+            event_time: event.event_time,
+            venue_address: event.venue_address,
+            decoration_details: event.decoration_details,
+            design_name: event.design_name,
+            reference_image_urls: urls
+        });
+    }
+    const {error} = await supabase.from("booking_events").insert(rows);
+    if (error) throw new Error("Booking create ho gayi, lekin event details save nahi ho sakin. Booking number ke saath Admin se sampark karein. " + error.message);
+}
+
 function applyServiceType(type) {
     if (!["bartan", "decoration", "both"].includes(type)) return;
     selectedServiceType = type;
-    serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
+    updateCombinedEventVisibility(type);
+    addCombinedEventButton?.addEventListener("click", addCombinedDecorationEvent);
+if (combinedEventsList && combinedEventsList.children.length === 0) addCombinedDecorationEvent();
+function updateCombinedEventVisibility(type) {
+    if (!combinedEventsSection) return;
+    combinedEventsSection.hidden = type === "bartan";
+}
+serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
         const active = card.dataset.serviceChoice === type;
         card.classList.toggle("selected", active);
         card.setAttribute("aria-pressed", String(active));
@@ -91,6 +208,15 @@ const decorationRequired =
 
 const decorationArea =
     document.getElementById("decorationArea");
+
+const combinedEventsSection = document.getElementById("combinedEventsSection");
+const combinedEventsList = document.getElementById("combinedEventsList");
+const combinedEventTemplate = document.getElementById("combinedEventTemplate");
+const addCombinedEventButton = document.getElementById("addCombinedEvent");
+const MAX_COMBINED_EVENTS = 10;
+const MAX_COMBINED_IMAGES = 3;
+const MAX_COMBINED_IMAGE_BYTES = 2 * 1024 * 1024;
+
 
 const bartanList =
     document.getElementById("bartanList");
@@ -1608,6 +1734,16 @@ async function handleSubmit(event) {
 
     try {
 
+        const combinedEventRows = getCombinedDecorationEventPayloads();
+        if (selectedServiceType !== "bartan") {
+            if (!combinedEventRows.length || combinedEventRows.some(e => !e.event_name || !e.event_date || !e.venue_address || !e.decoration_details)) {
+                throw new Error("Har Decoration event ka type, date, venue aur requirements bharein.");
+            }
+            if (combinedEventRows.some(e => e.event_date < (eventDate?.value || new Date().toISOString().slice(0,10)))) {
+                throw new Error("Decoration event ki date booking date se pehle nahi ho sakti.");
+            }
+        }
+
         const selectedItems =
             getSelectedBartan();
 
@@ -1778,6 +1914,16 @@ async function handleSubmit(event) {
 
         }
 
+
+        if (selectedServiceType !== "bartan" && combinedEventRows.length) {
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            if (authError || !authData?.user) {
+                throw new Error("Decoration events aur photos save karne ke liye pehle customer account mein login karein.");
+            }
+            const createdBookingId = booking.id || booking.booking_id;
+            if (!createdBookingId) throw new Error("Booking ID nahi mili; event details save nahi ho sake.");
+            await saveCombinedDecorationEvents(createdBookingId, authData.user.id, combinedEventRows);
+        }
 
         showSuccess(
             bookingNumber
