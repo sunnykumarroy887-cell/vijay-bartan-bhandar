@@ -502,6 +502,30 @@
 
                 </div>
 
+                <!-- COMBINED DECORATION EVENT DETAILS -->
+                <div class="form-card" id="combinedEventsSection" hidden>
+                    <div class="card-heading">
+                        <div class="heading-number">04</div>
+                        <div><h3>Decoration Event Details</h3><p>Har event ki alag date, time, venue aur customer reference photos dein.</p></div>
+                    </div>
+                    <div id="combinedEventsList"></div>
+                    <button type="button" id="addCombinedEvent" class="secondary-btn">＋ Add another Decoration Event</button>
+                    <p style="font-size:13px;line-height:1.5">Maximum 10 events per booking. Har event mein maximum 3 images, har image 2 MB tak. Decoration quotation Admin bhejega; aap Profile mein accept, changes request ya cancel kar sakte hain.</p>
+                </div>
+                <template id="combinedEventTemplate">
+                    <article class="combined-event-card" style="border:1px solid #dbe5dd;border-radius:14px;padding:14px;margin:12px 0;background:#fff">
+                        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h4 class="combined-event-title">Decoration Event 1</h4><button type="button" class="combined-remove-event secondary-btn">Remove</button></div>
+                        <div class="field-group"><label>Event type *</label><select class="combined-event-name" required><option value="">Select event</option><option>Haldi + Mehndi Combo</option><option>Haldi</option><option>Mehndi</option><option>Engagement</option><option>Wedding</option><option>Reception</option><option>Birthday</option><option>Wedding Stage Decoration</option><option>Saraswati Puja Decoration</option><option>Bed Decoration</option><option>Gate Decoration</option><option>Marwa / मंडप Decoration</option><option>कोहबर Decoration</option><option>गाड़ी Decoration</option><option>तिलक Stage Decoration</option><option>कमल फूल Stage Decoration</option><option>Other (Custom)</option></select></div>
+                        <div class="field-group combined-custom-wrap" hidden><label>Custom event name *</label><input class="combined-custom-name" maxlength="120"></div>
+                        <div class="field-group"><label>Event date *</label><input class="combined-event-date" type="date" required></div>
+                        <div class="field-group"><label>Event time</label><input class="combined-event-time" type="time"></div>
+                        <div class="field-group"><label>Design / package name (optional)</label><input class="combined-event-design" maxlength="150" placeholder="Selected design/package"></div>
+                        <div class="field-group"><label>Venue / address *</label><textarea class="combined-event-venue" rows="2" maxlength="500" required></textarea></div>
+                        <div class="field-group"><label>Decoration requirements *</label><textarea class="combined-event-details" rows="3" maxlength="1200" required placeholder="Flowers, colours, stage, lights, seating etc."></textarea></div>
+                        <div class="field-group"><label>Reference photos (optional; max 3 images, 2 MB each)</label><input class="combined-event-images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple><div class="combined-event-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
+                    </article>
+                </template>
+
                 <!-- SPECIAL REQUIREMENT -->
 
                 <div class="form-card">
