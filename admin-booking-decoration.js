@@ -28,6 +28,10 @@ const supabase = createClient(
 
 let allBookings = [];
 let currentBooking = null;
+let decorationEvents = [];
+let calendarCursor = new Date();
+let selectedCalendarDate = "";
+let currentQuotationEvent = null;
 
 
 // ======================================================
@@ -100,6 +104,7 @@ async function verifyAdmin() {
 
 
         await loadBookings();
+        if (document.body.dataset.bookingType === "decoration") await loadDecorationEvents();
 
     } catch (error) {
 
@@ -135,6 +140,11 @@ async function verifyAdmin() {
 
 function bindEvents() {
 
+    $("calendarPrevBtn")?.addEventListener("click", () => { calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth()-1, 1); renderDecorationCalendar(); });
+    $("calendarNextBtn")?.addEventListener("click", () => { calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth()+1, 1); renderDecorationCalendar(); });
+    $("calendarMonthInput")?.addEventListener("change", event => { if (!event.target.value) return; const [y,m] = event.target.value.split("-").map(Number); calendarCursor = new Date(y,m-1,1); renderDecorationCalendar(); });
+    $("closeQuotationBtn")?.addEventListener("click", closeQuotationModal);
+    $("sendQuotationBtn")?.addEventListener("click", saveDecorationQuotation);
     $("refreshBtn")?.addEventListener(
         "click",
         loadBookings
@@ -2111,6 +2121,70 @@ function closeDetailsModal() {
 // ======================================================
 // LOGOUT
 // ======================================================
+
+
+/* Decoration event monthly report and quotation controls */
+async function loadDecorationEvents() {
+    const list=$("decorationEventList"); if(list) list.innerHTML="<p>Loading decoration events…</p>";
+    try {
+        const {data,error}=await supabase.from("booking_events").select("id,booking_id,event_name,event_date,event_time,venue_address,decoration_details,design_name,quoted_amount,delivery_charge,discount,status,reference_image_urls").order("event_date",{ascending:true});
+        if(error)throw error;
+        decorationEvents=Array.isArray(data)?data:[];
+        if(!selectedCalendarDate)selectedCalendarDate=localDateKey(new Date());
+        renderDecorationCalendar();renderDecorationEventList();
+    } catch(error) {
+        console.error("Decoration events load failed:",error);
+        if(list)list.innerHTML='<p class="notes-box">Decoration events load nahi hue: '+escapeHtml(error.message||"Unknown error")+'</p>';
+    }
+}
+function localDateKey(date){return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");}
+function renderDecorationCalendar(){
+ const grid=$("decorationCalendar");if(!grid)return;
+ const year=calendarCursor.getFullYear(),month=calendarCursor.getMonth();
+ $("calendarMonthLabel").textContent=calendarCursor.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+ $("calendarMonthInput").value=year+"-"+String(month+1).padStart(2,"0");
+ const names=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],first=new Date(year,month,1).getDay(),days=new Date(year,month+1,0).getDate();
+ let out=names.map(n=>'<div style="font-weight:700;text-align:center;padding:6px">'+n+'</div>').join("");
+ for(let i=0;i<first;i++)out+="<div></div>";
+ for(let d=1;d<=days;d++){
+  const key=year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  const count=decorationEvents.filter(e=>String(e.event_date||"").slice(0,10)===key&&e.status!=="cancelled").length,active=selectedCalendarDate===key;
+  out+='<button type="button" data-calendar-date="'+key+'" style="min-height:54px;border:1px solid '+(active?'#176344':'#d7e2db')+';border-radius:9px;background:'+(active?'#176344':'#fff')+';color:'+(active?'#fff':'#20352a')+';padding:5px;cursor:pointer"><strong>'+d+'</strong><br><small>'+count+(count===1?' event':' events')+'</small></button>';
+ }
+ grid.innerHTML=out;grid.querySelectorAll("[data-calendar-date]").forEach(btn=>btn.addEventListener("click",()=>{selectedCalendarDate=btn.dataset.calendarDate;renderDecorationCalendar();renderDecorationEventList();}));
+}
+function renderDecorationEventList(){
+ const list=$("decorationEventList");if(!list)return;
+ if($("calendarSelectedDateLabel"))$("calendarSelectedDateLabel").textContent="Decoration events — "+(selectedCalendarDate||"All dates");
+ const events=decorationEvents.filter(e=>String(e.event_date||"").slice(0,10)===selectedCalendarDate);
+ if(!events.length){list.innerHTML='<p class="notes-box">Is date par koi decoration event nahi hai.</p>';return;}
+ list.innerHTML=events.map(e=>{
+  const b=allBookings.find(x=>Number(x.id)===Number(e.booking_id))||{},status=String(e.status||"pending"),canQuote=!["cancelled","completed","confirmed"].includes(status);
+  const net=Number(e.quoted_amount||0)+Number(e.delivery_charge||0)-Number(e.discount||0);
+  return '<article class="control-card" style="margin:10px 0;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3 style="margin:0 0 6px">'+escapeHtml(e.event_name||e.design_name||"Decoration event")+'</h3><div><b>Booking:</b> '+escapeHtml(b.booking_number||e.booking_id)+' · <b>Customer:</b> '+escapeHtml(b.customer_name||"—")+'</div><div><b>Time:</b> '+escapeHtml(e.event_time||"—")+' · <b>Status:</b> '+escapeHtml(status.replaceAll("_"," "))+'</div><div><b>Venue:</b> '+escapeHtml(e.venue_address||"—")+'</div><div><b>Quotation (admin):</b> ₹'+net.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+(canQuote?'<button class="btn primary" type="button" data-quote-event="'+e.id+'">Quotation / Edit</button>':'')+'</div></div>'+(e.decoration_details?'<p>'+escapeHtml(e.decoration_details)+'</p>':'')+'</article>';
+ }).join("");
+ list.querySelectorAll("[data-quote-event]").forEach(btn=>btn.addEventListener("click",()=>openQuotationModal(Number(btn.dataset.quoteEvent))));
+}
+function openQuotationModal(eventId){
+ currentQuotationEvent=decorationEvents.find(e=>Number(e.id)===Number(eventId));if(!currentQuotationEvent)return;
+ $("quotationEventLabel").textContent=(currentQuotationEvent.event_name||"Decoration event")+" · "+(currentQuotationEvent.event_date||"");
+ $("quotationAmount").value=Number(currentQuotationEvent.quoted_amount||0);$("quotationDelivery").value=Number(currentQuotationEvent.delivery_charge||0);$("quotationDiscount").value=Number(currentQuotationEvent.discount||0);$("quotationMessage").value="";
+ $("quotationModal").classList.remove("hidden");
+}
+function closeQuotationModal(){$("quotationModal")?.classList.add("hidden");currentQuotationEvent=null;}
+async function saveDecorationQuotation(){
+ if(!currentQuotationEvent)return;
+ const amount=Number($("quotationAmount").value),delivery=Number($("quotationDelivery").value),discount=Number($("quotationDiscount").value);
+ if(![amount,delivery,discount].every(Number.isFinite)||amount<0||delivery<0||discount<0||discount>amount+delivery){showToast("Quotation amount, delivery aur discount sahi enter karein.","error");return;}
+ const btn=$("sendQuotationBtn");btn.disabled=true;btn.textContent="Saving…";
+ try{
+  const {error}=await supabase.rpc("admin_set_decoration_quotation",{p_event_id:currentQuotationEvent.id,p_quoted_amount:amount,p_delivery_charge:delivery,p_discount:discount,p_message:$("quotationMessage").value.trim()||null});
+  if(error)throw error;
+  closeQuotationModal();showToast("Quotation save ho gaya. Customer profile mein approval ke liye status update ho gaya.","success");
+  await loadBookings();await loadDecorationEvents();
+ }catch(error){console.error(error);showToast(error.message||"Quotation save nahi hua.","error");}
+ finally{btn.disabled=false;btn.textContent="Save & Send Quotation";}
+}
 
 async function logout() {
 
