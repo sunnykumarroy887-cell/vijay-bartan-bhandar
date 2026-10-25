@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Combination Bookings - Vijay Bartan Bhandar</title>
+
+    <link
+        rel="stylesheet"
+        href="./admin-booking-both.css"
+    >
+</head>
+
+<body data-booking-type="both">
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-title">
+            विजय बर्तन भंडार
+        </div>
+
+        <div class="brand-subtitle">
+            Booking Management
+        </div>
+    </div>
+
+    <div class="top-actions">
+
+        <button
+            id="refreshBtn"
+            class="btn secondary"
+        >
+            Refresh
+        </button>
+
+        <button
+            id="dashboardBtn"
+            class="btn secondary"
+        >
+            Dashboard
+        </button>
+
+        <button
+            id="logoutBtn"
+            class="btn danger"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="page-heading">
+
+        <div>
+            <h1>Combination Bookings</h1>
+
+            <p>
+                Manage combined Bartan + Decoration bookings, payments and service status.
+            </p>
+        </div>
+
+    </section>
+
+
+    <section class="control-card" style="margin-bottom:18px"><div class="control-row" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn secondary" href="./admin-booking-bartan.html">🥘 Bartan Bookings</a><a class="btn secondary" href="./admin-booking-decoration.html">🌸 Decoration Bookings</a><a class="btn secondary" href="./admin-booking-combination.html">🥘🌸 Combination Bookings</a><a class="btn secondary" href="./admin-booking.html">All Bookings</a></div></section>
+
+    <!-- SUMMARY -->
+
+    <section class="summary-grid">
+
+        <div class="summary-card">
+            <span>Pending</span>
+            <strong id="pendingCount">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Confirmed</span>
+            <strong id="confirmedCount">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Issued</span>
+            <strong id="issuedCount">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Return Pending</span>
+            <strong id="returnPendingCount">0</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Completed</span>
+            <strong id="completedCount">0</strong>
+        </div>
+
+    </section>
+
+
+    <!-- FILTER -->
+
+    <section class="control-card">
+
+        <div class="control-row">
+
+            <div class="field">
+
+                <label for="searchInput">
+                    Search
+                </label>
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Booking number, customer name or mobile"
+                >
+
+            </div>
+
+
+            
+
+            <div class="field">
+
+                <label for="statusFilter">
+                    Status
+                </label>
+
+                <select id="statusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="issued">
+                        Issued
+                    </option>
+
+                    <option value="return_pending">
+                        Return Pending
+                    </option>
+
+                    <option value="completed">
+                        Completed
+                    </option>
+
+                    <option value="cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="field">
+                <label for="paymentFilter">Payment Status</label>
+                <select id="paymentFilter">
+                    <option value="all">All Payments</option>
+                    <option value="due">Payment Due</option>
+                    <option value="partial">Partially Paid</option>
+                    <option value="paid">Fully Paid</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="eventDateFrom">Event Date From</label>
+                <input id="eventDateFrom" type="date">
+            </div>
+
+            <div class="field">
+                <label for="eventDateTo">Event Date To</label>
+                <input id="eventDateTo" type="date">
+            </div>
+
+            <div class="field">
+                <label for="bookingSort">Sort By</label>
+                <select id="bookingSort">
+                    <option value="newest">Recently Added</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="event_soon">Upcoming Event First</option>
+                    <option value="amount_high">Highest Amount</option>
+                    <option value="amount_low">Lowest Amount</option>
+                </select>
+            </div>
+
+            <div class="field filter-reset-wrap">
+                <label>&nbsp;</label>
+                <button type="button" id="resetFiltersBtn" class="btn secondary">Reset Filters</button>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- BOOKINGS -->
+
+    <section class="table-card">
+
+        <div class="table-header">
+
+            <div>
+                <h2>Bookings</h2>
+                <span id="bookingCountText">
+                    0 bookings
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Booking</th>
+
+                        <th>Customer</th>
+
+                        <th>Event Date</th>
+
+                        <th>Return Date</th>
+
+                        <th>Status</th>
+
+                        <th>Amount</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="bookingTableBody">
+
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+                            Loading bookings...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     BOOKING DETAILS MODAL
+===================================================== -->
+
+<div
+    id="detailsModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box large">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Booking Details</h2>
+
+                <span id="modalBookingNumber">
+                    -
+                </span>
+            </div>
+
+            <button
+                id="closeModalBtn"
+                class="close-btn"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-content">
+
+            <!-- CUSTOMER -->
+
+            <section class="detail-section">
+
+                <h3>Customer Information</h3>
+
+                <div class="detail-grid">
+
+                    <div>
+                        <span>Name</span>
+                        <strong id="detailCustomerName">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Mobile</span>
+                        <strong id="detailCustomerMobile">-</strong>
+                    </div>
+
+                    <div class="full">
+                        <span>Address</span>
+                        <strong id="detailCustomerAddress">-</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- EVENT -->
+
+            <section class="detail-section">
+
+                <h3>Event Information</h3>
+
+                <div class="detail-grid">
+
+                    <div>
+                        <span>Event Date</span>
+                        <strong id="detailEventDate">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Expected Return</span>
+                        <strong id="detailReturnDate">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong id="detailStatus">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Booking Number</span>
+                        <strong id="detailBookingNumber">-</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- BARTAN -->
+
+            <section class="detail-section">
+
+                <h3>Bartan Items</h3>
+
+                <div
+                    id="bartanDetails"
+                    class="item-list"
+                ></div>
+
+            </section>
+
+
+            <!-- DECORATION -->
+
+            <section class="detail-section">
+
+                <h3>Decoration</h3>
+
+                <div
+                    id="decorationDetails"
+                    class="item-list"
+                ></div>
+
+            </section>
+
+
+            <!-- PAYMENT -->
+
+            <section class="detail-section">
+
+                <h3>Payment</h3>
+
+                <div class="detail-grid">
+
+                    <div>
+                        <span>Final Total</span>
+                        <strong id="detailFinalTotal">
+                            ₹0
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Paid</span>
+                        <strong id="detailPaid">
+                            ₹0
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Remaining</span>
+                        <strong id="detailRemaining">
+                            ₹0
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- NOTES -->
+
+            <section class="detail-section">
+
+                <h3>Notes</h3>
+
+                <div
+                    id="detailNotes"
+                    class="notes-box"
+                >
+                    No notes
+                </div>
+
+            </section>
+
+
+            <!-- ACTIONS -->
+
+            <section class="action-section">
+
+                <button
+                    id="confirmBtn"
+                    class="btn success"
+                >
+                    Confirm Booking
+                </button>
+
+                <button
+                    id="issueBtn"
+                    class="btn primary"
+                >
+                    Issue Bartan
+                </button>
+
+                <button
+                    id="returnPendingBtn"
+                    class="btn warning"
+                >
+                    Return Pending
+                </button>
+
+                <button
+                    id="cancelBtn"
+                    class="btn danger"
+                >
+                    Cancel Booking
+                </button>
+
+                <button
+                    id="paymentBtn"
+                    class="btn secondary"
+                >
+                    Add Payment
+                </button>
+                <button id="downloadBillBtn" class="btn primary hidden" type="button">
+                    Print / Save Bill PDF
+                </button>
+                <button id="whatsappBillBtn" class="btn success hidden" type="button">
+                    Share Bill on WhatsApp
+                </button>
+
+
+            </section>
+
+
+            <!-- RETURN -->
+
+            <section
+                id="returnSection"
+                class="detail-section hidden"
+            >
+
+                <h3>Return Management</h3>
+
+                <div id="returnItems"></div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PAYMENT MODAL
+===================================================== -->
+
+<div
+    id="paymentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box small">
+
+        <div class="modal-header">
+
+            <h2>Add Payment</h2>
+
+            <button
+                id="closePaymentBtn"
+                class="close-btn"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form">
+
+            <div class="field">
+
+                <label for="paymentAmount">
+                    Amount
+                </label>
+
+                <input
+                    id="paymentAmount"
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    placeholder="Enter amount"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="paymentType">
+                    Payment Type
+                </label>
+
+                <select id="paymentType">
+
+                    <option value="advance">
+                        Advance
+                    </option>
+
+                    <option value="additional">
+                        Additional Payment
+                    </option>
+
+                    <option value="refund">
+                        Refund
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="paymentMethod">
+                    Payment Method
+                </label>
+
+                <select id="paymentMethod">
+
+                    <option value="cash">
+                        Cash
+                    </option>
+
+                    <option value="upi">
+                        UPI
+                    </option>
+
+                    <option value="bank">
+                        Bank
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+                <label for="paymentReference">Transaction ID / UTR</label>
+                <input id="paymentReference" type="text" maxlength="200"
+                    placeholder="Enter UPI transaction ID / bank reference (required for UPI/Bank/Other)">
+                <small>Cash payment ke liye optional.</small>
+            </div>
+
+            <div class="field">
+                <label for="paymentProof">Payment Proof (Image/PDF, max 2 MB)</label>
+                <input id="paymentProof" type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf">
+                <small>Allowed: JPG, PNG, WEBP, PDF. Maximum size: 2 MB.</small>
+            </div>
+
+            <div class="field">
+
+                <label for="paymentNote">
+                    Note
+                </label>
+
+                <textarea
+                    id="paymentNote"
+                    rows="3"
+                    placeholder="Optional payment note"
+                ></textarea>
+
+            </div>
+
+
+            <button
+                id="savePaymentBtn"
+                class="btn primary full-btn"
+            >
+                Save Payment
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script
+    type="module"
+    src="./admin-booking-both.js"
+></script>
+
+</body>
+</html>
