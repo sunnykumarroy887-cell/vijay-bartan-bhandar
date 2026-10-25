@@ -196,8 +196,6 @@ function applyServiceType(type) {
     })[type];
     form?.scrollIntoView({behavior:"smooth", block:"start"});
 }
-addCombinedEventButton?.addEventListener("click", addCombinedDecorationEvent);
-if (combinedEventsList && combinedEventsList.children.length === 0) addCombinedDecorationEvent();
 serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
     card.addEventListener("click", () => applyServiceType(card.dataset.serviceChoice));
 });
@@ -215,6 +213,14 @@ const addCombinedEventButton = document.getElementById("addCombinedEvent");
 const MAX_COMBINED_EVENTS = 10;
 const MAX_COMBINED_IMAGES = 3;
 const MAX_COMBINED_IMAGE_BYTES = 2 * 1024 * 1024;
+
+// Register event controls only after their const declarations to avoid a
+// temporal-dead-zone ReferenceError that prevented the entire module loading.
+addCombinedEventButton?.addEventListener("click", addCombinedDecorationEvent);
+if (combinedEventsList && combinedEventsList.children.length === 0) {
+    addCombinedDecorationEvent();
+}
+
 
 
 const bartanList =
