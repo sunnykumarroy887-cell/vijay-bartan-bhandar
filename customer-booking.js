@@ -354,17 +354,16 @@ document.addEventListener(
 
         setupEvents();
 
-        if (bartanServiceSection) bartanServiceSection.hidden = selectedServiceType === "decoration";
-        if (decorationServiceSection) decorationServiceSection.hidden = selectedServiceType === "bartan";
-        if (decorationRequired) {
-            decorationRequired.checked = selectedServiceType !== "bartan";
-            decorationRequired.disabled = selectedServiceType !== "both";
-            decorationRequired.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        // This page is the combined booking flow: keep bartan selection visible,
+        // hide the duplicate decoration catalogue/toggle, and use event-wise details.
+        selectedServiceType = "both";
+        applyServiceType("both");
+        if (decorationArea) decorationArea.classList.add("hidden");
 
         setupTrackingEvents();
 
-        await Promise.all([
+        // Always replace static loading placeholders, even if a request fails.
+        await Promise.allSettled([
             loadBartan(),
             loadDecorations()
         ]);
