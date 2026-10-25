@@ -505,7 +505,8 @@ function renderBookings() {
                 const resolvedType = ["bartan", "decoration", "both"].includes(storedType)
                     ? storedType
                     : (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
-                const matchesType = bookingType === "all" || resolvedType === bookingType;
+                const pageBookingType = document.body.dataset.bookingType || "both";
+                const matchesType = resolvedType === pageBookingType;
                 const remaining = Number(booking.remaining || 0);
                 const paid = Number(booking.advance || 0);
                 const total = Number(booking.final_total || 0);
