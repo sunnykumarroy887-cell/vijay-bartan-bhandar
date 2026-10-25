@@ -170,23 +170,20 @@ async function saveCombinedDecorationEvents(bookingId, userId, eventRows) {
     if (error) throw new Error("Booking create ho gayi, lekin event details save nahi ho sakin. Booking number ke saath Admin se sampark karein. " + error.message);
 }
 
+function updateCombinedEventVisibility(type) {
+    if (combinedEventsSection) combinedEventsSection.hidden = type === "bartan";
+    if (decorationServiceSection) decorationServiceSection.hidden = type === "bartan" || type === "both";
+    if (bartanServiceSection) bartanServiceSection.hidden = type === "decoration";
+}
 function applyServiceType(type) {
     if (!["bartan", "decoration", "both"].includes(type)) return;
     selectedServiceType = type;
-    updateCombinedEventVisibility(type);
-    addCombinedEventButton?.addEventListener("click", addCombinedDecorationEvent);
-if (combinedEventsList && combinedEventsList.children.length === 0) addCombinedDecorationEvent();
-function updateCombinedEventVisibility(type) {
-    if (!combinedEventsSection) return;
-    combinedEventsSection.hidden = type === "bartan";
-}
-serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
+    serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
         const active = card.dataset.serviceChoice === type;
         card.classList.toggle("selected", active);
         card.setAttribute("aria-pressed", String(active));
     });
-    if (bartanServiceSection) bartanServiceSection.hidden = type === "decoration";
-    if (decorationServiceSection) decorationServiceSection.hidden = type === "bartan";
+    updateCombinedEventVisibility(type);
     if (decorationRequired) {
         decorationRequired.checked = type !== "bartan";
         decorationRequired.disabled = type !== "both";
@@ -194,11 +191,13 @@ serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
     }
     if (serviceChoiceHint) serviceChoiceHint.textContent = ({
         bartan: "आपने केवल Bartan Service चुनी है। केवल बर्तनों का चयन करें।",
-        decoration: "आपने केवल Decoration Service चुनी है। सजावट का चयन करें।",
-        both: "आपने दोनों सेवाएँ चुनी हैं। बर्तन और सजावट दोनों चुनें।"
+        decoration: "आपने केवल Decoration Service चुनी है। अपने Decoration events भरें।",
+        both: "Combined Booking: बर्तन चुनें और नीचे हर Decoration event की details भरें। अलग Decoration catalog चुनने की जरूरत नहीं है।"
     })[type];
     form?.scrollIntoView({behavior:"smooth", block:"start"});
 }
+addCombinedEventButton?.addEventListener("click", addCombinedDecorationEvent);
+if (combinedEventsList && combinedEventsList.children.length === 0) addCombinedDecorationEvent();
 serviceChooser?.querySelectorAll("[data-service-choice]").forEach(card => {
     card.addEventListener("click", () => applyServiceType(card.dataset.serviceChoice));
 });
@@ -1754,16 +1753,16 @@ async function handleSubmit(event) {
 
         if (
             (selectedServiceType === "bartan" && selectedItems.length === 0) ||
-            (selectedServiceType === "decoration" && selectedDecorationItems.length === 0) ||
-            (selectedServiceType === "both" && (selectedItems.length === 0 || selectedDecorationItems.length === 0))
+            (selectedServiceType === "decoration" && combinedEventRows.length === 0) ||
+            (selectedServiceType === "both" && selectedItems.length === 0)
         ) {
 
             throw new Error(
                 selectedServiceType === "bartan"
                     ? "कृपया कम से कम एक Bartan item चुनें।"
                     : selectedServiceType === "decoration"
-                        ? "कृपया कम से कम एक Decoration service चुनें।"
-                        : "कृपया Bartan और Decoration दोनों में से items चुनें।"
+                        ? "कृपया कम से कम एक Decoration event की details भरें।"
+                        : "कृपया कम से कम एक Bartan item चुनें और Decoration event की details भरें।"
             );
 
         }
