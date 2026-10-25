@@ -73,9 +73,23 @@
     </section>
 
 
-    <section class="control-card" style="margin-bottom:18px"><div class="control-row" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn secondary" href="./admin-booking-bartan.html">🥘 Bartan Bookings</a><a class="btn secondary" href="./admin-booking-decoration.html">🌸 Decoration Bookings</a><a class="btn secondary" href="./admin-booking-combination.html">🥘🌸 Combination Bookings</a><a class="btn secondary" href="./admin-booking.html">All Bookings</a></div></section>
+    <section class="control-card" style="margin-bottom:18px"><div class="control-row" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn secondary" href="./admin-booking-decoration.html" aria-current="page" style="background:#176344;color:#fff;border-color:#176344">🌸 Decoration Bookings ✓</a><a class="btn secondary" href="./admin.html">← Admin Dashboard</a></div></section>
 
     <!-- SUMMARY -->
+
+    <section class="control-card" style="margin-bottom:18px"><div class="control-row" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn secondary" href="./admin-booking-bartan.html">🥘 Bartan Bookings</a><a class="btn secondary" href="./admin-booking-decoration.html" aria-current="page" style="background:#176344;color:#fff;border-color:#176344">🌸 Decoration Bookings ✓</a><a class="btn secondary" href="./admin-booking-combination.html">🥘🌸 Combination Bookings</a><a class="btn secondary" href="./admin-booking.html">All Bookings</a></div></section>
+
+    <section class="control-card" id="decorationCalendarCard" style="margin-bottom:18px">
+      <div class="control-row" style="align-items:center;justify-content:space-between;gap:12px">
+        <div><h2 style="margin:0">Decoration Monthly Report</h2><p style="margin:6px 0">Event dates par click karke us din ke decoration requests dekhein.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn secondary" type="button" id="calendarPrevBtn">← Previous</button><strong id="calendarMonthLabel">Loading month…</strong>
+          <button class="btn secondary" type="button" id="calendarNextBtn">Next →</button><input type="month" id="calendarMonthInput" aria-label="Select report month">
+        </div>
+      </div>
+      <div id="decorationCalendar" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:14px"></div>
+      <h3 id="calendarSelectedDateLabel" style="margin-top:18px">Events</h3><div id="decorationEventList"><p>Loading decoration events…</p></div>
+    </section>
 
     <section class="summary-grid">
 
@@ -656,6 +670,16 @@
 
 </div>
 
+
+<div id="quotationModal" class="modal hidden"><div class="modal-box small">
+<div class="modal-header"><div><h2>Send Decoration Quotation</h2><span id="quotationEventLabel">Event</span></div><button type="button" id="closeQuotationBtn" class="close-btn">×</button></div>
+<div class="form">
+<div class="field"><label for="quotationAmount">Decoration Amount (₹)</label><input id="quotationAmount" type="number" min="0" step="0.01" required></div>
+<div class="field"><label for="quotationDelivery">Delivery / Setup Charge (₹)</label><input id="quotationDelivery" type="number" min="0" step="0.01" value="0" required></div>
+<div class="field"><label for="quotationDiscount">Discount (₹)</label><input id="quotationDiscount" type="number" min="0" step="0.01" value="0" required></div>
+<div class="field"><label for="quotationMessage">Message / Terms (optional)</label><textarea id="quotationMessage" rows="3" maxlength="1000"></textarea></div>
+<button type="button" id="sendQuotationBtn" class="btn primary full-btn">Save & Send Quotation</button>
+</div></div></div>
 
 <div
     id="toast"
