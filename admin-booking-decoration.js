@@ -396,12 +396,16 @@ async function loadBookings() {
 // ======================================================
 
 function updateSummary() {
-
-    const count = status =>
-        allBookings.filter(
-            booking =>
-                booking.status === status
-        ).length;
+    const bookingType = document.body.dataset.bookingType || "decoration";
+    const uniqueBookings = Array.from(new Map(allBookings.map(b => [String(b.id), b])).values());
+    const scopedBookings = uniqueBookings.filter(booking => {
+        const storedType = String(booking.booking_type || "").toLowerCase();
+        const hasBartan = Number(booking.bartan_count || 0) > 0 || Number(booking.bartan_total || 0) > 0;
+        const hasDecoration = Number(booking.decoration_count || 0) > 0 || booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0;
+        const type = ["bartan","decoration","both"].includes(storedType) ? storedType : (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
+        return bookingType === "all" || type === bookingType;
+    });
+    const count = status => scopedBookings.filter(booking => booking.status === status).length;
 
 
     if ($("pendingCount")) {
@@ -2148,8 +2152,9 @@ function renderDecorationCalendar(){
  for(let i=0;i<first;i++)out+="<div></div>";
  for(let d=1;d<=days;d++){
   const key=year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-  const count=decorationEvents.filter(e=>String(e.event_date||"").slice(0,10)===key&&e.status!=="cancelled").length,active=selectedCalendarDate===key;
-  out+='<button type="button" data-calendar-date="'+key+'" style="min-height:54px;border:1px solid '+(active?'#176344':'#d7e2db')+';border-radius:9px;background:'+(active?'#176344':'#fff')+';color:'+(active?'#fff':'#20352a')+';padding:5px;cursor:pointer"><strong>'+d+'</strong><br><small>'+count+(count===1?' event':' events')+'</small></button>';
+  const count=decorationEvents.filter(e=>String(e.event_date||"").slice(0,10)===key&&e.status!=="cancelled").length,active=selectedCalendarDate===key,hasBooking=count>0;
+  const bg=active?"#6d28d9":hasBooking?"#d1fae5":"#fff",fg=active?"#fff":hasBooking?"#065f46":"#20352a",border=active?"#5b21b6":hasBooking?"#059669":"#d7e2db";
+  out+='<button type="button" data-calendar-date="'+key+'" aria-pressed="'+active+'" title="'+(hasBooking?count+" decoration booking(s)":"No decoration bookings")+'" style="min-height:58px;border:2px solid '+border+';border-radius:9px;background:'+bg+';color:'+fg+';padding:5px;cursor:pointer;box-shadow:'+(active?'0 0 0 2px #ddd6fe':'none')+'"><strong>'+d+'</strong><br><small>'+(hasBooking?count+(count===1?' booking':' bookings'):'—')+'</small></button>';
  }
  grid.innerHTML=out;grid.querySelectorAll("[data-calendar-date]").forEach(btn=>btn.addEventListener("click",()=>{selectedCalendarDate=btn.dataset.calendarDate;renderDecorationCalendar();renderDecorationEventList();}));
 }
@@ -2159,9 +2164,11 @@ function renderDecorationEventList(){
  const events=decorationEvents.filter(e=>String(e.event_date||"").slice(0,10)===selectedCalendarDate);
  if(!events.length){list.innerHTML='<p class="notes-box">Is date par koi decoration event nahi hai.</p>';return;}
  list.innerHTML=events.map(e=>{
-  const b=allBookings.find(x=>Number(x.id)===Number(e.booking_id))||{},status=String(e.status||"pending"),canQuote=!["cancelled","completed","confirmed"].includes(status);
+  const b=allBookings.find(x=>Number(x.id)===Number(e.booking_id))||{},status=String(e.status||"pending"),canQuote=!["cancelled","completed"].includes(status);
   const net=Number(e.quoted_amount||0)+Number(e.delivery_charge||0)-Number(e.discount||0);
-  return '<article class="control-card" style="margin:10px 0;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3 style="margin:0 0 6px">'+escapeHtml(e.event_name||e.design_name||"Decoration event")+'</h3><div><b>Booking:</b> '+escapeHtml(b.booking_number||e.booking_id)+' · <b>Customer:</b> '+escapeHtml(b.customer_name||"—")+'</div><div><b>Time:</b> '+escapeHtml(e.event_time||"—")+' · <b>Status:</b> '+escapeHtml(status.replaceAll("_"," "))+'</div><div><b>Venue:</b> '+escapeHtml(e.venue_address||"—")+'</div><div><b>Quotation (admin):</b> ₹'+net.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+(canQuote?'<button class="btn primary" type="button" data-quote-event="'+e.id+'">Quotation / Edit</button>':'')+'</div></div>'+(e.decoration_details?'<p>'+escapeHtml(e.decoration_details)+'</p>':'')+'</article>';
+  const imageUrls=Array.isArray(e.reference_image_urls)?e.reference_image_urls.filter(Boolean):[];
+  const imageHtml=imageUrls.length?'<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">'+imageUrls.map((url,i)=>'<a href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer"><img src="'+escapeHtml(url)+'" alt="Customer reference image '+(i+1)+'" loading="lazy" style="width:112px;height:100px;object-fit:cover;border-radius:9px;border:1px solid #d7e2db" onerror="this.style.display=\'none\'"></a>').join("")+'</div>':'<p class="notes-box" style="margin-top:8px">Customer reference image is not attached to this event.</p>';
+  return '<article class="control-card" style="margin:10px 0;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><h3 style="margin:0 0 10px">'+escapeHtml(e.event_name||e.design_name||"Decoration event")+'</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px"><div><b>Booking No.</b><br>'+escapeHtml(b.booking_number||e.booking_id)+'</div><div><b>Customer name</b><br>'+escapeHtml(b.customer_name||"—")+'</div><div><b>Mobile</b><br>'+escapeHtml(b.customer_mobile||"—")+'</div><div><b>Event date & time</b><br>'+escapeHtml(e.event_date||"—")+' · '+escapeHtml(e.event_time||"—")+'</div><div><b>Status</b><br>'+escapeHtml(status.replaceAll("_"," "))+'</div><div><b>Quotation total (admin)</b><br>₹'+net.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})+'</div><div style="grid-column:1/-1"><b>Venue / address</b><br>'+escapeHtml(e.venue_address||b.customer_address||"—")+'</div><div style="grid-column:1/-1"><b>Customer request / design details</b><br>'+escapeHtml(e.decoration_details||b.notes||"—")+'</div></div>'+imageHtml+'</div><div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap">'+(canQuote?'<button class="btn primary" type="button" data-quote-event="'+e.id+'">Send / Edit Quotation</button>':'')+'</div></div></article>';
  }).join("");
  list.querySelectorAll("[data-quote-event]").forEach(btn=>btn.addEventListener("click",()=>openQuotationModal(Number(btn.dataset.quoteEvent))));
 }
