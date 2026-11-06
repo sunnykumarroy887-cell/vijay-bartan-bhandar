@@ -3788,3 +3788,11 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
  .intro .intro-bartan-card::before{height:165px;background-position:center 45%}
  .intro .intro-bartan-card::after{background:linear-gradient(180deg,rgba(12,35,25,.04) 0%,rgba(255,255,255,.18) 30%,rgba(255,255,255,.96) 49%,#fff 76%)}
 }
+
+/* Item-specific custom vector icons */
+.bartan-card-icon{display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#f7f8ef,#eaf2e9);border:1px solid rgba(190,157,83,.25);color:#1b6040;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.bartan-item-svg{display:block;width:27px;height:27px;flex:0 0 27px;color:inherit}
+.bartan-card-icon .bartan-item-svg{width:26px;height:26px}
+.selected-item-icon{display:grid;place-items:center}
+.selected-item-icon .bartan-item-svg{width:22px;height:22px;color:#fff}
+@media(max-width:800px){.bartan-card-icon{width:38px;height:38px;flex-basis:38px}.bartan-card-icon .bartan-item-svg{width:24px;height:24px}}
