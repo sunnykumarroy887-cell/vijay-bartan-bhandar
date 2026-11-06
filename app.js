@@ -523,7 +523,7 @@ function getBartanPhotoMeta(itemName) {
         { match: /नादी|nadi|नांदी/, position: "50% 0%" },
         { match: /लोहिया|lohiya/, position: "100% 0%" },
         { match: /कठौता|kathauta/, position: "0% 100%" },
-        { match: /झांझ|झांझ|jhanjh|jhanj/, position: "50% 100%" },
+        { match: /झांझ|jhanjh|jhanj/, position: "50% 100%" },
         { match: /कलछुल|कलछू|kalchhu|kalchul|ladle/, position: "100% 100%" }
     ];
     return photos.find(photo => photo.match.test(name)) || null;

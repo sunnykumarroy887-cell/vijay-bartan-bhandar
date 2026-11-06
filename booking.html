@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Vijay Bartan Bhandar Booking Management"
+    >
+
+    <meta
+        name="theme-color"
+        content="#123c2f"
+    >
+
+    <title>
+        Booking Management | Vijay Bartan Bhandar
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="booking.css"
+    >
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            व
+        </div>
+
+        <div>
+
+            <h1>
+                विजय बर्तन भंडार
+            </h1>
+
+            <p>
+                Booking Management
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="top-actions">
+
+        <a
+            href="admin.html"
+            class="top-btn"
+        >
+            ← Admin Panel
+        </a>
+
+        <button
+            type="button"
+            class="top-btn danger-btn"
+            id="logoutBtn"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="page-container">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="page-header">
+
+        <div>
+
+            <span class="eyebrow">
+                BOOKING SYSTEM
+            </span>
+
+            <h2>
+                Booking Management
+            </h2>
+
+            <p>
+                Create, manage and track customer bookings.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-gold"
+            id="newBookingBtn"
+        >
+            + New Booking
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         BOOKING FORM
+    ====================================================== -->
+
+    <section
+        class="card"
+        id="bookingFormCard"
+    >
+
+        <div class="card-heading">
+
+            <div>
+
+                <h3>
+                    Create New Booking
+                </h3>
+
+                <p>
+                    Enter customer and event details below.
+                </p>
+
+            </div>
+
+            <span class="secure-badge">
+                🔒 Secure
+            </span>
+
+        </div>
+
+
+        <form id="bookingForm">
+
+            <!-- CUSTOMER -->
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    👤 Customer Information
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="customerName">
+                            Customer Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="customerName"
+                            maxlength="150"
+                            placeholder="Enter customer name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="customerMobile">
+                            Mobile Number *
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="customerMobile"
+                            maxlength="15"
+                            inputmode="numeric"
+                            placeholder="Enter mobile number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label for="customerAddress">
+                            Address *
+                        </label>
+
+                        <textarea
+                            id="customerAddress"
+                            maxlength="500"
+                            placeholder="Enter customer address"
+                            required
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EVENT -->
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    📅 Event Information
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="eventDate">
+                            Event Date *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="eventDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="returnDate">
+                            Return Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="returnDate"
+                        >
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label for="bookingNotes">
+                            Notes
+                        </label>
+
+                        <textarea
+                            id="bookingNotes"
+                            maxlength="1000"
+                            placeholder="Additional booking notes..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BARTAN -->
+
+            <div class="form-section">
+
+                <div class="section-title-row">
+
+                    <div class="section-title">
+                        🍽️ Bartan Selection
+                    </div>
+
+                    <button
+                        type="button"
+                        class="small-btn"
+                        id="addBartanBtn"
+                    >
+                        + Add Bartan
+                    </button>
+
+                </div>
+
+                <p class="helper-text">
+                    Select the required items and quantity.
+                    Current rates will be locked into this booking.
+                </p>
+
+
+                <div
+                    class="bartan-selection"
+                    id="bartanSelection"
+                >
+
+                    <div class="empty-state">
+                        Loading Bartan items...
+                    </div>
+
+                </div>
+
+
+                <div class="mini-total">
+
+                    <span>
+                        Bartan Total
+                    </span>
+
+                    <strong id="bartanTotal">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- DECORATION -->
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    🌸 Decoration
+                </div>
+
+                <div class="decoration-toggle">
+
+                    <label class="checkbox-label">
+
+                        <input
+                            type="checkbox"
+                            id="decorationRequired"
+                        >
+
+                        <span>
+                            Decoration Required
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div
+                    class="decoration-box"
+                    id="decorationBox"
+                    hidden
+                >
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label for="decorationSelect">
+                                Decoration Service
+                            </label>
+
+                            <select
+                                id="decorationSelect"
+                            >
+
+                                <option value="">
+                                    Select Decoration
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="decorationCharge">
+                                Decoration Charge
+                            </label>
+
+                            <input
+                                type="number"
+                                id="decorationCharge"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- OTHER CHARGES -->
+
+            <div class="form-section">
+
+                <div class="section-title">
+                    💰 Charges & Payment
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="deliveryCharge">
+                            Delivery Charge
+                        </label>
+
+                        <input
+                            type="number"
+                            id="deliveryCharge"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="discount">
+                            Discount
+                        </label>
+
+                        <input
+                            type="number"
+                            id="discount"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="advance">
+                            Advance Payment
+                        </label>
+
+                        <input
+                            type="number"
+                            id="advance"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- CALCULATION -->
+
+                <div class="calculation">
+
+                    <div>
+                        <span>
+                            Bartan Total
+                        </span>
+
+                        <strong id="summaryBartan">
+                            ₹0.00
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>
+                            Decoration
+                        </span>
+
+                        <strong id="summaryDecoration">
+                            ₹0.00
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>
+                            Delivery
+                        </span>
+
+                        <strong id="summaryDelivery">
+                            ₹0.00
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>
+                            Discount
+                        </span>
+
+                        <strong id="summaryDiscount">
+                            - ₹0.00
+                        </strong>
+                    </div>
+
+
+                    <div class="grand-total">
+
+                        <span>
+                            Final Total
+                        </span>
+
+                        <strong id="finalTotal">
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="remaining">
+
+                        <span>
+                            Remaining
+                        </span>
+
+                        <strong id="remainingAmount">
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="cancelFormBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="saveBookingBtn"
+                >
+                    💾 Save Booking
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- =====================================================
+         BOOKING LIST
+    ====================================================== -->
+
+    <section class="card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <h3>
+                    All Bookings
+                </h3>
+
+                <p>
+                    Search and manage existing bookings.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="filters">
+
+            <div class="search-box">
+
+                <span>
+                    🔎
+                </span>
+
+                <input
+                    type="search"
+                    id="searchBooking"
+                    placeholder="Search name, mobile or booking number..."
+                >
+
+            </div>
+
+
+            <select id="statusFilter">
+
+                <option value="all">
+                    All Status
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="confirmed">
+                    Confirmed
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+                <option value="cancelled">
+                    Cancelled
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Booking
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Event Date
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Advance
+                        </th>
+
+                        <th>
+                            Remaining
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="bookingList">
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="loading"
+                        >
+                            Loading bookings...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     BOOKING DETAILS MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="bookingModal"
+    hidden
+>
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    BOOKING DETAILS
+                </span>
+
+                <h3 id="modalBookingNumber">
+                    Booking
+                </h3>
+
+            </div>
+
+            <button
+                type="button"
+                class="close-btn"
+                id="closeModalBtn"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="bookingDetails"
+        >
+        </div>
+
+
+        <div class="modal-footer">
+
+            <select id="modalStatus">
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="confirmed">
+                    Confirmed
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+                <option value="cancelled">
+                    Cancelled
+                </option>
+
+            </select>
+
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="updateStatusBtn"
+            >
+                Update Status
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+>
+    Saved successfully.
+</div>
+
+
+<script
+    type="module"
+    src="booking.js"
+></script>
+
+</body>
+
+</html>

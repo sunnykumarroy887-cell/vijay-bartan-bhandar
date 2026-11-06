@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | Vijay Bartan Bhandar</title>
+
+    <link rel="stylesheet" href="admin-login.css">
+</head>
+
+<body>
+
+    <main class="login-page">
+
+        <section class="login-card">
+
+            <div class="brand">
+                <div class="brand-logo">व</div>
+
+                <div>
+                    <h1>विजय बर्तन भंडार</h1>
+                    <p>Flower Decoration & Bartan Rental</p>
+                </div>
+            </div>
+
+
+            <div class="login-heading">
+                <span class="lock-icon">🔐</span>
+
+                <h2>Admin Login</h2>
+
+                <p>
+                    Login to manage bookings, rates and business details.
+                </p>
+            </div>
+
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm">
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter admin email"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="password-toggle"
+                            aria-label="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="login-button"
+                >
+                    <span id="loginButtonText">Login</span>
+                    <span id="loginLoader" class="loader hidden"></span>
+                </button>
+
+
+                <button
+                    type="button"
+                    id="forgotPassword"
+                    class="forgot-button"
+                >
+                    Forgot Password?
+                </button>
+
+            </form>
+
+
+            <!-- RESET PASSWORD FORM -->
+            <form id="resetForm" class="hidden">
+
+                <div class="reset-title">
+                    <h2>Create New Password</h2>
+
+                    <p>
+                        Enter a new password for your Admin account.
+                    </p>
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="newPassword">
+                        New Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        placeholder="Enter new password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm new password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="updatePasswordButton"
+                    class="login-button"
+                >
+                    Update Password
+                </button>
+
+            </form>
+
+
+            <div
+                id="message"
+                class="message hidden"
+                role="alert"
+            ></div>
+
+
+            <div class="security-note">
+                <span>🛡️</span>
+                <span>Secure Admin Access</span>
+            </div>
+
+
+            <div class="back-home">
+                <a href="../index.html">
+                    ← Back to Website
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script type="module" src="admin-login.js"></script>
+
+</body>
+</html>

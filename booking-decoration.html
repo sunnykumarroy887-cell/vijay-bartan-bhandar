@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Book flower decoration for your event with Maa Saraswati Decoration."
+    >
+
+    <title>Decoration Booking | Maa Saraswati Decoration</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./customer-booking.css">
+</head>
+
+<body data-service-type="decoration">
+
+    <!-- BACKGROUND -->
+    <div class="page-glow glow-one"></div>
+    <div class="page-glow glow-two"></div>
+
+
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+
+    <header class="site-header">
+
+        <div class="header-inner">
+
+            <a href="./index.html" class="brand">
+
+                <div class="brand-symbol">
+                    ॐ
+                </div>
+
+                <div class="brand-text">
+
+                    <span class="brand-top">
+                        श्री गणेशाय नमः
+                    </span>
+
+                    <strong>
+                        विजय बर्तन भंडार
+                    </strong>
+
+                    <small>
+                        बर्तन • सजावट • समारोह
+                    </small>
+
+                </div>
+
+            </a>
+
+
+            <div class="header-actions">
+
+                <a
+                    href="./index.html"
+                    class="header-link"
+                >
+                    Home
+                </a>
+
+
+                <a
+                    href="https://wa.me/916201852300"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="whatsapp-btn"
+                >
+                    <span>WhatsApp</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         MAIN
+    ================================================== -->
+
+    <main class="booking-page">
+
+
+        <!-- ==================================================
+             HERO
+        ================================================== -->
+
+        <section class="booking-hero">
+
+            <div class="hero-content">
+
+                <span class="hero-badge">
+                    ✦ BOOKING ENQUIRY
+                </span>
+
+                <h1>
+                    फूलों की सजावट
+                    <span>Booking करें</span>
+                </h1>
+
+                <p>
+                    शादी, पूजा और समारोह के लिए अपनी पसंद की Decoration Service चुनें। अपनी तारीख और जरूरत भेजें; हमारी टीम आपसे संपर्क करेगी।
+                </p>
+
+
+                <div class="hero-points">
+
+                    <div class="hero-point">
+                        <span class="point-icon">✓</span>
+                        <span>आसान Booking</span>
+                    </div>
+
+                    <div class="hero-point">
+                        <span class="point-icon">✓</span>
+                        <span>उपलब्धता जाँच</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-card">
+
+                <div class="hero-card-icon">
+                    🍽️
+                </div>
+
+                <strong>
+                    Maa Saraswati Decoration
+                </strong>
+
+                <span>
+                    खूबसूरत सजावट के साथ अपने समारोह को खास बनाएं
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             BOOKING FORM
+        ================================================== -->
+
+        <section class="booking-section">
+
+            <div class="section-heading">
+
+                <span>
+                    BOOKING DETAILS
+                </span>
+
+                <h2>
+                    Decoration Booking Details
+                </h2>
+
+                <p>
+                    सभी जरूरी जानकारी सही-सही भरें ताकि हम आपसे आसानी से संपर्क कर सकें।
+                </p>
+
+            </div>
+
+
+            <form
+                id="customerBookingForm"
+                novalidate
+            >
+
+                <!-- CUSTOMER DETAILS -->
+
+                <div class="form-card">
+
+                    <div class="card-heading">
+
+                        <div class="heading-number">
+                            01
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Customer Information
+                            </h3>
+
+                            <p>
+                                आपकी व्यक्तिगत जानकारी
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field-group field-full">
+
+                            <label for="customerName">
+                                Customer Name
+                                <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerName"
+                                name="customerName"
+                                placeholder="अपना पूरा नाम लिखें"
+                                autocomplete="name"
+                                maxlength="100"
+                                required
+                            >
+
+                            <small
+                                class="field-error"
+                                id="customerNameError"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="customerMobile">
+                                Mobile Number
+                                <span>*</span>
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="customerMobile"
+                                name="customerMobile"
+                                placeholder="10 digit mobile number"
+                                inputmode="numeric"
+                                autocomplete="tel"
+                                maxlength="10"
+                                required
+                            >
+
+                            <small
+                                class="field-error"
+                                id="customerMobileError"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="eventDate">
+                                Event Date
+                                <span>*</span>
+                            </label>
+
+                            <input
+                                type="date"
+                                id="eventDate"
+                                name="eventDate"
+                                required
+                            >
+
+                            <small
+                                class="field-error"
+                                id="eventDateError"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="returnDate">
+                                Expected Return Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="returnDate"
+                                name="returnDate"
+                            >
+
+                            <small class="field-hint">
+                                अनुमानित वापसी की तारीख
+                            </small>
+
+                        </div>
+
+
+                        <div class="field-group field-full">
+
+                            <label for="customerAddress">
+                                Address
+                                <span>*</span>
+                            </label>
+
+                            <textarea
+                                id="customerAddress"
+                                name="customerAddress"
+                                rows="3"
+                                placeholder="पूरा पता लिखें"
+                                autocomplete="street-address"
+                                maxlength="300"
+                                required
+                            ></textarea>
+
+                            <small
+                                class="field-error"
+                                id="customerAddressError"
+                            ></small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- BARTAN -->
+                <div id="bartanServiceSection">
+
+                <div class="form-card">
+
+                    <div class="card-heading">
+
+                        <div class="heading-number">
+                            02
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Bartan Requirement
+                            </h3>
+
+                            <p>
+                                कितना बर्तन चाहिए बताएं
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="catalog-note">
+
+                        <span>
+                            ℹ
+                        </span>
+
+                        <p>
+                            नीचे अपनी आवश्यकता के अनुसार बर्तन की quantity चुनें।
+                            Final availability और rate हमारी टीम confirm करेगी।
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="bartanList"
+                        class="catalog-grid"
+                    >
+
+                        <div class="catalog-loading">
+
+                            <div class="loading-spinner"></div>
+
+                            <span>
+                                Loading bartan...
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="bartanEmpty"
+                        class="empty-state hidden"
+                    >
+
+                        <div class="empty-icon">
+                            🍽️
+                        </div>
+
+                        <h4>
+                            अभी बर्तन उपलब्ध नहीं हैं
+                        </h4>
+
+                        <p>
+                            कृपया बाद में दोबारा प्रयास करें।
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                </div>
+
+                <!-- DECORATION -->
+                <div id="decorationServiceSection">
+
+                <div class="form-card">
+
+                    <div class="card-heading">
+
+                        <div class="heading-number">
+                            03
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Decoration Requirement
+                            </h3>
+
+                            <p>
+                                सजावट की आवश्यकता बताएं
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <label class="switch-row">
+
+                        <span class="switch-content">
+
+                            <strong>
+                                मुझे Decoration भी चाहिए
+                            </strong>
+
+                            <small>
+                                अपने कार्यक्रम के लिए सजावट चुनें
+                            </small>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            id="decorationRequired"
+                        >
+
+                        <span class="switch-ui"></span>
+
+                    </label>
+
+
+                    <div
+                        id="decorationArea"
+                        class="decoration-area hidden"
+                    >
+
+                        <div
+                            id="decorationList"
+                            class="catalog-grid decoration-grid"
+                        >
+
+                            <div class="catalog-loading">
+
+                                <div class="loading-spinner"></div>
+
+                                <span>
+                                    Loading decoration...
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                </div>
+
+                <!-- SPECIAL REQUIREMENT -->
+
+                <div class="form-card">
+
+                    <div class="card-heading">
+
+                        <div class="heading-number">
+                            04
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Special Requirement
+                            </h3>
+
+                            <p>
+                                कोई अतिरिक्त जानकारी हो तो बताएं
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label for="specialRequirement">
+                            Message / Special Requirement
+                        </label>
+
+                        <textarea
+                            id="specialRequirement"
+                            rows="5"
+                            maxlength="1000"
+                            placeholder="जैसे कार्यक्रम का समय, delivery की जरूरत या कोई अन्य जानकारी..."
+                        ></textarea>
+
+
+                        <div class="character-count">
+
+                            <span id="characterCount">
+                                0
+                            </span>/1000
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SUBMIT -->
+
+                <div class="submit-card">
+
+                    <div class="submit-info">
+
+                        <div class="secure-icon">
+                            🔒
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Booking Enquiry
+                            </strong>
+
+                            <p>
+                                Submit करने के बाद हमारी टीम आपकी
+                                availability और final details confirm करेगी।
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        id="submitBooking"
+                        class="submit-btn"
+                    >
+
+                        <span class="submit-text">
+                            Submit Booking Enquiry
+                        </span>
+
+                        <span class="submit-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             SUCCESS
+        ================================================== -->
+
+        <section
+            id="successSection"
+            class="success-section hidden"
+        >
+
+            <div class="success-card">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <span class="success-label">
+                    BOOKING RECEIVED
+                </span>
+
+                <h2>
+                    आपकी Booking Enquiry भेज दी गई है!
+                </h2>
+
+                <p>
+                    हमारी टीम आपकी जानकारी check करके
+                    आपसे जल्द संपर्क करेगी।
+                </p>
+
+
+                <div class="booking-number-box">
+
+                    <span>
+                        Booking Number
+                    </span>
+
+                    <strong id="bookingNumber">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="success-actions">
+
+                    <a
+                        id="whatsappConfirm"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="success-whatsapp"
+                    >
+                        WhatsApp पर भेजें
+                    </a>
+
+
+                    <a
+                        href="./index.html"
+                        class="success-home"
+                    >
+                        Home पर जाएं
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <div class="footer-brand">
+
+                <strong>
+                    विजय बर्तन भंडार
+                </strong>
+
+                <span>
+                    बर्तन • सजावट • समारोह
+                </span>
+
+            </div>
+
+
+            <div class="footer-contact">
+
+                <a href="tel:+916201852300">
+                    6201852300
+                </a>
+
+                <span>
+                    •
+                </span>
+
+                <a href="tel:+916206815594">
+                    6206815594
+                </a>
+
+            </div>
+
+
+            <p>
+                नयागाँव शिरोमणि टोला, परबत्ता (खगड़िया)
+            </p>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- ==================================================
+         TOAST
+    ================================================== -->
+
+    <div
+        id="toast"
+        class="toast"
+        role="alert"
+        aria-live="polite"
+    >
+
+        <span id="toastIcon">
+            !
+        </span>
+
+        <span id="toastMessage"></span>
+
+    </div>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script
+        type="module"
+        src="./customer-booking.js"
+    ></script>
+
+</body>
+</html>
