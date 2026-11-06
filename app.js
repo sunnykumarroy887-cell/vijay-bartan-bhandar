@@ -516,6 +516,19 @@ function renderBartanItems(container) {
 /* ============================================================
    ITEM-SPECIFIC BARTAN ICONS — INLINE SVG, NO EXTERNAL DEPENDENCY
 ============================================================ */
+function getBartanPhotoMeta(itemName) {
+    const name = String(itemName || "").toLocaleLowerCase("hi");
+    const photos = [
+        { match: /टोपिया|topiya/, position: "0% 0%" },
+        { match: /नादी|nadi|नांदी/, position: "50% 0%" },
+        { match: /लोहिया|lohiya/, position: "100% 0%" },
+        { match: /कठौता|kathauta/, position: "0% 100%" },
+        { match: /झांझ|झांझ|jhanjh|jhanj/, position: "50% 100%" },
+        { match: /कलछुल|कलछू|kalchhu|kalchul|ladle/, position: "100% 100%" }
+    ];
+    return photos.find(photo => photo.match.test(name)) || null;
+}
+
 function getBartanIcon(itemName) {
     const name = String(itemName || "").toLocaleLowerCase("hi");
     const icons = [
@@ -615,12 +628,21 @@ function createBartanCard(item) {
     // CARD HTML
     // ========================================================
 
-    card.innerHTML = `
-        <div class="bartan-card-icon">
-
-            ${getBartanIcon(itemName)}
-
+    const photoMeta = getBartanPhotoMeta(itemName);
+    const photoMarkup = photoMeta ? `
+        <div class="bartan-card-photo"
+             role="img"
+             aria-label="${escapeHTML(itemName)} की फोटो"
+             style="--bartan-photo-position:${photoMeta.position}">
+            <span class="bartan-photo-logo">${getBartanIcon(itemName)}</span>
+            <span class="bartan-photo-caption">भोज के बर्तन</span>
         </div>
+    ` : `
+        <div class="bartan-card-icon">${getBartanIcon(itemName)}</div>
+    `;
+
+    card.innerHTML = `
+        ${photoMarkup}
 
         <div class="bartan-card-content">
 

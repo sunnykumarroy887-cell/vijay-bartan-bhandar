@@ -3796,3 +3796,83 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
 .selected-item-icon{display:grid;place-items:center}
 .selected-item-icon .bartan-item-svg{width:22px;height:22px;color:#fff}
 @media(max-width:800px){.bartan-card-icon{width:38px;height:38px;flex-basis:38px}.bartan-card-icon .bartan-item-svg{width:24px;height:24px}}
+
+
+/* ============================================================
+   VERIFIED BHOJ UTENSIL PHOTO + MATCHING SVG BADGE
+   Photos are shown only for the six utensils visible in the
+   customer-provided reference image. Other items keep their icon.
+============================================================ */
+.bartan-card {
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(188, 151, 65, .28);
+  border-radius: 19px;
+  background: linear-gradient(160deg,#fffef9 0%,#f5f1e4 100%);
+  box-shadow: 0 12px 28px rgba(23,63,43,.09);
+}
+.bartan-card:hover { transform: translateY(-5px); box-shadow: 0 18px 34px rgba(23,63,43,.15); }
+.bartan-card-photo {
+  position: relative;
+  min-height: 172px;
+  aspect-ratio: 4 / 3;
+  background-image: url("/assets/bartan-photo-sprite.webp");
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: var(--bartan-photo-position, 50% 50%);
+  background-color: #eee9d9;
+  border-bottom: 1px solid rgba(188,151,65,.24);
+}
+.bartan-card-photo::after {
+  content: "";
+  position: absolute;
+  inset: 48% 0 0;
+  background: linear-gradient(180deg,transparent,rgba(15,43,29,.20));
+  pointer-events: none;
+}
+.bartan-photo-logo {
+  position: absolute;
+  z-index: 1;
+  top: 11px;
+  right: 11px;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border: 2px solid #e4c36d;
+  border-radius: 50%;
+  color: #f6e6b4;
+  background: linear-gradient(145deg,#0b3d28,#1b6844);
+  box-shadow: 0 4px 13px rgba(0,0,0,.2);
+}
+.bartan-photo-logo .bartan-item-svg { width: 25px; height: 25px; }
+.bartan-photo-caption {
+  position: absolute;
+  z-index: 1;
+  left: 11px;
+  bottom: 10px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 30px;
+  color: #fff;
+  background: rgba(16,54,36,.78);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .35px;
+}
+.bartan-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  width: 100%;
+  padding: 15px 16px 16px;
+}
+.bartan-card-content .bartan-select-btn { width: 100%; min-height: 42px; font-size: 12px; border-radius: 12px; }
+.bartan-card-content .bartan-category { font-size: 9px; }
+.bartan-card-content h3 { font-size: clamp(15px,1.35vw,18px); }
+@media (max-width: 640px) {
+  .bartan-card-photo { min-height: 145px; }
+  .bartan-card-content { padding: 12px; }
+  .bartan-photo-logo { width: 39px; height: 39px; }
+}
