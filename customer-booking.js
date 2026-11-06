@@ -1739,6 +1739,16 @@ async function handleSubmit(event) {
     try {
 
         const combinedEventRows = getCombinedDecorationEventPayloads();
+        // Check authentication before creating the parent booking. Previously this
+        // check ran after the RPC, which could leave an incomplete booking behind.
+        let decorationUser = null;
+        if (selectedServiceType !== "bartan") {
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            if (authError || !authData?.user) {
+                throw new Error("Decoration booking ke liye pehle customer account mein login karein.");
+            }
+            decorationUser = authData.user;
+        }
         if (selectedServiceType !== "bartan") {
             if (!combinedEventRows.length || combinedEventRows.some(e => !e.event_name || !e.event_date || !e.venue_address || !e.decoration_details)) {
                 throw new Error("Har Decoration event ka type, date, venue aur requirements bharein.");
@@ -1920,13 +1930,9 @@ async function handleSubmit(event) {
 
 
         if (selectedServiceType !== "bartan" && combinedEventRows.length) {
-            const { data: authData, error: authError } = await supabase.auth.getUser();
-            if (authError || !authData?.user) {
-                throw new Error("Decoration events aur photos save karne ke liye pehle customer account mein login karein.");
-            }
             const createdBookingId = booking.id || booking.booking_id;
             if (!createdBookingId) throw new Error("Booking ID nahi mili; event details save nahi ho sake.");
-            await saveCombinedDecorationEvents(createdBookingId, authData.user.id, combinedEventRows);
+            await saveCombinedDecorationEvents(createdBookingId, decorationUser.id, combinedEventRows);
         }
 
         showSuccess(
