@@ -978,87 +978,45 @@ async function loadBookingItems(
 // LOAD DECORATIONS
 // ======================================================
 
-async function loadBookingDecorations(
-    bookingId
-) {
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("booking_decorations")
-        .select(`
-            id,
-            decoration_id,
-            decoration_name,
-            locked_rate,
-            amount
-        `)
-        .eq(
-            "booking_id",
-            bookingId
-        )
-        .order("id");
-
-
-    if (error) {
-
-        console.error(
-            "Decoration error:",
-            error
-        );
-
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                Decoration information unavailable.
-            </div>
-        `;
-
+async function loadBookingDecorations(bookingId) {
+    const box = $("decorationDetails");
+    box.innerHTML = '<div class="notes-box">Loading decoration details…</div>';
+    const [eventsResult, legacyResult] = await Promise.all([
+        supabase.from("booking_events")
+            .select("id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls,quoted_amount,delivery_charge,discount,status")
+            .eq("booking_id", bookingId).order("event_date", { ascending: true }),
+        supabase.from("booking_decorations")
+            .select("id,decoration_id,decoration_name,locked_rate,amount")
+            .eq("booking_id", bookingId).order("id")
+    ]);
+    if (eventsResult.error) console.warn("Booking events load:", eventsResult.error);
+    if (legacyResult.error) console.warn("Legacy decorations load:", legacyResult.error);
+    const events = Array.isArray(eventsResult.data) ? eventsResult.data : [];
+    const legacy = Array.isArray(legacyResult.data) ? legacyResult.data : [];
+    if (!events.length && !legacy.length) {
+        box.innerHTML = '<div class="notes-box">No decoration event details were saved for this booking.</div>';
         return;
     }
-
-
-    if (!data?.length) {
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                No decoration selected.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    $("decorationDetails").innerHTML =
-        data.map(
-            item => {
-
-                return `
-                    <div class="item-row">
-
-                        <div>
-
-                            <div class="item-name">
-                                ${escapeHtml(
-                                    item.decoration_name
-                                )}
-                            </div>
-
-                        </div>
-
-                        <div>
-                            Selected
-                        </div>
-
-                    </div>
-                `;
-
-            }
-        )
-        .join("");
-
+    const eventHtml = events.map(ev => {
+        const images = Array.isArray(ev.reference_image_urls) ? ev.reference_image_urls.filter(Boolean) : [];
+        const imageHtml = images.length ? '<div class="event-reference-images">' + images.map((url,i) =>
+            '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer"><img src="' + escapeHtml(url) + '" alt="Decoration reference ' + (i+1) + '" loading="lazy" style="width:92px;height:82px;object-fit:cover;border-radius:8px"></a>'
+        ).join("") + '</div>' : "";
+        const quote = ev.quoted_amount == null ? "Quotation not sent" :
+            'Quotation: ₹' + formatMoney(ev.quoted_amount) +
+            ' · Delivery: ₹' + formatMoney(ev.delivery_charge) +
+            ' · Discount: ₹' + formatMoney(ev.discount) +
+            ' · Status: ' + escapeHtml(ev.status || "pending");
+        return '<article class="item-row" style="display:block;margin-bottom:10px"><div class="item-name">' + escapeHtml(ev.event_name || ev.design_name || "Decoration event") + '</div>' +
+            '<div class="item-meta">Date: ' + escapeHtml(ev.event_date || "—") + ' · Time: ' + escapeHtml(ev.event_time || "—") + '</div>' +
+            '<div class="item-meta">Venue: ' + escapeHtml(ev.venue_address || "—") + '</div>' +
+            '<div class="item-meta">Design: ' + escapeHtml(ev.design_name || "—") + '</div>' +
+            '<div style="white-space:pre-wrap;margin-top:6px">' + escapeHtml(ev.decoration_details || "No extra requirements") + '</div>' +
+            '<div class="item-meta" style="margin-top:7px">' + quote + '</div>' + imageHtml + '</article>';
+    }).join("");
+    const legacyHtml = legacy.map(x => '<div class="item-row"><div class="item-name">' + escapeHtml(x.decoration_name || "Decoration") +
+        '</div><div>Rate: ₹' + formatMoney(x.locked_rate) + ' · Amount: ₹' + formatMoney(x.amount) + '</div></div>').join("");
+    box.innerHTML = eventHtml + legacyHtml;
 }
 
 
@@ -2136,8 +2094,10 @@ async function loadDecorationEvents() {
         if(error)throw error;
         const {data:bookingRows,error:bookingError}=await supabase.rpc("admin_get_bookings");
         if(bookingError)throw bookingError;
-        const decorationBookingIds=new Set((Array.isArray(bookingRows)?bookingRows:[]).filter(b=>["decoration","both"].includes(String(b.booking_type||"").toLowerCase()) || (b.decoration_required===true && Number(b.decoration_charge||0)>0)).map(b=>String(b.id)));
-        decorationEvents=(Array.isArray(data)?data:[]).filter(ev=>decorationBookingIds.has(String(ev.booking_id)));
+        const visibleBookingIds=new Set((Array.isArray(bookingRows)?bookingRows:[]).map(b=>String(b.id)));
+        // New event-wise bookings may not yet carry legacy booking_type/decoration_required flags.
+        // Presence of a booking_events row is authoritative for the decoration calendar.
+        decorationEvents=(Array.isArray(data)?data:[]).filter(ev=>visibleBookingIds.has(String(ev.booking_id)));
         if(!selectedCalendarDate)selectedCalendarDate=localDateKey(new Date());
         renderDecorationCalendar();renderDecorationEventList();
     } catch(error) {
