@@ -125,20 +125,31 @@ function initializeCustomerSessionMenu() {
 
     const renderSignedIn = (user) => {
         const metadata = user?.user_metadata || {};
-        const name = (metadata.full_name || metadata.name || "").trim();
-        const label = name ? `👤 ${escapeMenuText(name)}` : "👤 My Account";
+        const name = (metadata.full_name || metadata.name || "My Account").trim();
+        const initial = (name.charAt(0) || "V").toUpperCase();
+        const safeName = escapeMenuText(name);
         host.innerHTML = `
+            <div class="customer-menu-profile-head">
+                <span class="customer-menu-avatar">${initial}</span>
+                <span class="customer-menu-identity">
+                    <strong>${safeName}</strong>
+                    <small>Welcome to your account</small>
+                </span>
+                <span class="customer-menu-verified" aria-label="Signed in">✓</span>
+            </div>
             <button class="customer-menu-trigger" type="button"
                 aria-expanded="false" aria-haspopup="true">
-                ${label} <span aria-hidden="true">▾</span>
+                <span>My Account & Services</span><span aria-hidden="true">⌄</span>
             </button>
             <div class="customer-menu-dropdown" role="menu">
-                <div class="customer-menu-greeting">Signed in${name ? ` as ${escapeMenuText(name)}` : ""}</div>
-                <a role="menuitem" href="./customer-profile.html">👤 My Account</a>
-                <a role="menuitem" href="./customer-tracking.html">📋 My Bookings</a>
-                <a role="menuitem" href="./customer-tracking.html">📍 Track Booking</a>
-                <a role="menuitem" href="./customer-profile.html#details">🧾 My Details</a>
-                <button role="menuitem" type="button" data-customer-logout>🚪 Logout</button>
+                <div class="customer-menu-group-label">YOUR ACCOUNT</div>
+                <a role="menuitem" href="./customer-profile.html"><span class="menu-item-icon">♙</span><span><strong>My Profile</strong><small>Personal details and account</small></span><b>›</b></a>
+                <a role="menuitem" href="./customer-profile.html#bookingHistory"><span class="menu-item-icon">▤</span><span><strong>My Bookings</strong><small>History, invoices and payments</small></span><b>›</b></a>
+                <a role="menuitem" href="./customer-tracking.html"><span class="menu-item-icon">⌕</span><span><strong>Track Booking</strong><small>Check your booking status</small></span><b>›</b></a>
+                <a role="menuitem" href="./booking-options.html"><span class="menu-item-icon">＋</span><span><strong>New Booking</strong><small>Bartan, decoration or both</small></span><b>›</b></a>
+                <div class="customer-menu-group-label customer-menu-help-label">ACCOUNT SETTINGS</div>
+                <a role="menuitem" href="./customer-profile.html#details"><span class="menu-item-icon">⚙</span><span><strong>My Details</strong><small>View saved information</small></span><b>›</b></a>
+                <button role="menuitem" type="button" data-customer-logout><span class="menu-item-icon">↪</span><span><strong>Logout</strong><small>Sign out securely</small></span><b>›</b></button>
             </div>`;
 
         const trigger = host.querySelector(".customer-menu-trigger");
@@ -159,7 +170,7 @@ function initializeCustomerSessionMenu() {
                 console.error("Customer logout failed:", error);
                 if (button) {
                     button.disabled = false;
-                    button.textContent = "Logout failed — try again";
+                    button.querySelector("strong").textContent = "Logout failed — try again";
                 }
             }
         });
