@@ -2732,3 +2732,19 @@ button {
 .service-choice-hint{margin:18px 0 0;padding:12px 14px;border-radius:12px;background:#edf5ee;color:#315b43;font-size:.92rem;line-height:1.5}
 #bartanServiceSection[hidden],#decorationServiceSection[hidden]{display:none!important}
 @media(max-width:720px){.service-choice-grid{grid-template-columns:1fr;gap:10px}.service-choice-card{display:grid;grid-template-columns:52px 1fr;align-items:center;column-gap:12px;padding:14px}.service-choice-icon{grid-row:span 3}.service-choice-card strong,.service-choice-card>span:not(.service-choice-icon),.service-choice-card em{grid-column:2}.service-choice-card em{padding-top:0}}
+
+/* ===== CUSTOMER BOOKING FORM PREMIUM VISUAL PASS ===== */
+body{background:linear-gradient(135deg,rgba(8,42,29,.72),rgba(19,75,49,.55)),url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1900&q=85') center/cover fixed!important}
+.site-header{position:sticky;top:0;z-index:30;background:rgba(255,253,246,.97)!important;border-bottom:1px solid rgba(198,160,78,.55)!important;box-shadow:0 8px 24px rgba(0,0,0,.13);backdrop-filter:blur(14px)}
+.brand-text strong{color:#174a34!important}.brand-top{color:#98752f!important}
+.booking-page{max-width:1120px!important}
+.booking-hero{overflow:hidden;border:1px solid rgba(255,255,255,.2)!important;border-radius:26px!important;background:linear-gradient(110deg,rgba(9,48,31,.96),rgba(24,99,63,.82)),url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1400&q=85') center/cover!important;box-shadow:0 24px 55px rgba(0,0,0,.22)!important}
+.booking-hero h1,.booking-hero p,.booking-hero .hero-badge{color:#fff!important}
+.booking-hero h1 span{color:#f3d68b!important}
+.tracking-card,.service-choice-card,.form-card,.booking-section,.booking-panel{border:1px solid rgba(202,168,91,.32)!important;border-radius:20px!important;box-shadow:0 13px 32px rgba(20,63,42,.09)!important}
+.tracking-card,.service-choice-card,.form-card,.booking-section,.booking-panel{background:linear-gradient(145deg,#fffefa,#f6f3e8)!important}
+.service-choice-card.selected{border:2px solid #b9974c!important;background:linear-gradient(145deg,#f5f7e9,#eaf3e8)!important;box-shadow:0 0 0 4px rgba(201,164,91,.13)!important}
+input,select,textarea{border-radius:12px!important}
+input:focus,select:focus,textarea:focus{border-color:#b9974c!important;box-shadow:0 0 0 4px rgba(201,164,91,.13)!important}
+button[type=submit],.primary-btn,.booking-submit,.tracking-btn{border-radius:13px!important;background:linear-gradient(135deg,#124a32,#26764f)!important;box-shadow:0 9px 20px rgba(18,74,50,.18)!important}
+@media(max-width:720px){body{background-attachment:scroll!important}.booking-hero{border-radius:20px!important}}

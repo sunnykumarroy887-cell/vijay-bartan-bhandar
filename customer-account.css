@@ -547,3 +547,17 @@ a {
         padding: 27px 18px;
     }
 }
+/* ===== CUSTOMER SIGN-IN PREMIUM VISUAL PASS ===== */
+body{background:linear-gradient(135deg,rgba(8,39,27,.78),rgba(17,75,49,.62)),url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1800&q=85') center/cover fixed!important}
+.site-header{position:sticky;top:0;z-index:20;background:rgba(255,253,246,.96)!important;border-bottom:1px solid rgba(198,160,78,.55);box-shadow:0 8px 26px rgba(0,0,0,.12);backdrop-filter:blur(14px)}
+.page-container{width:min(1080px,calc(100% - 36px))!important;gap:24px!important;align-items:stretch}
+.welcome-panel{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.22);border-radius:28px!important;background:linear-gradient(145deg,rgba(10,54,35,.96),rgba(25,99,63,.83)),url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1300&q=80') center/cover!important;box-shadow:0 25px 65px rgba(0,0,0,.24)}
+.welcome-panel:after{content:"✦  ✿  ✦";position:absolute;right:22px;bottom:20px;color:rgba(245,215,145,.45);font-size:34px;letter-spacing:12px}
+.welcome-content,.welcome-panel h1,.welcome-panel p,.welcome-panel .eyebrow,.benefit{color:#fff!important;position:relative;z-index:1}
+.welcome-panel h1 span{color:#f2d68d!important}
+.benefit-icon{background:linear-gradient(145deg,#f4d98d,#c99c42)!important;color:#173e32!important;box-shadow:0 5px 14px rgba(0,0,0,.16)}
+.account-panel{border:1px solid rgba(207,177,106,.38)!important;border-radius:28px!important;background:linear-gradient(145deg,rgba(255,255,251,.99),rgba(248,245,234,.98))!important;box-shadow:0 25px 65px rgba(0,0,0,.22)!important}
+.account-tab.active,.submit-button{background:linear-gradient(135deg,#124a32,#26764f)!important;box-shadow:0 9px 20px rgba(18,74,50,.2)}
+.form-field input{border-radius:13px!important;background:#fffefa!important;border-color:#d9dfd2!important;min-height:48px}
+.form-field input:focus{border-color:#b9974c!important;box-shadow:0 0 0 4px rgba(201,164,91,.15)!important}
+@media(max-width:800px){body{background-attachment:scroll!important}.page-container{width:min(620px,calc(100% - 24px))!important;gap:14px!important}.welcome-panel,.account-panel{border-radius:21px!important}}

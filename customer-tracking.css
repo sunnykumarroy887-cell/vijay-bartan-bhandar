@@ -833,3 +833,20 @@ body {
     }
 
 }
+/* ===== BOOKING TRACKING PREMIUM VISUAL PASS ===== */
+body{font-family:"DM Sans",Arial,sans-serif!important;background:linear-gradient(135deg,rgba(8,42,29,.79),rgba(18,73,49,.63)),url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1900&q=85') center/cover fixed!important;color:#20372c!important}
+.tracking-header{position:sticky;top:0;z-index:30;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:16px;padding:15px max(22px,calc((100% - 1120px)/2))!important;background:rgba(255,253,246,.97)!important;border-bottom:1px solid rgba(198,160,78,.55);box-shadow:0 8px 26px rgba(0,0,0,.13);backdrop-filter:blur(15px)}
+.brand h1{color:#174a34!important}.brand p{color:#68796e!important}.brand .ganesh{color:#98752f!important}
+.back-btn{border:1px solid rgba(255,255,255,.2)!important;border-radius:13px!important;background:linear-gradient(135deg,#124a32,#26764f)!important;box-shadow:0 8px 18px rgba(18,74,50,.2)}
+.tracking-container{max-width:980px!important;margin:38px auto!important}
+.search-card,.timeline-card,.details-card,.booking-result{border:1px solid rgba(208,180,111,.35)!important;border-radius:23px!important;background:linear-gradient(145deg,rgba(255,255,251,.98),rgba(248,245,234,.97))!important;box-shadow:0 20px 48px rgba(0,0,0,.16)!important}
+.search-card{padding:clamp(22px,4vw,38px)!important}
+.card-heading h2{color:#174a34!important;font-size:clamp(23px,4vw,30px)!important}
+.heading-icon{background:linear-gradient(145deg,#fff1c8,#f2dfaa)!important;border-radius:15px!important}
+.form-group input{min-height:50px!important;border:1px solid #d8dfd3!important;border-radius:13px!important;background:#fffefa!important}
+.form-group input:focus{border-color:#b9974c!important;box-shadow:0 0 0 4px rgba(201,164,91,.14)!important}
+.track-btn{min-height:50px!important;border-radius:13px!important;background:linear-gradient(135deg,#124a32,#26764f)!important;box-shadow:0 9px 20px rgba(18,74,50,.2)}
+.result-header{border-radius:17px!important;background:linear-gradient(120deg,#103d2a,#1e6846)!important}
+.timeline-item.active .timeline-dot{background:#c9a45b!important}
+.tracking-footer{color:#fff!important}
+@media(max-width:650px){body{background-attachment:scroll!important}.tracking-header{align-items:center!important;flex-direction:row!important;padding:12px 16px!important}.brand h1{font-size:19px!important}.brand p{font-size:11px}.back-btn{width:auto!important;padding:10px 12px!important}.tracking-container{width:calc(100% - 24px)!important;margin:20px auto!important}.search-card,.timeline-card,.details-card{padding:19px!important}}

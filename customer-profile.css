@@ -949,3 +949,26 @@ body {
 @keyframes historyReveal { from { opacity:0;transform:translateY(12px); } to { opacity:1;transform:translateY(0); } }
 @media(max-width:700px) { .quick-card,.quick-card.new-booking-card { min-height:136px; } }
 @media(prefers-reduced-motion:reduce) { .booking-history-card.history-revealed { animation:none; } }
+
+/* ===== CUSTOMER EXPERIENCE PREMIUM VISUAL PASS ===== */
+:root{--ink:#173b2c;--green:#15583b;--gold:#c6a04e;--cream:#f8f5eb}
+body{background:linear-gradient(135deg,rgba(9,43,29,.82),rgba(18,67,46,.68)),url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=2000&q=85') center/cover fixed!important;color:#20372c}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(255,253,246,.96)!important;border-bottom:1px solid rgba(199,164,83,.55)!important;box-shadow:0 8px 28px rgba(5,36,23,.13);backdrop-filter:blur(16px)}
+.shell{max-width:1120px!important}
+.hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.2);border-radius:28px!important;background:linear-gradient(110deg,rgba(9,48,31,.96),rgba(22,92,59,.84)),url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1400&q=80') center/cover!important;box-shadow:0 24px 65px rgba(0,0,0,.2)!important}
+.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 90% 15%,rgba(226,193,112,.28),transparent 28%);pointer-events:none}
+.hero h1,.hero p,.hero .eyebrow{color:#fff!important}.hero h1 em{color:#f4d98c!important}
+.hero-art{filter:drop-shadow(0 15px 22px rgba(0,0,0,.22))}
+.welcome-card,.details-card,.profile-photo-card,.quick-card{border:1px solid rgba(207,181,119,.3)!important;border-radius:21px!important;box-shadow:0 14px 35px rgba(11,50,32,.1)!important}
+.welcome-card,.details-card,.profile-photo-card{background:linear-gradient(145deg,rgba(255,255,251,.98),rgba(248,245,234,.96))!important}
+.quick-grid{gap:16px!important}
+.quick-card{position:relative;overflow:hidden;min-height:136px!important;background:linear-gradient(145deg,#fffef9,#f2f4e9)!important;transition:transform .22s,box-shadow .22s!important}
+.quick-card:after{content:"";position:absolute;width:120px;height:120px;right:-45px;top:-55px;border-radius:50%;background:radial-gradient(circle,rgba(207,174,95,.19),transparent 70%);pointer-events:none}
+.quick-card:hover{transform:translateY(-5px)!important;box-shadow:0 20px 38px rgba(11,50,32,.16)!important}
+.quick-card.new-booking-card{background:linear-gradient(125deg,#0c3927,#176344 65%,#2a7952)!important}
+.quick-card.account-manage-card{background:linear-gradient(145deg,#fff9e9,#f5edda)!important}
+.quick-card.feedback-card{background:linear-gradient(145deg,#f0f8ef,#fff)!important}
+.booking-history-card{background:linear-gradient(145deg,#fffef9,#f5f1e5)!important}
+.booking-history-item{border:1px solid #e8dfc7!important;border-radius:17px!important;background:#fff!important;box-shadow:0 7px 20px rgba(18,62,41,.06)}
+.button-primary,.history-track-link{background:linear-gradient(135deg,#15583b,#26764f)!important;box-shadow:0 8px 18px rgba(21,88,59,.2)}
+@media(max-width:700px){body{background-attachment:scroll!important}.hero{border-radius:21px!important}.quick-grid{gap:11px!important}.quick-card{min-height:126px!important}}
