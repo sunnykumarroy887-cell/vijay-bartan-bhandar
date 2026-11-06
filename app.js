@@ -60,60 +60,52 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================
 
 function initializeMobileMenu() {
+    const menuButton = document.getElementById("menuBtn");
+    const nav = document.getElementById("mainNavigation");
+    const header = document.querySelector(".header");
 
-    const menuButton =
-        document.querySelector(".menu-btn");
+    if (!menuButton || !nav) return;
 
-    /*
-     * Current index.html uses:
-     * .navbar
-     *
-     * Earlier code was looking for .main-nav,
-     * which does not exist in index.html.
-     */
+    const closeMenu = () => {
+        nav.classList.remove("active");
+        menuButton.setAttribute("aria-expanded", "false");
+        menuButton.setAttribute("aria-label", "Open Menu");
+        menuButton.textContent = "☰";
+    };
 
-    const nav =
-        document.querySelector(".navbar");
+    const openMenu = () => {
+        nav.classList.add("active");
+        menuButton.setAttribute("aria-expanded", "true");
+        menuButton.setAttribute("aria-label", "Close Menu");
+        menuButton.textContent = "✕";
+    };
 
-    if (!menuButton || !nav) {
-        return;
-    }
-
-    menuButton.addEventListener("click", () => {
-
-        nav.classList.toggle("active");
-
-        const isOpen =
-            nav.classList.contains("active");
-
-        menuButton.setAttribute(
-            "aria-expanded",
-            isOpen ? "true" : "false"
-        );
-
+    // One click handler only: avoids opening and immediately closing the menu.
+    menuButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        nav.classList.contains("active") ? closeMenu() : openMenu();
     });
 
-
-    const navLinks =
-        nav.querySelectorAll("a");
-
-    navLinks.forEach(link => {
-
-        link.addEventListener("click", () => {
-
-            nav.classList.remove("active");
-
-            menuButton.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-        });
-
+    nav.addEventListener("click", (event) => {
+        if (event.target.closest("a")) closeMenu();
     });
 
+    document.addEventListener("click", (event) => {
+        if (header && !header.contains(event.target)) closeMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeMenu();
+    });
+
+    // Compact the sticky title bar as the visitor scrolls.
+    const updateHeader = () => {
+        if (header) header.classList.toggle("is-scrolled", window.scrollY > 24);
+    };
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
 }
-
 
 // ============================================================
 // CUSTOMER SESSION MENU (SUPABASE AUTH)
