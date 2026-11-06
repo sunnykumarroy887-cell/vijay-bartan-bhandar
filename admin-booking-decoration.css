@@ -650,3 +650,11 @@ td {
     white-space: normal;
     line-height: 1.4;
 }
+
+
+/* Persistent selected state for booking category navigation */
+.booking-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.booking-nav-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;border:1px solid #d1d5db;text-decoration:none;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.booking-nav-link[aria-current="page"],.booking-nav-link[aria-current="page"]:hover,.booking-nav-link[aria-current="page"]:focus-visible{background:#176344!important;color:#fff!important;border:1px solid #176344!important;box-shadow:0 3px 10px rgba(23,99,68,.20)}
+.booking-nav-link:focus-visible{outline:3px solid rgba(23,99,68,.25);outline-offset:2px}
+@media(max-width:560px){.booking-nav-link{flex:1 1 calc(50% - 6px);text-align:center}}
