@@ -964,89 +964,51 @@ async function loadBookingItems(
 // LOAD DECORATIONS
 // ======================================================
 
-async function loadBookingDecorations(
-    bookingId
-) {
+async function loadBookingDecorations(bookingId) {
+    const container = $("decorationDetails");
+    container.innerHTML = '<div class="notes-box">Loading decoration details…</div>';
 
-    const {
-        data,
-        error
-    } = await supabase
-        .from("booking_decorations")
-        .select(`
-            id,
-            decoration_id,
-            decoration_name,
-            locked_rate,
-            amount
-        `)
-        .eq(
-            "booking_id",
-            bookingId
-        )
-        .order("id");
-
-
-    if (error) {
-
-        console.error(
-            "Decoration error:",
-            error
-        );
-
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                Decoration information unavailable.
-            </div>
-        `;
-
+    // New multi-event bookings are stored in booking_events; retain legacy rows too.
+    const [eventResult, legacyResult] = await Promise.all([
+        supabase.from("booking_events")
+            .select("id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls")
+            .eq("booking_id", bookingId)
+            .order("event_date", { ascending: true }),
+        supabase.from("booking_decorations")
+            .select("id,decoration_id,decoration_name,locked_rate,amount")
+            .eq("booking_id", bookingId)
+            .order("id")
+    ]);
+    if (eventResult.error) console.warn("Booking events load:", eventResult.error);
+    if (legacyResult.error) console.warn("Legacy decoration load:", legacyResult.error);
+    const events = Array.isArray(eventResult.data) ? eventResult.data : [];
+    const legacy = Array.isArray(legacyResult.data) ? legacyResult.data : [];
+    if (!events.length && !legacy.length) {
+        container.innerHTML = '<div class="notes-box">No decoration event details were saved for this booking.</div>';
         return;
     }
-
-
-    if (!data?.length) {
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                No decoration selected.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    $("decorationDetails").innerHTML =
-        data.map(
-            item => {
-
-                return `
-                    <div class="item-row">
-
-                        <div>
-
-                            <div class="item-name">
-                                ${escapeHtml(
-                                    item.decoration_name
-                                )}
-                            </div>
-
-                        </div>
-
-                        <div>
-                            Selected
-                        </div>
-
-                    </div>
-                `;
-
-            }
-        )
-        .join("");
-
+    const eventHtml = events.map(event => {
+        const images = Array.isArray(event.reference_image_urls) ? event.reference_image_urls.filter(Boolean) : [];
+        const imageHtml = images.length
+            ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">' + images.map((url, i) =>
+                '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer"><img src="' + escapeHtml(url) +
+                '" alt="Decoration reference ' + (i + 1) + '" loading="lazy" style="width:100px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #d1d5db"></a>'
+              ).join("") + '</div>' : "";
+        return '<article class="item-row" style="display:block;margin-bottom:10px"><div class="item-name">' +
+            escapeHtml(event.event_name || event.design_name || "Decoration event") + '</div>' +
+            '<div class="item-meta" style="margin-top:6px">Date: ' + escapeHtml(event.event_date || "—") +
+            ' · Time: ' + escapeHtml(event.event_time || "—") + '</div>' +
+            '<div class="item-meta" style="margin-top:4px">Venue: ' + escapeHtml(event.venue_address || "—") + '</div>' +
+            '<div class="item-meta" style="margin-top:4px">Design: ' + escapeHtml(event.design_name || "—") + '</div>' +
+            '<div style="margin-top:8px;white-space:pre-wrap">' + escapeHtml(event.decoration_details || "No extra decoration details") + '</div>' +
+            imageHtml + '</article>';
+    }).join("");
+    const legacyHtml = legacy.map(item =>
+        '<div class="item-row"><div><div class="item-name">' + escapeHtml(item.decoration_name || "Decoration") +
+        '</div></div><div>Selected</div></div>'
+    ).join("");
+    container.innerHTML = eventHtml + legacyHtml;
 }
-
 
 // ======================================================
 // RETURN ITEMS
