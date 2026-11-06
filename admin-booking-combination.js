@@ -971,7 +971,7 @@ async function loadBookingDecorations(bookingId) {
     // New multi-event bookings are stored in booking_events; retain legacy rows too.
     const [eventResult, legacyResult] = await Promise.all([
         supabase.from("booking_events")
-            .select("id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls")
+            .select("id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls,quoted_amount,delivery_charge,discount,status")
             .eq("booking_id", bookingId)
             .order("event_date", { ascending: true }),
         supabase.from("booking_decorations")
@@ -1001,6 +1001,7 @@ async function loadBookingDecorations(bookingId) {
             '<div class="item-meta" style="margin-top:4px">Venue: ' + escapeHtml(event.venue_address || "—") + '</div>' +
             '<div class="item-meta" style="margin-top:4px">Design: ' + escapeHtml(event.design_name || "—") + '</div>' +
             '<div style="margin-top:8px;white-space:pre-wrap">' + escapeHtml(event.decoration_details || "No extra decoration details") + '</div>' +
+            '<div class="item-meta" style="margin-top:7px">' + (event.quoted_amount == null ? 'Quotation not sent' : 'Quotation: ₹' + formatMoney(event.quoted_amount) + ' · Delivery: ₹' + formatMoney(event.delivery_charge) + ' · Discount: ₹' + formatMoney(event.discount) + ' · Status: ' + escapeHtml(event.status || 'pending')) + '</div>' +
             imageHtml + '</article>';
     }).join("");
     const legacyHtml = legacy.map(item =>
