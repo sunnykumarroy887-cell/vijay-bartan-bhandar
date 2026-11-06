@@ -684,3 +684,64 @@ footer {
 .profile-photo-copy input{max-width:100%;padding:10px;border:1px solid #d8dfd5;border-radius:10px}
 .profile-photo-copy button{justify-self:start}
 .avatar.has-profile-photo{background-size:cover!important;background-position:center!important;color:transparent!important}
+
+
+/* =========================================================
+   CUSTOMER PROFILE — premium app-style account dashboard
+========================================================= */
+:root {
+  --ink:#20372b; --green:#174b32; --green-light:#edf5ec;
+  --cream:#f5f6f1; --gold:#c39a38; --line:#e6eae1;
+}
+.topbar {
+  position:sticky; top:0; z-index:50; min-height:70px;
+  padding:12px clamp(16px,4vw,54px);
+  background:rgba(255,255,255,.94); backdrop-filter:blur(16px);
+  box-shadow:0 5px 24px rgba(26,55,38,.08);
+}
+.brand-mark { overflow:hidden; background:#f4f7ed; }
+.brand-mark img { width:44px; height:44px; object-fit:contain; }
+.shell { width:min(1080px,calc(100% - 28px)); margin:22px auto 42px; }
+.hero {
+  min-height:210px; border-radius:24px;
+  background:radial-gradient(circle at 88% 15%,rgba(231,205,132,.28),transparent 28%),linear-gradient(120deg,#123b29,#236344 72%,#36734d);
+}
+.welcome-card {
+  position:relative; margin-top:16px; padding:22px;
+  border-radius:22px; border:1px solid #e6e9de;
+  background:linear-gradient(115deg,#fff,#f9fbf6);
+}
+.avatar {
+  width:72px; height:72px; flex-basis:72px; border:3px solid #fff;
+  box-shadow:0 0 0 2px #dfd2a9,0 8px 20px rgba(26,68,43,.12);
+}
+.welcome-text h2 { color:#183f2c; }
+.profile-photo-card { margin:14px 0; border-radius:18px; box-shadow:0 8px 24px rgba(28,59,40,.045); }
+.quick-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+.quick-card {
+  min-height:100px; padding:15px; border-radius:17px;
+  box-shadow:0 6px 20px rgba(28,59,40,.045);
+}
+.quick-card strong { font-size:14px; }
+.quick-card small { line-height:1.4; }
+.details-card { border-radius:20px; }
+.booking-history-card { border-top:3px solid #c7a04b; }
+@media(max-width:700px) {
+  .shell { width:calc(100% - 22px); margin-top:14px; }
+  .hero { min-height:190px; border-radius:20px; }
+  .welcome-card { gap:13px; padding:17px; }
+  .welcome-card .button { margin-left:0; }
+  .quick-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+  .quick-card { min-height:112px; align-items:flex-start; flex-wrap:wrap; gap:8px; padding:12px; }
+  .quick-card span:nth-child(2) { flex-basis:calc(100% - 54px); }
+  .quick-card > b { margin-left:auto; }
+  .quick-icon { width:36px; height:36px; flex-basis:36px; font-size:20px; }
+  .quick-card small { font-size:10px; }
+  .profile-photo-card { padding:15px; }
+  .booking-history-amounts { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:380px) {
+  .quick-grid { grid-template-columns:1fr 1fr; }
+  .quick-card { min-height:120px; }
+  .booking-history-amounts { grid-template-columns:1fr; }
+}
