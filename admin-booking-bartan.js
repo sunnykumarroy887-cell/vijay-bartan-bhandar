@@ -386,12 +386,17 @@ async function loadBookings() {
 // ======================================================
 
 function updateSummary() {
-
-    const count = status =>
-        allBookings.filter(
-            booking =>
-                booking.status === status
-        ).length;
+    // Keep the Bartan dashboard counters limited to Bartan-only bookings.
+    const scopedBookings = allBookings.filter(booking => {
+        const stored = String(booking.booking_type || "").toLowerCase();
+        const hasBartan = Number(booking.bartan_count || 0) > 0 || Number(booking.bartan_total || 0) > 0;
+        const hasDecoration = Number(booking.decoration_count || 0) > 0 ||
+            booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0;
+        const inferred = hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan";
+        const actual = ["bartan", "decoration", "both"].includes(stored) ? stored : inferred;
+        return actual === "bartan";
+    });
+    const count = status => scopedBookings.filter(booking => booking.status === status).length;
 
 
     if ($("pendingCount")) {
