@@ -608,6 +608,19 @@ $("logoutButton")?.addEventListener("click", async (event) => {
   }
 });
 
+// Keep booking history hidden until the customer explicitly opens My Bookings.
+const historySection = $("bookingHistory");
+const historyShortcut = $("showBookingHistory");
+function revealBookingHistory(event) {
+  event?.preventDefault();
+  if (!historySection) return;
+  historySection.hidden = false;
+  historySection.classList.add("history-revealed");
+  historySection.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (window.history?.replaceState) window.history.replaceState(null, "", "#bookingHistory");
+}
+historyShortcut?.addEventListener("click", revealBookingHistory);
+if (window.location.hash === "#bookingHistory" && historySection) historySection.hidden = false;
 if ($("currentYear")) $("currentYear").textContent = new Date().getFullYear();
 loadProfile().catch((error) => {
   console.error("Profile page load failed:", error);
