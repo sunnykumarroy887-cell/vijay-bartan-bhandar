@@ -1084,3 +1084,39 @@ window.openCustomerBooking =
 // ============================================================
 // END OF APP.JS
 // ============================================================
+
+// PROGRESSIVE WEB APP INSTALL
+let deferredInstallPrompt = null;
+function initializePwaInstall() {
+    const button = document.getElementById("installAppBtn");
+    if (!button) return;
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    if (standalone) { button.hidden = true; return; }
+    window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        button.hidden = false;
+    });
+    window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        button.hidden = true;
+        button.textContent = "✓ App Installed";
+    });
+    button.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) {
+            alert("Chrome ke ⋮ menu me 'Install app' ya 'Add to Home screen' option select karein.");
+            return;
+        }
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        button.hidden = true;
+    });
+}
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .catch((error) => console.warn("PWA service worker registration failed:", error));
+    });
+}
+document.addEventListener("DOMContentLoaded", initializePwaInstall);
