@@ -129,27 +129,46 @@ function initializeCustomerSessionMenu() {
         const initial = (name.charAt(0) || "V").toUpperCase();
         const safeName = escapeMenuText(name);
         host.innerHTML = `
-            <div class="customer-menu-profile-head">
-                <span class="customer-menu-avatar">${initial}</span>
-                <span class="customer-menu-identity">
-                    <strong>${safeName}</strong>
-                    <small>Welcome to your account</small>
-                </span>
-                <span class="customer-menu-verified" aria-label="Signed in">✓</span>
-            </div>
+            <section class="customer-menu-welcome" aria-label="Customer account">
+                <div class="customer-menu-welcome-art" aria-hidden="true">✦</div>
+                <div class="customer-menu-profile-head">
+                    <span class="customer-menu-avatar">${initial}</span>
+                    <span class="customer-menu-identity">
+                        <strong>${safeName}</strong>
+                        <small>Welcome back · Vijay family</small>
+                    </span>
+                    <span class="customer-menu-verified" aria-label="Signed in">✓</span>
+                </div>
+                <div class="customer-menu-member-note"><span>●</span> Your account is securely signed in</div>
+            </section>
             <button class="customer-menu-trigger" type="button"
                 aria-expanded="false" aria-haspopup="true">
-                <span>My Account & Services</span><span aria-hidden="true">⌄</span>
+                <span class="customer-trigger-icon" aria-hidden="true">▦</span>
+                <span class="customer-trigger-copy"><strong>My Account</strong><small>Bookings, profile & services</small></span>
+                <span class="customer-trigger-chevron" aria-hidden="true">⌄</span>
             </button>
             <div class="customer-menu-dropdown" role="menu">
-                <div class="customer-menu-group-label">YOUR ACCOUNT</div>
-                <a role="menuitem" href="./customer-profile.html"><span class="menu-item-icon">♙</span><span><strong>My Profile</strong><small>Personal details and account</small></span><b>›</b></a>
-                <a role="menuitem" href="./customer-profile.html#bookingHistory"><span class="menu-item-icon">▤</span><span><strong>My Bookings</strong><small>History, invoices and payments</small></span><b>›</b></a>
-                <a role="menuitem" href="./customer-tracking.html"><span class="menu-item-icon">⌕</span><span><strong>Track Booking</strong><small>Check your booking status</small></span><b>›</b></a>
-                <a role="menuitem" href="./booking-options.html"><span class="menu-item-icon">＋</span><span><strong>New Booking</strong><small>Bartan, decoration or both</small></span><b>›</b></a>
-                <div class="customer-menu-group-label customer-menu-help-label">ACCOUNT SETTINGS</div>
-                <a role="menuitem" href="./customer-profile.html#details"><span class="menu-item-icon">⚙</span><span><strong>My Details</strong><small>View saved information</small></span><b>›</b></a>
-                <button role="menuitem" type="button" data-customer-logout><span class="menu-item-icon">↪</span><span><strong>Logout</strong><small>Sign out securely</small></span><b>›</b></button>
+                <div class="customer-menu-group-label"><span>YOUR SERVICES</span><i>ACCOUNT</i></div>
+                <a class="customer-menu-item" role="menuitem" href="./customer-profile.html">
+                    <span class="menu-item-icon">♙</span><span class="customer-menu-item-copy"><strong>My Profile</strong><small>Personal details and account</small></span><b>›</b>
+                </a>
+                <a class="customer-menu-item" role="menuitem" href="./customer-profile.html#bookingHistory">
+                    <span class="menu-item-icon">▤</span><span class="customer-menu-item-copy"><strong>My Bookings</strong><small>History, invoices and payments</small></span><b>›</b>
+                </a>
+                <a class="customer-menu-item" role="menuitem" href="./customer-tracking.html">
+                    <span class="menu-item-icon">⌕</span><span class="customer-menu-item-copy"><strong>Track Booking</strong><small>Live booking status and updates</small></span><b>›</b>
+                </a>
+                <a class="customer-menu-item customer-menu-new" role="menuitem" href="./booking-options.html">
+                    <span class="menu-item-icon">＋</span><span class="customer-menu-item-copy"><strong>New Booking</strong><small>Bartan, decoration or both</small></span><b>›</b>
+                </a>
+                <div class="customer-menu-group-label customer-menu-settings-label"><span>PROFILE & SECURITY</span><i>SETTINGS</i></div>
+                <a class="customer-menu-item" role="menuitem" href="./customer-profile.html#details">
+                    <span class="menu-item-icon">⚙</span><span class="customer-menu-item-copy"><strong>My Details</strong><small>View your saved information</small></span><b>›</b>
+                </a>
+                <button class="customer-menu-item customer-menu-logout" role="menuitem" type="button" data-customer-logout>
+                    <span class="menu-item-icon">↪</span><span class="customer-menu-item-copy"><strong>Logout</strong><small>Sign out of your account</small></span><b>›</b>
+                </button>
+                <div class="customer-menu-footer"><span>श्री गणेशाय नमः</span><small>Vijay Bartan Bhandar · Customer Care</small></div>
             </div>`;
 
         const trigger = host.querySelector(".customer-menu-trigger");
