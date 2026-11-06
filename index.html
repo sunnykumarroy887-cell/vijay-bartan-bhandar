@@ -8,6 +8,11 @@
 
     <title>Vijay Bartan Bhandar &amp; Maa Saraswati Decoration | Nayagaon, Parbatta</title>
     <link rel="canonical" href="https://vijay-bartan-bhandar.vercel.app/">
+<meta name="theme-color" content="#173f2b">
+<meta name="application-name" content="Vijay Bartan Bhandar">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/vijay-logo.svg">
 
     <script type="application/ld+json">
 {
@@ -100,9 +105,7 @@
 
         <a href="#home" class="logo">
 
-            <div class="logo-symbol">
-                व
-            </div>
+            <img class="brand-logo" src="/assets/vijay-logo.svg" alt="Vijay Bartan Bhandar logo" width="52" height="52">
 
             <div>
                 <strong>विजय बर्तन भंडार</strong>
@@ -112,7 +115,7 @@
         </a>
 
 
-        <nav class="navbar">
+        <nav class="navbar" id="mainNavigation">
 
             <a href="#home">
                 Home
@@ -168,6 +171,8 @@
             id="menuBtn"
             type="button"
             aria-label="Open Menu"
+            aria-expanded="false"
+            aria-controls="mainNavigation"
         >
             ☰
         </button>
