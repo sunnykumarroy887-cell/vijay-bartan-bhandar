@@ -852,3 +852,31 @@ body{font-family:"DM Sans",Arial,sans-serif!important;background:linear-gradient
 @media(max-width:650px){body{background-attachment:scroll!important}.tracking-header{align-items:center!important;flex-direction:row!important;padding:12px 16px!important}.brand h1{font-size:19px!important}.brand p{font-size:11px}.back-btn{width:auto!important;padding:10px 12px!important}.tracking-container{width:calc(100% - 24px)!important;margin:20px auto!important}.search-card,.timeline-card,.details-card{padding:19px!important}}
 
 /* Responsive finish: booking tracking */ *,*::before,*::after{box-sizing:border-box}html,body{width:100%;min-width:320px;overflow-x:hidden}.tracking-container{width:min(1000px,calc(100% - 40px));padding:0}.search-card,.booking-result,.timeline-card,.details-card{min-width:0}.details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detail-item,.customer-details,.item-list,.decoration-list{min-width:0;overflow-wrap:anywhere}@media(max-width:650px){.tracking-container{width:calc(100% - 22px)}.tracking-header{gap:9px;padding-inline:12px!important}.brand{min-width:0}.brand h1{font-size:17px!important}.search-card,.timeline-card,.details-card{padding:17px!important}.details-grid{grid-template-columns:1fr}.form-group input,.track-btn{width:100%;min-width:0}.track-btn{min-height:48px}.result-header{flex-wrap:wrap;gap:10px}}@media(max-width:360px){.brand h1{font-size:15px!important}.back-btn{font-size:12px!important;padding:8px!important}}
+
+/* NEW BOOKING BUTTON — softer premium treatment */
+.tracking-header .back-btn{
+  background:linear-gradient(135deg,#f7f4e9,#eee8d6)!important;
+  color:#174a34!important;
+  border:1px solid #c9ad70!important;
+  box-shadow:0 4px 12px rgba(23,74,52,.09)!important;
+  font-weight:700!important;
+  transition:background .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.tracking-header .back-btn:hover{
+  background:linear-gradient(135deg,#eee8d6,#e4ecdF)!important;
+  color:#103d2a!important;
+  box-shadow:0 6px 15px rgba(23,74,52,.13)!important;
+  transform:translateY(-1px);
+}
+.tracking-header .back-btn:focus-visible{
+  outline:3px solid rgba(201,164,91,.35);
+  outline-offset:3px;
+}
+@media(max-width:650px){
+  .tracking-header .back-btn{
+    background:#f5f0df!important;
+    color:#174a34!important;
+    border:1px solid #c9ad70!important;
+    box-shadow:0 3px 9px rgba(23,74,52,.08)!important;
+  }
+}
