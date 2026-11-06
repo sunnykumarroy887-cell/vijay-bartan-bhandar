@@ -145,10 +145,8 @@ function bindEvents() {
     $("calendarMonthInput")?.addEventListener("change", event => { if (!event.target.value) return; const [y,m] = event.target.value.split("-").map(Number); calendarCursor = new Date(y,m-1,1); renderDecorationCalendar(); });
     $("closeQuotationBtn")?.addEventListener("click", closeQuotationModal);
     $("sendQuotationBtn")?.addEventListener("click", saveDecorationQuotation);
-    $("refreshBtn")?.addEventListener(
-        "click",
-        loadBookings
-    );
+    $("refreshBtn")?.addEventListener("click", async () => { await loadBookings(); await loadDecorationEvents(); });
+    $("latestDecorationRefreshBtn")?.addEventListener("click", async () => { await loadBookings(); await loadDecorationEvents(); });
 
 
     $("dashboardBtn")?.addEventListener(
@@ -514,11 +512,13 @@ function renderBookings() {
 
                 const matchesStatus = status === "all" || booking.status === status;
                 const hasBartan = Number(booking.bartan_total || 0) > 0 || Number(booking.bartan_count || 0) > 0;
-                const hasDecoration = booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0 || Number(booking.decoration_count || 0) > 0;
+                const hasDecorationEvent = decorationEvents.some(event => String(event.booking_id) === String(booking.id));
+                const hasDecoration = hasDecorationEvent || booking.decoration_required === true || Number(booking.decoration_charge || 0) > 0 || Number(booking.decoration_count || 0) > 0;
                 const storedType = String(booking.booking_type || "").toLowerCase();
-                const resolvedType = ["bartan", "decoration", "both"].includes(storedType)
+                let resolvedType = ["bartan", "decoration", "both"].includes(storedType)
                     ? storedType
                     : (hasBartan && hasDecoration ? "both" : hasDecoration ? "decoration" : "bartan");
+                if (hasDecorationEvent) resolvedType = hasBartan ? "both" : "decoration";
                 const pageBookingType = document.body.dataset.bookingType || "decoration";
                 const matchesType = resolvedType === pageBookingType;
                 const remaining = Number(booking.remaining || 0);
@@ -2105,7 +2105,10 @@ async function loadDecorationEvents() {
         // Presence of a booking_events row is authoritative for the decoration calendar.
         decorationEvents=(Array.isArray(data)?data:[]).filter(ev=>visibleBookingIds.has(String(ev.booking_id)));
         if(!selectedCalendarDate)selectedCalendarDate=localDateKey(new Date());
-        renderDecorationCalendar();renderDecorationEventList();
+        renderBookings();
+        renderDecorationCalendar();
+        renderDecorationEventList();
+        renderLatestDecorationEvents();
     } catch(error) {
         console.error("Decoration events load failed:",error);
         if(list)list.innerHTML='<p class="notes-box">Decoration events load nahi hue: '+escapeHtml(error.message||"Unknown error")+'</p>';
@@ -2141,6 +2144,20 @@ function renderDecorationEventList(){
   return '<article class="control-card" style="margin:10px 0;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><h3 style="margin:0 0 10px">'+escapeHtml(e.event_name||e.design_name||"Decoration event")+'</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px"><div><b>Booking No.</b><br>'+escapeHtml(b.booking_number||e.booking_id)+'</div><div><b>Customer name</b><br>'+escapeHtml(b.customer_name||"—")+'</div><div><b>Mobile</b><br>'+escapeHtml(b.customer_mobile||"—")+'</div><div><b>Event date & time</b><br>'+escapeHtml(e.event_date||"—")+' · '+escapeHtml(e.event_time||"—")+'</div><div><b>Status</b><br>'+escapeHtml(status.replaceAll("_"," "))+'</div><div><b>Quotation total (admin)</b><br>₹'+net.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})+'</div><div style="grid-column:1/-1"><b>Venue / address</b><br>'+escapeHtml(e.venue_address||b.customer_address||"—")+'</div><div style="grid-column:1/-1"><b>Customer request / design details</b><br>'+escapeHtml(e.decoration_details||b.notes||"—")+'</div></div>'+imageHtml+'</div><div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap">'+(canQuote?'<button class="btn primary" type="button" data-quote-event="'+e.id+'">Send / Edit Quotation</button>':'')+'</div></div></article>';
  }).join("");
  list.querySelectorAll("[data-quote-event]").forEach(btn=>btn.addEventListener("click",()=>openQuotationModal(Number(btn.dataset.quoteEvent))));
+}
+function renderLatestDecorationEvents(){
+ const list=$("latestDecorationEventList");if(!list)return;
+ const latest=[...decorationEvents].sort((a,b)=>String(b.event_date||"").localeCompare(String(a.event_date||""))||Number(b.id||0)-Number(a.id||0)).slice(0,30);
+ if(!latest.length){list.innerHTML='<p class="notes-box">Abhi koi decoration booking/event nahi mila.</p>';return;}
+ list.innerHTML=latest.map(e=>{
+  const b=allBookings.find(x=>String(x.id)===String(e.booking_id))||{};
+  const status=String(e.status||"pending"),net=Number(e.quoted_amount||0)+Number(e.delivery_charge||0)-Number(e.discount||0);
+  const quote=e.quoted_amount==null?"Quotation pending":"₹"+net.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const canQuote=!["cancelled","completed"].includes(status);
+  return '<article class="control-card" style="margin:10px 0;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:220px"><h3 style="margin:0 0 8px">'+escapeHtml(e.event_name||e.design_name||"Decoration event")+'</h3><div class="detail-grid"><div><span>Booking No.</span><strong>'+escapeHtml(b.booking_number||e.booking_id)+'</strong></div><div><span>Customer</span><strong>'+escapeHtml(b.customer_name||"—")+'</strong></div><div><span>Mobile</span><strong>'+escapeHtml(b.customer_mobile||"—")+'</strong></div><div><span>Event date & time</span><strong>'+escapeHtml(e.event_date||"—")+' · '+escapeHtml(e.event_time||"—")+'</strong></div><div><span>Venue</span><strong>'+escapeHtml(e.venue_address||b.customer_address||"—")+'</strong></div><div><span>Status</span><strong>'+escapeHtml(status.replaceAll("_"," "))+'</strong></div><div><span>Quotation</span><strong>'+escapeHtml(quote)+'</strong></div><div><span>Remaining</span><strong>₹'+Number(b.remaining||0).toLocaleString("en-IN")+'</strong></div></div><p style="margin-top:8px">'+escapeHtml(e.decoration_details||b.notes||"No additional requirements")+'</p></div><div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">'+(canQuote?'<button class="btn primary" type="button" data-latest-quote-event="'+e.id+'">'+(e.quoted_amount==null?"Send Quotation":"Edit Quotation")+'</button>':'')+'<button class="btn secondary" type="button" data-open-booking="'+e.booking_id+'">View Booking</button></div></div></article>';
+ }).join("");
+ list.querySelectorAll("[data-latest-quote-event]").forEach(btn=>btn.addEventListener("click",()=>openQuotationModal(Number(btn.dataset.latestQuoteEvent))));
+ list.querySelectorAll("[data-open-booking]").forEach(btn=>btn.addEventListener("click",()=>openBookingDetails(Number(btn.dataset.openBooking))));
 }
 function openQuotationModal(eventId){
  currentQuotationEvent=decorationEvents.find(e=>Number(e.id)===Number(eventId));if(!currentQuotationEvent)return;
