@@ -3764,3 +3764,27 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
 @media(max-width:800px){.header{position:sticky;top:0}.nav-container{min-height:72px;width:94%}.brand-logo{width:52px;height:52px}.logo strong{font-size:16px}.logo small{font-size:10px}.nav-buttons{display:none}.hero{min-height:unset;background-position:58% center}.hero-overlay{background:linear-gradient(180deg,rgba(5,29,20,.72),rgba(5,29,20,.88) 42%,rgba(5,29,20,.96))}.hero-content{width:90%;grid-template-columns:1fr;gap:26px;padding:60px 0 68px}.hero h1{font-size:clamp(37px,9.4vw,53px)}.hero-description{font-size:14px}.hero-buttons{display:grid;grid-template-columns:1fr;max-width:100%;gap:10px}.hero-buttons a{width:100%;min-height:50px}.hero-trust-row{gap:10px 14px;font-size:10px}.hero-highlight-card{max-width:100%;padding:23px 19px 20px}.track-booking-section .service-grid,.intro .service-grid{grid-template-columns:1fr;gap:16px}.track-booking-section .service-card{min-height:unset;padding:22px 20px}.intro .service-card{min-height:345px;padding:166px 21px 23px}.decoration .gallery-grid{grid-template-columns:1fr;grid-template-rows:auto}.gallery-card,.gallery-card.large{grid-row:auto;min-height:260px}.bartan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bartan-card{min-height:130px;padding:16px}.booking-wrapper{grid-template-columns:1fr;gap:28px}.booking-cta-content{padding:24px 20px}.contact-grid{grid-template-columns:1fr;gap:12px}.footer-container{grid-template-columns:1fr 1fr;gap:25px;padding:40px 0}}
 @media(max-width:430px){.top-line{min-height:31px;font-size:11px}.nav-container{min-height:68px}.brand-logo{width:48px;height:48px}.logo{gap:9px}.logo strong{font-size:15px}.hero-content{padding:49px 0 56px}.hero h1{font-size:37px}.hero-trust-row{font-size:9px;gap:8px}.hero-highlight-card{padding:21px 16px 18px;border-radius:21px}.hero-service-link{grid-template-columns:43px minmax(0,1fr) 16px;padding:11px}.section{padding:58px 5%}.section-heading h2{font-size:clamp(27px,8vw,36px)}.bartan-grid{gap:10px}.bartan-card{padding:14px;border-radius:15px}.calculation-box{align-items:flex-start;flex-direction:column}.calculation-box .primary-btn{width:100%;text-align:center}.footer-container{grid-template-columns:1fr;gap:22px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* BARTAN RENTAL PHOTO + ICON POLISH v11 */
+.intro .intro-bartan-card{isolation:isolate;overflow:hidden;background:linear-gradient(145deg,#fffdf7,#f7f5eb)}
+.intro .intro-bartan-card::before{
+  background-image:url("https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1200&q=88");
+  background-position:center 48%;background-size:cover;opacity:1;
+}
+.intro .intro-bartan-card::after{
+  background:linear-gradient(180deg,rgba(12,35,25,.08) 0%,rgba(255,255,255,.20) 25%,rgba(255,255,255,.94) 47%,#fff 74%);
+}
+.intro .intro-bartan-card .service-icon{
+  color:#fff;background:linear-gradient(145deg,#1c6544,#0d3827);
+  border:2px solid rgba(255,255,255,.92);
+  box-shadow:0 9px 25px rgba(10,47,31,.25);
+}
+.bartan-service-icon i,.hero-service-icon i{font-size:25px;line-height:1}
+.intro .intro-bartan-card .service-icon i{font-size:28px;color:#f5d98d}
+.hero-service-link:nth-of-type(2) .hero-service-icon{display:grid;place-items:center;color:#9b6728}
+.hero-service-link:nth-of-type(2) .hero-service-icon i{font-size:23px}
+.bartan .section-heading .eyebrow::before{content:"";display:inline-block;width:22px;height:22px;margin-right:8px;vertical-align:middle;background:linear-gradient(145deg,#1c6544,#0d3827);mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M3 3h2v7a2 2 0 0 0 4 0V3h2v7a4 4 0 0 1-3 3.87V21H6v-7.13A4 4 0 0 1 3 10zm13 0h2v7h2v2h-2v9h-2z'/%3E%3C/svg%3E") center/contain no-repeat}
+@media(max-width:800px){
+ .intro .intro-bartan-card::before{height:165px;background-position:center 45%}
+ .intro .intro-bartan-card::after{background:linear-gradient(180deg,rgba(12,35,25,.04) 0%,rgba(255,255,255,.18) 30%,rgba(255,255,255,.96) 49%,#fff 76%)}
+}
