@@ -3797,78 +3797,45 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
 .selected-item-icon .bartan-item-svg{width:22px;height:22px;color:#fff}
 @media(max-width:800px){.bartan-card-icon{width:38px;height:38px;flex-basis:38px}.bartan-card-icon .bartan-item-svg{width:24px;height:24px}}
 
-/* Verified bhoj utensil photo + matching SVG badge */
-.bartan-card{overflow:hidden;padding:0;border:1px solid rgba(188,151,65,.28);border-radius:19px;background:linear-gradient(160deg,#fffef9,#f5f1e4);box-shadow:0 12px 28px rgba(23,63,43,.09)}
-.bartan-card:hover{transform:translateY(-5px);box-shadow:0 18px 34px rgba(23,63,43,.15)}
-.bartan-card-photo{position:relative;min-height:172px;aspect-ratio:4/3;background-image:url("/assets/bartan-photo-sprite.webp");background-repeat:no-repeat;background-size:300% 200%;background-position:var(--bartan-photo-position,50% 50%);background-color:#eee9d9;border-bottom:1px solid rgba(188,151,65,.24)}
-.bartan-card-photo:after{content:"";position:absolute;inset:48% 0 0;background:linear-gradient(180deg,transparent,rgba(15,43,29,.2));pointer-events:none}
-.bartan-photo-logo{position:absolute;z-index:1;top:11px;right:11px;display:grid;place-items:center;width:43px;height:43px;border:2px solid #e4c36d;border-radius:50%;color:#f6e6b4;background:linear-gradient(145deg,#0b3d28,#1b6844);box-shadow:0 4px 13px rgba(0,0,0,.2)}
-.bartan-photo-logo .bartan-item-svg{width:25px;height:25px}
-.bartan-photo-caption{position:absolute;z-index:1;left:11px;bottom:10px;padding:5px 9px;border:1px solid rgba(255,255,255,.45);border-radius:30px;color:#fff;background:rgba(16,54,36,.78);font-size:9px;font-weight:800;letter-spacing:.35px}
-.bartan-card-content{display:flex;flex-direction:column;align-items:flex-start;min-width:0;width:100%;padding:15px 16px 16px}
-.bartan-card-content .bartan-select-btn{width:100%;min-height:42px;font-size:12px;border-radius:12px}
-.bartan-card-content .bartan-category{font-size:9px}
-.bartan-card-content h3{font-size:clamp(15px,1.35vw,18px)}
-@media(max-width:640px){.bartan-card-photo{min-height:145px}.bartan-card-content{padding:12px}.bartan-photo-logo{width:39px;height:39px}}
 
 
-/* Hotfix: prevent empty photo-sprite panels; restore complete compact item cards */
+/* Premium icon-only utensil cards — no product photos */
+.bartan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .bartan-grid .bartan-card{
-  display:flex;
-  flex-direction:row;
-  align-items:flex-start;
-  gap:12px;
-  min-width:0;
-  min-height:170px;
-  padding:16px;
-  overflow:hidden;
+  position:relative;display:flex;align-items:flex-start;gap:14px;
+  min-width:0;min-height:172px;padding:18px;overflow:hidden;
+  border:1px solid rgba(184,151,77,.3);border-radius:20px;
+  background:linear-gradient(145deg,#fffef9 0%,#f7f4e8 100%);
+  box-shadow:0 9px 24px rgba(19,61,42,.075);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
 }
-.bartan-grid .bartan-card-photo{display:none!important}
+.bartan-grid .bartan-card:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(180deg,#d9bd70,#a17c2d);opacity:.85}
+.bartan-grid .bartan-card:hover{transform:translateY(-4px);border-color:rgba(184,151,77,.65);box-shadow:0 15px 30px rgba(19,61,42,.13)}
 .bartan-grid .bartan-card-icon{
-  display:grid;
-  place-items:center;
-  flex:0 0 46px;
-  width:46px;
-  height:46px;
-  margin:0;
-  border-radius:14px;
+  position:relative;display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;
+  margin:0;border:1px solid rgba(188,151,65,.3);border-radius:17px;
+  color:#15583b;background:linear-gradient(145deg,#f8f8ef,#e7f0e6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 13px rgba(20,70,48,.07)
 }
-.bartan-grid .bartan-card-content{
-  display:flex;
-  flex:1 1 auto;
-  flex-direction:column;
-  align-items:flex-start;
-  width:auto;
-  min-width:0;
-  min-height:138px;
-  padding:3px 0 0;
-}
-.bartan-grid .bartan-card-content h3{margin:5px 0 2px;overflow-wrap:anywhere}
-.bartan-grid .bartan-card-content .bartan-select-btn{
-  width:auto;
-  min-width:112px;
-  min-height:42px;
-  margin-top:auto;
-  align-self:flex-end;
-}
+.bartan-grid .bartan-card-icon:after{content:"";position:absolute;inset:4px;border:1px solid rgba(25,94,62,.08);border-radius:12px;pointer-events:none}
+.bartan-grid .bartan-card-icon .bartan-item-svg{width:31px;height:31px}
+.bartan-grid .bartan-card-content{display:flex;flex:1 1 auto;flex-direction:column;align-items:flex-start;gap:6px;width:auto;min-width:0;min-height:135px;padding:1px 0 0}
+.bartan-grid .bartan-card-content .bartan-category{margin:0;color:#927b3f;font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase}
+.bartan-grid .bartan-card-content h3{margin:1px 0 2px;color:#174b35;font-size:clamp(15px,1.35vw,19px);font-weight:800;line-height:1.35;overflow-wrap:anywhere}
+.bartan-grid .bartan-card-content .bartan-status{display:flex;align-items:center;gap:7px;margin:2px 0;color:#53695d;font-size:13px;font-weight:700}
+.bartan-grid .bartan-card-content .bartan-select-btn{width:100%;min-height:43px;margin-top:auto;align-self:stretch;border:1px solid rgba(25,94,62,.12);border-radius:13px;color:#15583b;background:linear-gradient(135deg,#edf5ec,#e2efe1);font-weight:800;transition:background .2s ease,color .2s ease,transform .2s ease}
+.bartan-grid .bartan-card-content .bartan-select-btn:hover:not(:disabled){color:#fff;background:linear-gradient(135deg,#15583b,#26734e);transform:translateY(-1px)}
+.bartan-grid .bartan-card-content .bartan-select-btn:disabled{opacity:.48;cursor:not-allowed}
+@media(max-width:900px){.bartan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}}
 @media(max-width:640px){
-  .bartan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .bartan-grid .bartan-card{gap:9px;min-height:174px;padding:11px}
-  .bartan-grid .bartan-card-icon{flex-basis:38px;width:38px;height:38px}
-  .bartan-grid .bartan-card-content{min-height:148px;padding-top:1px}
-  .bartan-grid .bartan-card-content .bartan-select-btn{width:100%;min-width:0;min-height:42px;font-size:11px}
+ .bartan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .bartan-grid .bartan-card{gap:9px;min-height:164px;padding:12px;border-radius:17px}
+ .bartan-grid .bartan-card-icon{flex-basis:42px;width:42px;height:42px;border-radius:13px}
+ .bartan-grid .bartan-card-icon .bartan-item-svg{width:25px;height:25px}
+ .bartan-grid .bartan-card-content{min-height:137px;gap:5px}
+ .bartan-grid .bartan-card-content .bartan-category{font-size:9px;letter-spacing:1.2px}
+ .bartan-grid .bartan-card-content h3{font-size:14px;line-height:1.3}
+ .bartan-grid .bartan-card-content .bartan-status{font-size:11px;flex-wrap:wrap}
+ .bartan-grid .bartan-card-content .bartan-select-btn{min-height:40px;padding:7px;font-size:11px}
 }
-
-/* Final mobile fix: show real utensil photo in a fixed-height card hero */
-.bartan-grid .bartan-card{display:flex;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:0;padding:0;overflow:hidden;border:1px solid rgba(188,151,65,.28);border-radius:19px;background:linear-gradient(160deg,#fffef9,#f5f1e4);box-shadow:0 10px 25px rgba(23,63,43,.09)}
-.bartan-grid .bartan-card-photo{display:block!important;position:relative;width:100%;height:145px;min-height:145px;aspect-ratio:auto;background-image:url("/assets/bartan-photo-sprite.webp");background-repeat:no-repeat;background-size:300% 200%;background-position:var(--bartan-photo-position,50% 50%);background-color:#eee9d9;border-bottom:1px solid rgba(188,151,65,.24)}
-.bartan-grid .bartan-card-photo:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(180deg,transparent,rgba(15,43,29,.18));pointer-events:none}
-.bartan-grid .bartan-card-photo .bartan-photo-logo{position:absolute;z-index:1;top:9px;right:9px;display:grid;place-items:center;width:39px;height:39px;border:2px solid #e4c36d;border-radius:50%;color:#f6e6b4;background:linear-gradient(145deg,#0b3d28,#1b6844);box-shadow:0 4px 13px rgba(0,0,0,.2)}
-.bartan-grid .bartan-card-photo .bartan-item-svg{width:23px;height:23px}
-.bartan-grid .bartan-card-photo .bartan-photo-caption{position:absolute;z-index:1;left:9px;bottom:8px;padding:5px 9px;border:1px solid rgba(255,255,255,.45);border-radius:30px;color:#fff;background:rgba(16,54,36,.8);font-size:9px;font-weight:800}
-.bartan-grid .bartan-card-content{display:flex;flex:1 1 auto;flex-direction:column;align-items:flex-start;min-width:0;width:100%;min-height:148px;padding:12px}
-.bartan-grid .bartan-card-content h3{margin:5px 0 2px;font-size:15px;line-height:1.35;overflow-wrap:anywhere}
-.bartan-grid .bartan-card-content .bartan-select-btn{width:100%;min-height:40px;margin-top:auto;align-self:stretch;font-size:11px}
-.bartan-grid .bartan-card:not(:has(.bartan-card-photo)){display:flex;flex-direction:row;align-items:flex-start;gap:10px;padding:12px}
-.bartan-grid .bartan-card:not(:has(.bartan-card-photo)) .bartan-card-content{min-height:145px;padding:0}
-@media(max-width:640px){.bartan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bartan-grid .bartan-card-photo{height:132px;min-height:132px}.bartan-grid .bartan-card-content{min-height:145px;padding:11px}.bartan-grid .bartan-card-content h3{font-size:14px}.bartan-grid .bartan-card:not(:has(.bartan-card-photo)){min-height:166px}}
+@media(max-width:360px){.bartan-grid .bartan-card{gap:7px;padding:9px}.bartan-grid .bartan-card-icon{flex-basis:36px;width:36px;height:36px}.bartan-grid .bartan-card-content h3{font-size:13px}}
