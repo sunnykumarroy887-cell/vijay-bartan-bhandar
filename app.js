@@ -512,6 +512,37 @@ function renderBartanItems(container) {
 }
 
 
+
+/* ============================================================
+   ITEM-SPECIFIC BARTAN ICONS — INLINE SVG, NO EXTERNAL DEPENDENCY
+============================================================ */
+function getBartanIcon(itemName) {
+    const name = String(itemName || "").toLocaleLowerCase("hi");
+    const icons = [
+        { match: /टोपिया|topiya|cooking pot|stock pot/, label: "Cooking pot", path: '<path d="M5 9h14l-1.2 10H6.2L5 9Z"/><path d="M8 9V6h8v3M3 11h2m14 0h2M9 5V3h6v2"/>' },
+        { match: /नादी|nadi|नांदी|basin|tub/, label: "Basin", path: '<path d="M3 10h18l-2 8H5l-2-8Z"/><path d="M6 10V7h12v3M8 18v2m8-2v2"/>' },
+        { match: /लोहिया|lohiya|कड़ाही|karahi|wok/, label: "Cooking kadai", path: '<path d="M4 10c0 5 3.5 8 8 8s8-3 8-8H4Z"/><path d="M4 10H2m18 0h2M8 7c1-2 7-2 8 0"/>' },
+        { match: /ट्रे|tray/, label: "Serving tray", path: '<rect x="3" y="7" width="18" height="11" rx="2"/><path d="M7 7V5h10v2M8 18v2m8-2v2"/>' },
+        { match: /चूल्हा|chulha|stove|burner/, label: "Stove", path: '<rect x="4" y="9" width="16" height="10" rx="2"/><path d="M8 9V6h8v3M9 14h6M12 3c2 2 2 3 0 5-2-2-2-3 0-5Z"/>' },
+        { match: /बाल्टी.*स्टील|steel bucket|steel pail/, label: "Steel bucket", path: '<path d="M5 8h14l-1.5 12h-11L5 8Z"/><path d="M7 8a5 5 0 0 1 10 0M8 11h8"/>' },
+        { match: /बाल्टी.*प्लास्टिक|plastic bucket|plastic pail/, label: "Plastic bucket", path: '<path d="M5 8h14l-1.5 12h-11L5 8Z"/><path d="M7 8a5 5 0 0 1 10 0M8 11h8"/><path d="M7 14h10"/>' },
+        { match: /कलछुल.*छोटा|छोटा.*कलछुल|small ladle/, label: "Small ladle", path: '<path d="M8 5a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"/><path d="m13 8 5 12"/>' },
+        { match: /कलछुल.*बड़ा|बड़ा.*कलछुल|large ladle/, label: "Large ladle", path: '<path d="M6 7a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z"/><path d="m13 12 5 8"/>' },
+        { match: /कठौता|kathauta|कठौता|basin bowl/, label: "Large bowl", path: '<path d="M3 9c0 6 4 10 9 10s9-4 9-10H3Z"/><path d="M5 9c1-3 13-3 14 0M8 19v2m8-2v2"/>' },
+        { match: /जग|jug|pitcher/, label: "Water jug", path: '<path d="M7 5h8v15H7z"/><path d="M15 8h3l2 3v6h-5M9 5V3h4v2M9 9h4"/>' },
+        { match: /छोलनी|छलनी|छलनी|strainer|sieve/, label: "Strainer", path: '<path d="M4 7h16l-2 7H6L4 7Z"/><path d="M8 14v6m4-6v6m4-6v6M7 10h.1m3 .0h.1m3 0h.1m3 0h.1"/>' },
+        { match: /पंजा|panja|serving fork|fork/, label: "Serving fork", path: '<path d="M8 3v7m3-7v7m3-7v7M7 10h8c0 3-1 4-4 4v7"/>' },
+        { match: /झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांझ|झांঝ|ঝাঁঝ|cymbal|metal plate/, label: "Metal cymbals", path: '<ellipse cx="8" cy="12" rx="5" ry="8"/><ellipse cx="16" cy="12" rx="5" ry="8"/><path d="M8 4v16m8-16v16"/>' },
+        { match: /दरी|dari|rug|mat/, label: "Floor mat", path: '<rect x="4" y="5" width="16" height="14" rx="1"/><path d="M7 5v14m3-14v14m3-14v14m3-14v14M4 8h16m-16 4h16m-16 4h16"/>' },
+        { match: /ड्रम|drum|barrel/, label: "Storage drum", path: '<path d="M5 5c0-2 14-2 14 0v14c0 2-14 2-14 0V5Z"/><path d="M5 9c0 2 14 2 14 0M5 15c0 2 14 2 14 0M8 3v18m8-18v18"/>' }
+    ];
+    const found = icons.find(icon => icon.match.test(name));
+    const fallback = '<path d="M4 8h16l-2 11H6L4 8Z"/><path d="M8 8V5h8v3M9 12h6"/>';
+    const path = found?.path || fallback;
+    const label = found?.label || "Bartan item";
+    return `<svg class="bartan-item-svg" viewBox="0 0 24 24" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${path}</g></svg>`;
+}
+
 // ============================================================
 // CREATE BARTAN CARD
 // ============================================================
@@ -587,7 +618,7 @@ function createBartanCard(item) {
     card.innerHTML = `
         <div class="bartan-card-icon">
 
-            <i class="fas fa-utensils"></i>
+            ${getBartanIcon(itemName)}
 
         </div>
 
@@ -884,7 +915,7 @@ function renderSelectedItems() {
 
                 <div class="selected-item-icon">
 
-                    <i class="fas fa-check"></i>
+                    ${getBartanIcon(itemName)}
 
                 </div>
 
