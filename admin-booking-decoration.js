@@ -2136,8 +2136,8 @@ async function loadDecorationEvents() {
         if(error)throw error;
         const {data:bookingRows,error:bookingError}=await supabase.rpc("admin_get_bookings");
         if(bookingError)throw bookingError;
-        const decorationOnlyIds=new Set((Array.isArray(bookingRows)?bookingRows:[]).filter(b=>String(b.booking_type||"").toLowerCase()==="decoration").map(b=>String(b.id)));
-        decorationEvents=(Array.isArray(data)?data:[]).filter(ev=>decorationOnlyIds.has(String(ev.booking_id)));
+        const decorationBookingIds=new Set((Array.isArray(bookingRows)?bookingRows:[]).filter(b=>["decoration","both"].includes(String(b.booking_type||"").toLowerCase()) || (b.decoration_required===true && Number(b.decoration_charge||0)>0)).map(b=>String(b.id)));
+        decorationEvents=(Array.isArray(data)?data:[]).filter(ev=>decorationBookingIds.has(String(ev.booking_id)));
         if(!selectedCalendarDate)selectedCalendarDate=localDateKey(new Date());
         renderDecorationCalendar();renderDecorationEventList();
     } catch(error) {
