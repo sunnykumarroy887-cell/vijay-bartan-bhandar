@@ -963,87 +963,42 @@ async function loadBookingItems(
 // LOAD DECORATIONS
 // ======================================================
 
-async function loadBookingDecorations(
-    bookingId
-) {
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("booking_decorations")
-        .select(`
-            id,
-            decoration_id,
-            decoration_name,
-            locked_rate,
-            amount
-        `)
-        .eq(
-            "booking_id",
-            bookingId
-        )
-        .order("id");
-
-
-    if (error) {
-
-        console.error(
-            "Decoration error:",
-            error
-        );
-
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                Decoration information unavailable.
-            </div>
-        `;
-
+async function loadBookingDecorations(bookingId) {
+    const box = $("decorationDetails");
+    box.innerHTML = '<div class="notes-box">Loading decoration details…</div>';
+    const [eventsResult, legacyResult] = await Promise.all([
+        supabase.from("booking_events")
+            .select("id,event_name,event_date,event_time,venue_address,decoration_details,design_name,reference_image_urls,quoted_amount,delivery_charge,discount,status")
+            .eq("booking_id", bookingId).order("event_date", { ascending: true }),
+        supabase.from("booking_decorations")
+            .select("id,decoration_id,decoration_name,locked_rate,amount")
+            .eq("booking_id", bookingId).order("id")
+    ]);
+    if (eventsResult.error) console.warn("Booking events load:", eventsResult.error);
+    if (legacyResult.error) console.warn("Legacy decorations load:", legacyResult.error);
+    const events = Array.isArray(eventsResult.data) ? eventsResult.data : [];
+    const legacy = Array.isArray(legacyResult.data) ? legacyResult.data : [];
+    if (!events.length && !legacy.length) {
+        box.innerHTML = '<div class="notes-box">No decoration event details were saved for this booking.</div>';
         return;
     }
-
-
-    if (!data?.length) {
-
-        $("decorationDetails").innerHTML = `
-            <div class="notes-box">
-                No decoration selected.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    $("decorationDetails").innerHTML =
-        data.map(
-            item => {
-
-                return `
-                    <div class="item-row">
-
-                        <div>
-
-                            <div class="item-name">
-                                ${escapeHtml(
-                                    item.decoration_name
-                                )}
-                            </div>
-
-                        </div>
-
-                        <div>
-                            Selected
-                        </div>
-
-                    </div>
-                `;
-
-            }
-        )
-        .join("");
-
+    const eventHtml = events.map(ev => {
+        const images = Array.isArray(ev.reference_image_urls) ? ev.reference_image_urls.filter(Boolean) : [];
+        const imageHtml = images.length ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' + images.map((url,i) =>
+            '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer"><img src="' + escapeHtml(url) + '" alt="Decoration reference ' + (i+1) + '" loading="lazy" style="width:92px;height:82px;object-fit:cover;border-radius:8px"></a>'
+        ).join("") + '</div>' : "";
+        const quote = ev.quoted_amount == null ? "Quotation not sent" :
+            'Quotation: ₹' + formatMoney(ev.quoted_amount) + ' · Delivery: ₹' + formatMoney(ev.delivery_charge) +
+            ' · Discount: ₹' + formatMoney(ev.discount) + ' · Status: ' + escapeHtml(ev.status || "pending");
+        return '<article class="item-row" style="display:block;margin-bottom:10px"><div class="item-name">' + escapeHtml(ev.event_name || ev.design_name || "Decoration event") + '</div>' +
+            '<div class="item-meta">Date: ' + escapeHtml(ev.event_date || "—") + ' · Time: ' + escapeHtml(ev.event_time || "—") + '</div>' +
+            '<div class="item-meta">Venue: ' + escapeHtml(ev.venue_address || "—") + '</div><div class="item-meta">Design: ' + escapeHtml(ev.design_name || "—") + '</div>' +
+            '<div style="white-space:pre-wrap;margin-top:6px">' + escapeHtml(ev.decoration_details || "No extra requirements") + '</div>' +
+            '<div class="item-meta" style="margin-top:7px">' + quote + '</div>' + imageHtml + '</article>';
+    }).join("");
+    const legacyHtml = legacy.map(x => '<div class="item-row"><div class="item-name">' + escapeHtml(x.decoration_name || "Decoration") +
+        '</div><div>Rate: ₹' + formatMoney(x.locked_rate) + ' · Amount: ₹' + formatMoney(x.amount) + '</div></div>').join("");
+    box.innerHTML = eventHtml + legacyHtml;
 }
 
 
@@ -2343,19 +2298,23 @@ async function getBookingBillData() {
     if (!currentBooking) throw new Error("Pehle booking select karein.");
 
     const id = currentBooking.id;
-    const [ir, dr] = await Promise.all([
+    const [ir, dr, er] = await Promise.all([
         supabase.from("booking_items")
             .select("item_name, quantity, locked_rate, amount")
             .eq("booking_id", id).order("id", { ascending: true }),
         supabase.from("booking_decorations")
             .select("decoration_name, locked_rate, amount")
-            .eq("booking_id", id).order("id", { ascending: true })
+            .eq("booking_id", id).order("id", { ascending: true }),
+        supabase.from("booking_events")
+            .select("event_name,event_date,event_time,venue_address,decoration_details,design_name,quoted_amount,delivery_charge,discount,status")
+            .eq("booking_id", id).order("event_date", { ascending: true })
     ]);
 
     if (ir.error) throw ir.error;
     if (dr.error) throw dr.error;
+    if (er.error) throw er.error;
 
-    return { booking: { ...currentBooking }, items: ir.data || [], decorations: dr.data || [] };
+    return { booking: { ...currentBooking }, items: ir.data || [], decorations: dr.data || [], events: er.data || [] };
 }
 
 function buildBookingBillHTML(data) {
@@ -2367,10 +2326,17 @@ function buildBookingBillHTML(data) {
         <td>${billMoney(x.amount)}</td></tr>`).join("") :
         '<tr><td colspan="5">No bartan items</td></tr>';
 
+    const eventRows = data.events.length ? data.events.map((x, i) => `
+        <tr><td>${i + 1}</td><td>${billEscape(x.event_name || x.design_name || "Decoration event")}</td>
+        <td>${billEscape(x.event_date || "—")}</td><td>${billEscape(x.event_time || "—")}</td>
+        <td>${billEscape(x.venue_address || "—")}</td><td>${billEscape(x.design_name || "—")}</td>
+        <td>${billEscape(x.decoration_details || "—")}</td><td>${billMoney(x.quoted_amount)}</td>
+        <td>${billEscape(x.status || "pending")}</td></tr>`).join("") :
+        '<tr><td colspan="9">No event-wise decoration details</td></tr>';
     const decorations = data.decorations.length ? data.decorations.map((x, i) => `
         <tr><td>${i + 1}</td><td>${billEscape(x.decoration_name)}</td>
         <td>${billMoney(x.locked_rate)}</td><td>${billMoney(x.amount)}</td></tr>`).join("") :
-        '<tr><td colspan="4">No decoration items</td></tr>';
+        '<tr><td colspan="4">No legacy decoration items</td></tr>';
 
     return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -2404,7 +2370,8 @@ button{padding:10px 18px;margin-bottom:18px}
 <p><b>Bill Date:</b> ${billDate(new Date().toISOString())}</p>
 </section>
 <h2>Bartan Items</h2><table><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${items}</tbody></table>
-<h2>Decoration Items</h2><table><thead><tr><th>#</th><th>Decoration</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${decorations}</tbody></table>
+<h2>Decoration Events / Quotation</h2><table><thead><tr><th>#</th><th>Event</th><th>Date</th><th>Time</th><th>Venue</th><th>Design</th><th>Requirements</th><th>Quoted Amount</th><th>Status</th></tr></thead><tbody>${eventRows}</tbody></table>
+<h2>Legacy Decoration Items</h2><table><thead><tr><th>#</th><th>Decoration</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${decorations}</tbody></table>
 <table class="totals"><tbody>
 <tr><td>Bartan Total</td><td>${billMoney(b.bartan_total)}</td></tr>
 <tr><td>Decoration Charge</td><td>${billMoney(b.decoration_charge)}</td></tr>
