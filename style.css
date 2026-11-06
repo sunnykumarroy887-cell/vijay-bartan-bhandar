@@ -3393,3 +3393,137 @@ a:focus-visible,button:focus-visible {
 @media(prefers-reduced-motion:reduce) {
   .service-card,.gallery-card img,.social-card,.bartan-card { transition:none !important; }
 }
+
+
+/* =========================================================
+   VIJAY HOMEPAGE — COMPLETE FINISHING PASS (v7)
+   Visual-only layer: keeps existing IDs, links and app.js hooks.
+========================================================= */
+:root{
+  --home-bg:#f7f8f2;--home-card:#ffffff;--home-forest:#103b29;
+  --home-forest-2:#1d6041;--home-gold:#c9a34d;--home-ink:#1c3428;
+  --home-muted:#65766b;--home-line:rgba(24,65,43,.10);
+}
+body{
+  color:var(--home-ink);
+  background:var(--home-bg);
+  font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.65;
+}
+img{max-width:100%}
+.section{isolation:isolate;overflow:hidden}
+.section-heading{position:relative;z-index:1;text-align:center;margin-left:auto;margin-right:auto}
+.section-heading h2{font-size:clamp(30px,4.2vw,48px);font-weight:800;letter-spacing:-.8px}
+.section-heading p{max-width:690px;margin:12px auto 0;font-size:clamp(14px,1.25vw,16px);line-height:1.85}
+.section-heading .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:7px 13px;border:1px solid rgba(190,151,63,.25);border-radius:999px;background:#fff8e8;color:#987426;font-size:10px;letter-spacing:1.8px}
+.section-heading .eyebrow:before,.section-heading .eyebrow:after{content:"✦";font-size:9px;color:#c49a3e}
+.section-heading::after{margin-top:18px}
+.track-booking-section{
+ background:linear-gradient(135deg,rgba(244,248,240,.96),rgba(255,253,247,.97)),
+ url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=75") center/cover;
+}
+.track-booking-section .service-card,.intro .service-card{
+ border:1px solid var(--home-line);border-radius:24px;
+ box-shadow:0 14px 38px rgba(17,55,36,.075);
+ transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease;
+}
+.track-booking-section .service-card:hover,.intro .service-card:hover{
+ transform:translateY(-6px);border-color:rgba(194,155,67,.42);
+ box-shadow:0 22px 46px rgba(17,55,36,.13)
+}
+.track-booking-section .service-card h3,.intro .service-card h3{font-family:"DM Sans",sans-serif;font-weight:800;letter-spacing:-.3px}
+.track-booking-section .service-card p,.track-booking-section .service-card li,.intro .service-card p{font-size:14px;line-height:1.85}
+.intro{
+ background:
+ radial-gradient(ellipse at 8% 10%,rgba(203,169,91,.16),transparent 30%),
+ radial-gradient(ellipse at 95% 85%,rgba(67,132,89,.10),transparent 32%),
+ linear-gradient(145deg,#fffdf7,#f0f6ee);
+}
+.decoration{
+ background:
+ radial-gradient(ellipse at 100% 0,rgba(213,183,111,.13),transparent 28%),
+ linear-gradient(180deg,#fff,#fbfcf8);
+}
+.more-decoration-section{
+ background:
+ radial-gradient(circle at 10% 15%,rgba(202,166,84,.18),transparent 28%),
+ radial-gradient(circle at 90% 90%,rgba(56,119,78,.12),transparent 30%),
+ linear-gradient(135deg,#f2f7ef,#fffdf7);
+}
+.bartan{
+ background:
+ linear-gradient(rgba(247,250,244,.91),rgba(255,253,247,.96)),
+ url("https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=1800&q=75") center/cover fixed;
+}
+.bartan-card{border-color:var(--home-line);border-radius:20px;box-shadow:0 10px 28px rgba(18,57,37,.07)}
+.bartan-card h3{font-weight:800;line-height:1.4}
+.bartan-select-btn{min-height:39px;font-size:11px;border-radius:11px}
+.calculation-box{border:1px solid rgba(232,208,151,.25)}
+.booking{
+ background:
+ linear-gradient(120deg,rgba(247,250,244,.94),rgba(255,253,247,.96)),
+ url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=75") center/cover;
+}
+.booking-form{border:1px solid rgba(191,157,83,.22);box-shadow:0 24px 65px rgba(15,54,35,.14)}
+.booking-intro h2{font-weight:850;letter-spacing:-1px}
+.mini-item{border:1px solid var(--home-line);border-radius:16px;background:rgba(255,255,255,.9);padding:11px 13px}
+.contact{
+ background:
+ radial-gradient(ellipse at 0 0,rgba(209,178,103,.13),transparent 32%),
+ linear-gradient(145deg,#fffdf7,#f0f6ef);
+}
+.contact-card{border-color:var(--home-line);border-radius:19px;box-shadow:0 11px 30px rgba(18,57,37,.07)}
+.contact-card:hover{border-color:rgba(195,157,66,.48);box-shadow:0 18px 36px rgba(18,57,37,.12)}
+.contact-social>p{text-align:center;font-weight:800;color:#244633}
+.footer{
+ background:
+ radial-gradient(circle at 90% 0,rgba(215,180,96,.18),transparent 30%),
+ radial-gradient(circle at 0 100%,rgba(56,123,80,.24),transparent 35%),
+ linear-gradient(130deg,#082b1e,#123e2b 55%,#09291d);
+}
+.footer-container{gap:30px}
+.footer-brand h3{font-size:21px;letter-spacing:.1px}
+.footer-brand p,.footer-contact a,.footer-links a{color:rgba(255,255,255,.78)}
+.footer-links a:hover,.footer-contact a:hover{color:#f1d58e}
+.footer-social a{transition:transform .2s ease,background .2s ease}
+.footer-social a:hover{transform:translateY(-3px);background:#c7a14c}
+a,button{-webkit-tap-highlight-color:transparent}
+button,a{touch-action:manipulation}
+:focus-visible{outline:3px solid rgba(197,157,65,.65);outline-offset:3px}
+@media(max-width:800px){
+ body{font-size:15px}
+ .section{padding:58px 17px}
+ .section-heading{margin-bottom:28px}
+ .section-heading h2{font-size:clamp(27px,7.3vw,36px);line-height:1.2}
+ .section-heading p{font-size:13px;line-height:1.8}
+ .track-booking-section .service-card,.intro .service-card{padding:21px;border-radius:19px}
+ .gallery-grid{grid-template-columns:1fr;grid-template-rows:none;gap:13px}
+ .gallery-card,.gallery-card.large{grid-row:auto;min-height:235px;border-radius:20px}
+ .gallery-content{left:19px;right:19px;bottom:19px}
+ .gallery-content h3{font-size:22px}
+ .decoration-note{display:flex;flex-direction:column;align-items:stretch}
+ .decoration-note>div{align-items:flex-start}
+ .social-links{grid-template-columns:1fr;gap:12px}
+ .social-card{min-height:76px;padding:14px 16px;border-radius:16px}
+ .social-icon{width:45px;height:45px;min-width:45px;font-size:20px}
+ .rate-notice{margin:0 auto 22px;padding:14px;border-radius:15px}
+ .bartan-card{box-shadow:0 7px 20px rgba(18,57,37,.065)}
+ .calculation-box{gap:12px}
+ .booking-intro h2{font-size:clamp(30px,8vw,39px)}
+ .booking-form{padding:22px 18px}
+ .form-title{align-items:flex-start;flex-direction:column;gap:7px}
+ .contact-social{margin-top:30px}
+ .footer{padding:45px 18px 24px}
+ .footer-container{display:grid;grid-template-columns:1fr;gap:22px}
+ .footer-links{display:flex;flex-wrap:wrap;gap:13px 20px}
+}
+@media(max-width:380px){
+ .section{padding-left:13px;padding-right:13px}
+ .section-heading .eyebrow{font-size:9px;letter-spacing:1.2px}
+ .gallery-card,.gallery-card.large{min-height:210px}
+ .social-info strong{font-size:15px}
+ .social-info span{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
