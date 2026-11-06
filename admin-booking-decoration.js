@@ -1401,6 +1401,11 @@ function renderReturnItems(
 
 
 function updateActionButtons() {
+    // Decoration-only bookings do not use the Bartan issue/return lifecycle.
+    const pageType = document.body.dataset.bookingType || "decoration";
+    const bartanSection = $("bartanDetails")?.closest(".detail-section");
+    bartanSection?.classList.toggle("hidden", pageType === "decoration");
+    $("returnSection")?.classList.toggle("hidden", pageType === "decoration" || currentBooking?.status !== "return_pending");
     if (!currentBooking) {
         $("downloadBillBtn")?.classList.add("hidden");
         $("whatsappBillBtn")?.classList.add("hidden");
@@ -1408,10 +1413,11 @@ function updateActionButtons() {
     }
 
     const status = currentBooking.status;
+    const hasBartanWorkflow = pageType !== "decoration";
 
     $("confirmBtn")?.classList.toggle("hidden", status !== "pending");
-    $("issueBtn")?.classList.toggle("hidden", status !== "confirmed");
-    $("returnPendingBtn")?.classList.toggle("hidden", status !== "issued");
+    $("issueBtn")?.classList.toggle("hidden", !hasBartanWorkflow || status !== "confirmed");
+    $("returnPendingBtn")?.classList.toggle("hidden", !hasBartanWorkflow || status !== "issued");
 
     $("cancelBtn")?.classList.toggle(
         "hidden",
