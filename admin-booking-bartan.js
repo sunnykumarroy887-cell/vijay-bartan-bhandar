@@ -1434,6 +1434,8 @@ function renderReturnItems(
 
 
 function updateActionButtons() {
+    // Bartan-only screen must not display decoration-only detail sections.
+    $("decorationDetails")?.closest(".detail-section")?.classList.add("hidden");
     if (!currentBooking) {
         $("downloadBillBtn")?.classList.add("hidden");
         $("whatsappBillBtn")?.classList.add("hidden");
