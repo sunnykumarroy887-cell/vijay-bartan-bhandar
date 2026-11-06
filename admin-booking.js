@@ -1899,8 +1899,10 @@ async function savePayment() {
         return;
     }
 
-    if (["upi", "bank", "other"].includes(paymentMethod) && !reference) {
-        showToast("Transaction ID / UTR is required for UPI, Bank and Other payments.", "error");
+    // A proof file is an alternative to manually entering the transaction reference.
+    // If no proof is attached, require the reference for non-cash payments.
+    if (["upi", "bank", "other"].includes(paymentMethod) && !file && !reference) {
+        showToast("Payment proof upload nahi kiya hai, isliye Transaction ID / UTR zaroor bharein.", "error");
         $("paymentReference").focus();
         return;
     }
