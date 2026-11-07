@@ -360,11 +360,15 @@ document.addEventListener(
 
         setupEvents();
 
-        // This page is the combined booking flow: keep bartan selection visible,
-        // hide the duplicate decoration catalogue/toggle, and use event-wise details.
-        selectedServiceType = "both";
-        applyServiceType("both");
-        if (decorationArea) decorationArea.classList.add("hidden");
+        // Respect each page's declared service type:
+        // booking-decoration.html => decoration only
+        // booking-bartan.html => bartan only
+        // customer-booking.html (no data-service-type) => combined
+        selectedServiceType = document.body.dataset.serviceType || "both";
+        applyServiceType(selectedServiceType);
+        if (selectedServiceType === "both" && decorationArea) {
+            decorationArea.classList.add("hidden");
+        }
 
         setupTrackingEvents();
 
