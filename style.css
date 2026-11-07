@@ -3917,3 +3917,22 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
   .more-decoration-section .social-info strong{font-size:18px}
   .more-decoration-section .social-info span{font-size:12px}
 }
+
+
+/* GLOBAL SOCIAL CARDS FIX v16 — gallery AND contact/footer cards */
+.social-links{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;width:min(850px,100%)!important;margin:28px auto!important}
+.social-links>a.social-card,.more-decoration-section .social-links>a.social-card,.contact-social .social-links>a.social-card{
+ display:flex!important;align-items:center!important;position:relative!important;min-height:104px!important;padding:18px 20px!important;gap:15px!important;box-sizing:border-box!important;border:1px solid rgba(255,255,255,.38)!important;border-radius:20px!important;color:#fff!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;overflow:hidden!important;box-shadow:0 14px 30px rgba(14,48,32,.18)!important
+}
+.social-links>a.social-card.facebook-card,.more-decoration-section .social-links>a.social-card.facebook-card,.contact-social .social-links>a.social-card.facebook-card{background:linear-gradient(120deg,#0866ff,#1877f2 58%,#0849a8)!important}
+.social-links>a.social-card.instagram-card,.more-decoration-section .social-links>a.social-card.instagram-card,.contact-social .social-links>a.social-card.instagram-card{background:linear-gradient(125deg,#5b35b1,#c13584 42%,#e1306c 72%,#f6a43a)!important}
+.social-links .social-icon{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 54px!important;width:54px!important;height:54px!important;min-width:54px!important;border-radius:17px!important;background:rgba(255,255,255,.19)!important;border:1px solid rgba(255,255,255,.48)!important;color:#fff!important;opacity:1!important;visibility:visible!important}
+.social-brand-mark{display:inline-flex!important;align-items:center;justify-content:center;color:#fff!important;font-family:Arial,sans-serif;font-weight:900;line-height:1}
+.social-brand-facebook{font-size:43px;transform:translateY(5px)}
+.social-brand-instagram{font-size:43px;font-weight:500}
+.social-links .social-info{display:flex!important;flex:1 1 auto!important;min-width:0!important;flex-direction:column!important;gap:5px!important;opacity:1!important;visibility:visible!important}
+.social-links .social-info strong{display:block!important;color:#fff!important;font-size:19px!important;font-weight:850!important;line-height:1.25!important;opacity:1!important;visibility:visible!important}
+.social-links .social-info span{display:block!important;color:rgba(255,255,255,.94)!important;font-size:13px!important;line-height:1.4!important;opacity:1!important;visibility:visible!important}
+.social-links .social-arrow{display:block!important;color:#fff!important;font-size:22px!important;opacity:1!important}
+.social-links>a.social-card:hover{transform:translateY(-3px);box-shadow:0 19px 36px rgba(14,48,32,.23)!important}
+@media(max-width:650px){.social-links{grid-template-columns:1fr!important;gap:13px!important;margin:23px auto!important}.social-links>a.social-card,.more-decoration-section .social-links>a.social-card,.contact-social .social-links>a.social-card{min-height:91px!important;padding:15px 16px!important;border-radius:17px!important}.social-links .social-icon{flex-basis:49px!important;width:49px!important;height:49px!important;min-width:49px!important}.social-brand-facebook,.social-brand-instagram{font-size:38px}.social-links .social-info strong{font-size:17px!important}.social-links .social-info span{font-size:12px!important}}
