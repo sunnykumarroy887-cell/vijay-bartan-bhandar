@@ -3839,3 +3839,81 @@ html{scroll-behavior:smooth;scroll-padding-top:110px}body{color:var(--hp-ink);ba
  .bartan-grid .bartan-card-content .bartan-select-btn{min-height:40px;padding:7px;font-size:11px}
 }
 @media(max-width:360px){.bartan-grid .bartan-card{gap:7px;padding:9px}.bartan-grid .bartan-card-icon{flex-basis:36px;width:36px;height:36px}.bartan-grid .bartan-card-content h3{font-size:13px}}
+
+
+/* SOCIAL GALLERY VISIBILITY FIX — v9
+   Keep platform cards visibly branded even when generic card styles load later. */
+.more-decoration-section .social-links{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  width:min(920px,100%);
+  margin:34px auto 0;
+}
+.more-decoration-section .social-card{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  min-height:112px;
+  padding:22px 24px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:22px;
+  color:#fff !important;
+  text-decoration:none;
+  box-shadow:0 14px 32px rgba(17,55,36,.16);
+  isolation:isolate;
+}
+.more-decoration-section .social-card.facebook-card{
+  background:linear-gradient(120deg,#0866ff 0%,#1877f2 55%,#0b4eb3 100%) !important;
+}
+.more-decoration-section .social-card.instagram-card{
+  background:linear-gradient(125deg,#5b35b1 0%,#c13584 42%,#e1306c 68%,#f6a43a 100%) !important;
+}
+.more-decoration-section .social-card::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:radial-gradient(circle at 92% 12%,rgba(255,255,255,.22),transparent 36%);
+  pointer-events:none;
+}
+.more-decoration-section .social-icon{
+  flex:0 0 58px;
+  width:58px;
+  height:58px;
+  min-width:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:18px;
+  background:rgba(255,255,255,.18);
+  color:#fff !important;
+  font-size:27px;
+}
+.more-decoration-section .social-icon i{color:#fff !important;opacity:1!important}
+.more-decoration-section .social-info{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.more-decoration-section .social-info strong{
+  display:block;
+  color:#fff !important;
+  font-size:20px;
+  line-height:1.2;
+  font-weight:800;
+}
+.more-decoration-section .social-info span{
+  display:block;
+  color:rgba(255,255,255,.92) !important;
+  font-size:13px;
+  line-height:1.45;
+}
+.more-decoration-section .social-arrow{color:#fff!important;font-size:18px}
+.more-decoration-section .social-card:hover{transform:translateY(-4px);box-shadow:0 20px 38px rgba(17,55,36,.23)}
+@media(max-width:650px){
+  .more-decoration-section .social-links{grid-template-columns:1fr;gap:13px;margin-top:27px}
+  .more-decoration-section .social-card{min-height:94px;padding:17px 18px;border-radius:19px}
+  .more-decoration-section .social-icon{flex-basis:52px;width:52px;height:52px;min-width:52px;border-radius:16px}
+  .more-decoration-section .social-info strong{font-size:18px}
+  .more-decoration-section .social-info span{font-size:12px}
+}
