@@ -1,4 +1,4 @@
-const CACHE_NAME = "vijay-static-v14";
+const CACHE_NAME = "vijay-static-v15";
 const SHELL = ["/", "/index.html", "/style.css", "/assets/vijay-logo.svg", "/assets/favicon.svg", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
