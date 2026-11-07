@@ -132,7 +132,7 @@ function getCombinedDecorationEventPayloads() {
             event_date: card.querySelector(".combined-event-date").value,
             event_time: card.querySelector(".combined-event-time").value || null,
             venue_address: card.querySelector(".combined-event-venue").value.trim(),
-            decoration_details: card.querySelector(".combined-event-details").value.trim(),
+            decoration_details: card.querySelector(".combined-event-details")?.value.trim() || "",
             design_name: card.querySelector(".combined-event-design").value.trim() || null,
             files: [...(card.querySelector(".combined-event-images").files || [])]
         };
