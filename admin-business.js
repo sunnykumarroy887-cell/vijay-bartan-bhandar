@@ -129,8 +129,32 @@ function reportRows(){
  const from=$("reportFrom").value,to=$("reportTo").value,type=$("reportType").value,status=$("reportStatus").value;
  return bookings.filter(b=>(!from||String(b.event_date||"")>=from)&&(!to||String(b.event_date||"")<=to)&&serviceMatch(b,type)&&statusMatch(b,status));
 }
+let serviceMixChartInstance = null;
+let bookingStatusChartInstance = null;
+function renderReportCharts(rows){
+ if(!window.Chart) return;
+ const serviceCounts={bartan:0,decoration:0,both:0};
+ rows.forEach(b=>{
+  const type=String(b.booking_type||"").toLowerCase();
+  if(type==="both" || (b.decoration_required && Number(b.bartan_total||0)>0)) serviceCounts.both++;
+  else if(type==="decoration" || (b.decoration_required && Number(b.bartan_total||0)===0)) serviceCounts.decoration++;
+  else serviceCounts.bartan++;
+ });
+ const serviceCanvas=$("serviceMixChart"),statusCanvas=$("bookingStatusChart");
+ if(serviceCanvas){
+  if(serviceMixChartInstance)serviceMixChartInstance.destroy();
+  serviceMixChartInstance=new Chart(serviceCanvas,{type:"pie",data:{labels:["Bartan Only","Decoration Only","Combined"],datasets:[{data:[serviceCounts.bartan,serviceCounts.decoration,serviceCounts.both],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:ctx=>ctx.label+": "+ctx.raw+" bookings"}}}}});
+ }
+ if(statusCanvas){
+  const statuses=["pending","confirmed","issued","return_pending","completed","cancelled"];
+  const counts=statuses.map(s=>rows.filter(b=>String(b.status||"").toLowerCase()===s).length);
+  if(bookingStatusChartInstance)bookingStatusChartInstance.destroy();
+  bookingStatusChartInstance=new Chart(statusCanvas,{type:"bar",data:{labels:["Pending","Confirmed","Issued","Return Pending","Completed","Cancelled"],datasets:[{label:"Bookings",data:counts,borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+ }
+}
 function renderReport(){
  const rows=reportRows(),sum=k=>rows.reduce((n,b)=>n+Number(b[k]||0),0);
+ renderReportCharts(rows);
  const received=rows.reduce((n,b)=>n+(paymentTotals.get(String(b.id))||0),0);
  const pendingOnline=rows.reduce((n,b)=>n+payments.filter(p=>String(p.booking_id)===String(b.id)&&String(p.payment_method||"").toLowerCase()!=="cash"&&String(p.verification_status||"pending").toLowerCase()==="pending"&&String(p.payment_type||"").toLowerCase()!=="refund").reduce((s,p)=>s+Number(p.amount||0),0),0);
  statCards("reportStats",[["Bookings",rows.length],["Booking value",money(sum("final_total"))],["Received / verified",money(received)],["Remaining balance",money(rows.reduce((n,b)=>n+Math.max(0,Number(b.final_total||0)-(paymentTotals.get(String(b.id))||0)),0))],["Pending online claims",money(pendingOnline)],["Decoration bookings",rows.filter(b=>b.decoration_required).length]]);
