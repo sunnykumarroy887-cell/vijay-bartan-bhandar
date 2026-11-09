@@ -28,6 +28,7 @@ const supabase = createClient(
 
 let allBookings = [];
 let currentBooking = null;
+let currentBookingQuotationEvent = null;
 
 
 // ======================================================
@@ -229,6 +230,11 @@ function bindEvents() {
 
     $("downloadBillBtn")?.addEventListener("click", printBookingBill);
     $("whatsappBillBtn")?.addEventListener("click", shareBookingBillWhatsApp);
+    $("closeQuotationBtn")?.addEventListener("click", closeBookingQuotationModal);
+    $("sendQuotationBtn")?.addEventListener("click", saveBookingQuotation);
+    $("quotationModal")?.addEventListener("click", event => {
+        if (event.target === $("quotationModal")) closeBookingQuotationModal();
+    });
 
 
 
@@ -994,11 +1000,74 @@ async function loadBookingDecorations(bookingId) {
             '<div class="item-meta">Date: ' + escapeHtml(ev.event_date || "—") + ' · Time: ' + escapeHtml(ev.event_time || "—") + '</div>' +
             '<div class="item-meta">Venue: ' + escapeHtml(ev.venue_address || "—") + '</div><div class="item-meta">Design: ' + escapeHtml(ev.design_name || "—") + '</div>' +
             '<div style="white-space:pre-wrap;margin-top:6px">' + escapeHtml(ev.decoration_details || "No extra requirements") + '</div>' +
-            '<div class="item-meta" style="margin-top:7px">' + quote + '</div>' + imageHtml + '</article>';
+            '<div class="item-meta" style="margin-top:7px">' + quote + '</div>' +
+            (["cancelled", "completed"].includes(String(ev.status || "").toLowerCase()) ? "" :
+              '<div style="margin-top:10px"><button type="button" class="btn primary" data-admin-booking-quote="' + ev.id + '">' +
+              (ev.quoted_amount == null ? 'Send Quotation' : 'Edit Quotation') + '</button></div>') +
+            imageHtml + '</article>';
     }).join("");
     const legacyHtml = legacy.map(x => '<div class="item-row"><div class="item-name">' + escapeHtml(x.decoration_name || "Decoration") +
         '</div><div>Rate: ₹' + formatMoney(x.locked_rate) + ' · Amount: ₹' + formatMoney(x.amount) + '</div></div>').join("");
     box.innerHTML = eventHtml + legacyHtml;
+    box.querySelectorAll("[data-admin-booking-quote]").forEach(button => {
+        button.addEventListener("click", () => openBookingQuotationModal(Number(button.dataset.adminBookingQuote), events));
+    });
+}
+
+function openBookingQuotationModal(eventId, events) {
+    currentBookingQuotationEvent = (events || []).find(event => Number(event.id) === Number(eventId));
+    if (!currentBookingQuotationEvent) {
+        showToast("Is booking ka decoration event nahi mila.", "error");
+        return;
+    }
+    $("quotationEventLabel").textContent =
+        (currentBookingQuotationEvent.event_name || currentBookingQuotationEvent.design_name || "Decoration event") +
+        " · " + (currentBookingQuotationEvent.event_date || "");
+    $("quotationAmount").value = Number(currentBookingQuotationEvent.quoted_amount || 0);
+    $("quotationDelivery").value = Number(currentBookingQuotationEvent.delivery_charge || 0);
+    $("quotationDiscount").value = Number(currentBookingQuotationEvent.discount || 0);
+    $("quotationMessage").value = "";
+    $("quotationModal").classList.remove("hidden");
+}
+
+function closeBookingQuotationModal() {
+    $("quotationModal")?.classList.add("hidden");
+    currentBookingQuotationEvent = null;
+}
+
+async function saveBookingQuotation() {
+    if (!currentBookingQuotationEvent) return;
+    const amount = Number($("quotationAmount").value);
+    const delivery = Number($("quotationDelivery").value);
+    const discount = Number($("quotationDiscount").value);
+    if (![amount, delivery, discount].every(Number.isFinite) ||
+        amount < 0 || delivery < 0 || discount < 0 || discount > amount + delivery) {
+        showToast("Quotation amount, delivery aur discount sahi enter karein.", "error");
+        return;
+    }
+    const button = $("sendQuotationBtn");
+    button.disabled = true;
+    button.textContent = "Saving…";
+    try {
+        const { error } = await supabase.rpc("admin_set_decoration_quotation", {
+            p_event_id: currentBookingQuotationEvent.id,
+            p_quoted_amount: amount,
+            p_delivery_charge: delivery,
+            p_discount: discount,
+            p_message: $("quotationMessage").value.trim() || null
+        });
+        if (error) throw error;
+        closeBookingQuotationModal();
+        showToast("Combined booking quotation save ho gaya. Customer approval ke liye available hai.", "success");
+        await loadBookings();
+        if (currentBooking) await openBookingDetails(currentBooking.id);
+    } catch (error) {
+        console.error("Booking quotation save failed:", error);
+        showToast(error.message || "Quotation save nahi hua.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Save & Send Quotation";
+    }
 }
 
 
