@@ -37,6 +37,9 @@ let bartanItems = [];
 let decorations = [];
 let bookings = [];
 let selectedBookingId = null;
+const bookingMode = new URLSearchParams(location.search).get("type") || "both";
+const isDecorationOnly = bookingMode === "decoration";
+const isBartanOnly = bookingMode === "bartan";
 
 
 // =========================================================
@@ -1435,31 +1438,18 @@ async function saveBooking(event) {
     }
 
 
-    let selectedItems;
-
-
-    try {
-
-        selectedItems =
-            collectBartanItems();
-
-    } catch (error) {
-
-        showToast(
-            error.message
-        );
-
-        return;
-    }
-
-
-    if (!selectedItems.length) {
-
-        showToast(
-            "At least one Bartan item is required."
-        );
-
-        return;
+    let selectedItems = [];
+    if (!isDecorationOnly) {
+        try {
+            selectedItems = collectBartanItems();
+        } catch (error) {
+            showToast(error.message);
+            return;
+        }
+        if (!selectedItems.length) {
+            showToast("At least one Bartan item is required.");
+            return;
+        }
     }
 
 
@@ -1492,9 +1482,12 @@ async function saveBooking(event) {
         null;
 
 
-    const decorationRequired =
-        $("decorationRequired")
-            .checked;
+    const decorationRequired = isDecorationOnly || (!isBartanOnly && $("decorationRequired").checked);
+    if (decorationRequired && !$("decorationSelect")?.value) {
+        showToast("Please select a Decoration Service.");
+        $("decorationSelect")?.focus();
+        return;
+    }
 
 
     const decorationCharge =
@@ -1685,6 +1678,9 @@ async function saveBooking(event) {
                     booking_number:
                         bookingNumber,
 
+                    booking_type:
+                        isDecorationOnly ? "decoration" : (isBartanOnly ? "bartan" : (decorationRequired ? "both" : "bartan")),
+
                     customer_name:
                         customerName,
 
@@ -1770,15 +1766,10 @@ async function saveBooking(event) {
             );
 
 
-        const {
-            error: itemError
-        } =
-            await supabase
-                .from("booking_items")
-                .insert(
-                    bookingItems
-                );
-
+        const itemInsert = bookingItems.length
+            ? await supabase.from("booking_items").insert(bookingItems)
+            : { error: null };
+        const itemError = itemInsert.error;
 
         if (itemError) {
 
@@ -2979,6 +2970,21 @@ async function initialize() {
     ]);
 
 
+    // Match the selected admin booking type before showing the form.
+    const bartanSection = document.querySelector(".form-section:has(#bartanSelection)");
+    const decorationSection = document.querySelector(".form-section:has(#decorationRequired)");
+    if (bartanSection) bartanSection.hidden = isDecorationOnly;
+    if (decorationSection) {
+        decorationSection.hidden = isBartanOnly;
+        if (isDecorationOnly) {
+            $("decorationRequired").checked = true;
+            $("decorationBox").hidden = false;
+        }
+    }
+    const heading = document.querySelector("#bookingFormCard .card-heading h3");
+    if (heading) heading.textContent = isDecorationOnly ? "Create Decoration Booking" : (isBartanOnly ? "Create Bartan Booking" : "Create Combined Booking");
+    const helper = document.querySelector("#bookingFormCard .card-heading p");
+    if (helper) helper.textContent = isDecorationOnly ? "Enter customer and decoration event details." : (isBartanOnly ? "Enter customer and bartan rental details." : "Enter customer, bartan and decoration details.");
     calculateTotals();
 
 }
