@@ -1014,8 +1014,18 @@ async function loadBookingDecorations(bookingId) {
             '<div class="item-meta" style="margin-top:4px">Venue: ' + escapeHtml(event.venue_address || "—") + '</div>' +
             '<div class="item-meta" style="margin-top:4px">Design: ' + escapeHtml(event.design_name || "—") + '</div>' +
             '<div style="margin-top:8px;white-space:pre-wrap">' + escapeHtml(event.decoration_details || "No extra decoration details") + '</div>' +
-            '<div class="item-meta" style="margin-top:7px">' + (event.quoted_amount == null ? 'Quotation not sent' : 'Quotation: ₹' + formatMoney(event.quoted_amount) + ' · Delivery: ₹' + formatMoney(event.delivery_charge) + ' · Discount: ₹' + formatMoney(event.discount) + ' · Status: ' + escapeHtml(event.status || 'pending')) + '</div>' +
-            '<div style="margin-top:10px"><button type="button" class="btn primary" data-combination-quote="' + event.id + '"' + (["cancelled","completed"].includes(event.status) ? ' disabled' : '') + '>Send / Edit Quotation</button></div>' +
+            '<div class="item-meta combination-quotation-status" style="margin-top:10px;padding:10px 12px;border-radius:10px;background:#f1f7f2;border:1px solid #d7e8dc">' +
+              (event.quoted_amount == null
+                ? '<strong style="color:#9a6b16">Quotation not sent yet</strong>'
+                : '<strong style="color:#176b4b">Quotation saved: ₹' + formatMoney(event.quoted_amount) + '</strong><br>Delivery: ₹' + formatMoney(event.delivery_charge) + ' · Discount: ₹' + formatMoney(event.discount) + ' · Status: ' + escapeHtml(event.status || 'pending')) +
+            '</div>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">' +
+              '<button type="button" class="btn primary" data-combination-quote="' + event.id + '"' +
+                (["cancelled","completed"].includes(String(event.status || "").toLowerCase()) ? ' disabled title="Cancelled/completed events cannot be quoted"' : '') +
+                ' style="min-height:44px;padding:10px 18px;font-weight:700">' +
+                (event.quoted_amount == null ? '📩 Send Quotation to Customer' : '✏️ Edit & Resend Quotation') +
+              '</button>' +
+            '</div>' +
             imageHtml + '</article>';
     }).join("");
     const legacyHtml = legacy.map(item =>
