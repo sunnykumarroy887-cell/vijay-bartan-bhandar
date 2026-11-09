@@ -3033,10 +3033,10 @@ async function initialize() {
 
 
     // Other data can load afterwards.
-    await Promise.all([
-        loadDecorations(),
-        loadBookings()
-    ]);
+    await loadDecorations();
+    // The New Booking screen does not show booking history. Avoid fetching
+    // all existing customer records here; the dedicated management page owns it.
+    if (!isAdminBooking) await loadBookings();
 
 
     // Admin New Booking is a focused form. Existing booking history remains
