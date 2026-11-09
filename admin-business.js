@@ -139,24 +139,106 @@ function reportRows(){
 }
 let serviceMixChartInstance = null;
 let bookingStatusChartInstance = null;
+
+// Draw real numeric values directly on chart segments/bars. This avoids
+// relying on a third-party datalabel plugin and works on mobile canvases.
+const reportValueLabels = {
+ id: "reportValueLabels",
+ afterDatasetsDraw(chart) {
+  const {ctx} = chart;
+  const isPie = chart.config.type === "pie";
+  ctx.save();
+  chart.data.datasets.forEach((dataset, datasetIndex) => {
+   const meta = chart.getDatasetMeta(datasetIndex);
+   meta.data.forEach((element, index) => {
+    const value = Number(dataset.data[index] || 0);
+    if (!value) return;
+    const label = String(value);
+    ctx.font = "700 12px Inter, system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (isPie) {
+     const pos = element.tooltipPosition();
+     const bg = dataset.backgroundColor;
+     ctx.fillStyle = "#fff";
+     ctx.shadowColor = "rgba(0,0,0,.28)";
+     ctx.shadowBlur = 3;
+     ctx.fillText(label, pos.x, pos.y);
+     ctx.shadowBlur = 0;
+    } else {
+     const pos = element.tooltipPosition();
+     ctx.fillStyle = "#173e32";
+     ctx.textAlign = "left";
+     ctx.fillText(label, pos.x + 8, pos.y);
+    }
+   });
+  });
+  ctx.restore();
+ }
+};
+
 function renderReportCharts(rows){
  if(!window.Chart) return;
  const serviceCounts={bartan:0,decoration:0,both:0};
- rows.forEach(b=>{
-  const type=String(b.booking_type||"").toLowerCase();
-  const resolved=resolvedBookingType(b);
-  serviceCounts[resolved]++;
- });
+ rows.forEach(b=>{ serviceCounts[resolvedBookingType(b)]++; });
  const serviceCanvas=$("serviceMixChart"),statusCanvas=$("bookingStatusChart");
  if(serviceCanvas){
   if(serviceMixChartInstance)serviceMixChartInstance.destroy();
-  serviceMixChartInstance=new Chart(serviceCanvas,{type:"pie",data:{labels:["Bartan Only","Decoration Only","Combined"],datasets:[{data:[serviceCounts.bartan,serviceCounts.decoration,serviceCounts.both],backgroundColor:["#176b4b","#d9a441","#d9798b"],hoverBackgroundColor:["#0f5037","#bf8b2c","#bd5b70"],borderWidth:3,borderColor:"#fff",hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:ctx=>ctx.label+": "+ctx.raw+" bookings"}}}}});
+  serviceMixChartInstance=new Chart(serviceCanvas,{
+   type:"pie",
+   data:{
+    labels:["Bartan Only","Decoration Only","Combined"],
+    datasets:[{
+     data:[serviceCounts.bartan,serviceCounts.decoration,serviceCounts.both],
+     backgroundColor:["#176b4b","#d9a441","#d9798b"],
+     hoverBackgroundColor:["#0f5037","#bf8b2c","#bd5b70"],
+     borderWidth:4,borderColor:"#fff",hoverOffset:12,
+     spacing:2
+    }]
+   },
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    layout:{padding:12},
+    plugins:{
+     legend:{position:"bottom",labels:{usePointStyle:true,pointStyle:"rectRounded",padding:18,boxWidth:15,font:{size:12}}},
+     tooltip:{callbacks:{label:ctx=>{
+      const total=ctx.dataset.data.reduce((a,v)=>a+Number(v||0),0);
+      const count=Number(ctx.raw||0);
+      const pct=total?Math.round(count/total*100):0;
+      return ctx.label+": "+count+" bookings ("+pct+"%)";
+     }}}
+    }
+   },
+   plugins:[reportValueLabels]
+  });
  }
  if(statusCanvas){
   const statuses=["pending","confirmed","issued","return_pending","completed","cancelled"];
   const counts=statuses.map(s=>rows.filter(b=>String(b.status||"").toLowerCase()===s).length);
   if(bookingStatusChartInstance)bookingStatusChartInstance.destroy();
-  bookingStatusChartInstance=new Chart(statusCanvas,{type:"bar",data:{labels:["Pending","Confirmed","Issued","Return Pending","Completed","Cancelled"],datasets:[{label:"Bookings",data:counts,backgroundColor:["#d9a441","#2b8a62","#4e9cc5","#e28b42","#24734f","#c75b55"],hoverBackgroundColor:["#bd8b2e","#216f4e","#397fa2","#c87530","#185a3b","#a9443f"],borderRadius:9,borderSkipped:false,borderWidth:0,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  bookingStatusChartInstance=new Chart(statusCanvas,{
+   type:"bar",
+   data:{
+    labels:["Pending","Confirmed","Issued","Return Pending","Completed","Cancelled"],
+    datasets:[{
+     label:"Bookings",data:counts,
+     backgroundColor:["#d9a441","#2b8a62","#4e9cc5","#e28b42","#24734f","#c75b55"],
+     hoverBackgroundColor:["#bd8b2e","#216f4e","#397fa2","#c87530","#185a3b","#a9443f"],
+     borderRadius:8,borderSkipped:false,borderWidth:0,maxBarThickness:28,
+     barPercentage:.72,categoryPercentage:.78
+    }]
+   },
+   options:{
+    indexAxis:"y",responsive:true,maintainAspectRatio:false,
+    layout:{padding:{right:24,left:2}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>" "+ctx.raw+" bookings"}}},
+    scales:{
+     x:{beginAtZero:true,ticks:{precision:0,stepSize:1},grid:{color:"rgba(23,62,50,.10)"}},
+     y:{grid:{display:false},ticks:{font:{size:12},color:"#42564a"}}
+    }
+   },
+   plugins:[reportValueLabels]
+  });
  }
 }
 function renderReport(){
