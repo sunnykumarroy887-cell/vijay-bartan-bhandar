@@ -1542,7 +1542,9 @@ async function saveBooking(event) {
     if (adminDecorationRows.some(e => !e.event_name || !e.event_date || !e.venue_address || !e.decoration_details)) { showToast("Har Decoration Event ka type, date, venue aur requirements bharein."); return; }
     if (adminDecorationRows.some(e => e.event_date < (eventDate || new Date().toISOString().slice(0,10)))) { showToast("Decoration event ki date booking date se pehle nahi ho sakti."); return; }
     if (adminDecorationRows.some(e => e.files.length > 3 || e.files.some(f => !["image/jpeg","image/png","image/webp","image/gif"].includes(f.type) || f.size > 2*1024*1024))) { showToast("Har event mein maximum 3 valid photos, 2 MB each allowed hain."); return; }
-    if (decorationRequired && !$("decorationSelect")?.value) {
+    // Admin decoration bookings select the event/design in each event card.
+    // The legacy single-decoration dropdown is retained only for customer flow.
+    if (!isAdminBooking && decorationRequired && !$("decorationSelect")?.value) {
         showToast("Please select a Decoration Service.");
         $("decorationSelect")?.focus();
         return;
@@ -3050,19 +3052,38 @@ async function initialize() {
     const decorationToggle = document.querySelector(".decoration-toggle");
     if (decorationToggle) decorationToggle.hidden = isAdminBooking;
     if ($("decorationRequired")) $("decorationRequired").checked = isAdminBooking ? !isBartanOnly : isDecorationOnly;
-    if ($("decorationBox")) $("decorationBox").hidden = isAdminBooking ? isBartanOnly : !isDecorationOnly;
+    if ($("decorationBox")) $("decorationBox").hidden = isAdminBooking ? true : !isDecorationOnly;
+
+    // Admin booking uses the event cards as the decoration selector. Remove
+    // the duplicate legacy selector box and place its single manual charge
+    // field inside Charges & Payment instead.
+    const decorationSelectField = $("decorationSelect")?.closest(".field");
+    const decorationChargeField = $("decorationCharge")?.closest(".field");
+    const chargesGrid = [...document.querySelectorAll(".form-section")].find(section =>
+        section.querySelector(".section-title")?.textContent.includes("Charges & Payment")
+    )?.querySelector(".form-grid");
+    if (isAdminBooking) {
+        if (decorationSelectField) decorationSelectField.hidden = true;
+        if (decorationChargeField && chargesGrid) {
+            const chargeLabel = decorationChargeField.querySelector("label");
+            if (chargeLabel) chargeLabel.textContent = "Decoration Charge (₹)";
+            decorationChargeField.hidden = isBartanOnly;
+            chargesGrid.prepend(decorationChargeField);
+        }
+    }
 
     // Match the selected admin booking type before showing the form.
     const bartanSection = document.querySelector(".form-section:has(#bartanSelection)");
     const decorationSection = document.querySelector(".form-section:has(#decorationRequired)");
     if (bartanSection) bartanSection.hidden = isDecorationOnly;
+    if (decorationSection) decorationSection.hidden = isAdminBooking || isBartanOnly;
     const eventSection = $("adminDecorationEventsSection");
     if (eventSection) eventSection.hidden = !isAdminBooking || isBartanOnly;
     const eventList = $("adminDecorationEventsList");
     if (isAdminBooking && !isBartanOnly && eventList && !eventList.children.length) addAdminDecorationEvent();
     $("adminAddDecorationEvent")?.addEventListener("click", addAdminDecorationEvent);
 
-    if (decorationSection) {
+    if (!isAdminBooking && decorationSection) {
         decorationSection.hidden = isBartanOnly;
         if (!isBartanOnly) {
             $("decorationRequired").checked = true;
