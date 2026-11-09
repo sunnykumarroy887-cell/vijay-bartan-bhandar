@@ -1502,3 +1502,15 @@ tbody tr:hover {
     }
 }
 /* Responsive finish: legacy customer booking page */ *,*::before,*::after{box-sizing:border-box}html,body{width:100%;min-width:320px;overflow-x:hidden}.page-container{width:min(1080px,calc(100% - 40px));margin-inline:auto}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{min-width:0}.field input,.field select,.field textarea{width:100%;min-width:0;max-width:100%}.table-wrapper{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:560px}@media(max-width:800px){.page-container{width:calc(100% - 28px)}.form-grid{grid-template-columns:1fr}.card{padding:19px!important}.page-header{gap:12px;flex-wrap:wrap}}@media(max-width:560px){.page-container{width:calc(100% - 20px)}.topbar{gap:10px;flex-wrap:wrap}.top-actions{display:flex;flex-wrap:wrap}.top-btn{min-height:40px}.card{padding:16px!important}.form-actions{display:grid;grid-template-columns:1fr}.btn-primary,.btn-secondary{width:100%;min-height:46px}}
+
+/* Admin booking form responsive layout refinement */
+.page-container{width:min(1180px,calc(100% - 40px));min-width:0}
+.card,.form-section,.form-grid,.field{min-width:0}
+.form-section{padding:clamp(16px,2vw,24px);margin:16px 0;border:1px solid #e1e9df;border-radius:18px;background:#fffefa;box-shadow:0 8px 24px rgba(18,63,45,.06)}
+.form-section .section-title{color:#174b35;font-weight:800}
+.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.form-grid .field.full{grid-column:1/-1}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;max-width:100%;min-width:0}
+.bartan-row{min-width:0}
+@media(max-width:760px){.page-container{width:calc(100% - 28px)}.form-grid{grid-template-columns:1fr}.form-grid .field.full{grid-column:auto}.form-section{padding:16px;margin:12px 0}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .btn{width:100%;min-height:46px}}
+@media(max-width:420px){.page-container{width:calc(100% - 18px)}.card{padding:13px!important}.bartan-row{grid-template-columns:1fr}.bartan-row .item-select{grid-column:auto}.topbar{align-items:center}.top-actions{flex-direction:row;flex-wrap:wrap}}
