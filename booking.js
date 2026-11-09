@@ -117,6 +117,60 @@ function showToast(message) {
 
 
 // =========================================================
+// =========================================================
+// ADMIN DECORATION EVENT DETAILS
+// =========================================================
+function renumberAdminDecorationEvents() {
+    const list = $("adminDecorationEventsList");
+    if (!list) return;
+    [...list.children].forEach((card, index) => {
+        const title = card.querySelector(".admin-decoration-event-title");
+        if (title) title.textContent = "Decoration Event " + (index + 1);
+        const remove = card.querySelector(".admin-remove-decoration-event");
+        if (remove) remove.disabled = list.children.length <= 1;
+    });
+}
+function addAdminDecorationEvent() {
+    const list = $("adminDecorationEventsList"), template = $("adminDecorationEventTemplate");
+    if (!list || !template) return;
+    if (list.children.length >= 10) return showToast("Ek booking mein maximum 10 decoration events add kar sakte hain.");
+    const card = template.content.cloneNode(true).querySelector(".admin-decoration-event");
+    card.querySelector(".admin-event-date").min = $("eventDate")?.value || new Date().toISOString().slice(0,10);
+    const type = card.querySelector(".admin-event-name"), customWrap = card.querySelector(".admin-event-custom-wrap"), customInput = card.querySelector(".admin-event-custom");
+    type.addEventListener("change", () => { const custom = type.value === "Other (Custom)"; customWrap.hidden = !custom; customInput.required = custom; if (!custom) customInput.value = ""; });
+    card.querySelector(".admin-remove-decoration-event").addEventListener("click", () => { if (list.children.length <= 1) return showToast("Kam se kam ek decoration event rakhein."); card.remove(); renumberAdminDecorationEvents(); });
+    const input = card.querySelector(".admin-event-images"), preview = card.querySelector(".admin-event-preview");
+    input.addEventListener("change", () => {
+        preview.replaceChildren(); const files = [...(input.files || [])];
+        if (files.length > 3 || files.some(f => !["image/jpeg","image/png","image/webp","image/gif"].includes(f.type) || f.size > 2*1024*1024)) { input.value=""; return showToast("Har event ke liye JPG/PNG/WEBP/GIF format mein maximum 3 photos, 2 MB each select karein."); }
+        files.forEach(file => { const img=document.createElement("img"); img.src=URL.createObjectURL(file); img.alt="Decoration reference photo"; img.style.cssText="width:76px;height:68px;object-fit:cover;border-radius:9px"; preview.append(img); });
+    });
+    list.append(card); renumberAdminDecorationEvents();
+}
+function getAdminDecorationEventRows() {
+    const list=$("adminDecorationEventsList"); if(!list) return [];
+    return [...list.children].map(card => {
+        const selected=card.querySelector(".admin-event-name").value, custom=card.querySelector(".admin-event-custom").value.trim();
+        return {event_name:selected==="Other (Custom)"?custom:selected,event_date:card.querySelector(".admin-event-date").value,event_time:card.querySelector(".admin-event-time").value||null,venue_address:card.querySelector(".admin-event-venue").value.trim(),decoration_details:card.querySelector(".admin-event-details").value.trim(),design_name:card.querySelector(".admin-event-design").value.trim()||null,files:[...(card.querySelector(".admin-event-images").files||[])]};
+    });
+}
+async function saveAdminDecorationEvents(bookingId,eventRows) {
+    const rows=[];
+    for(let i=0;i<eventRows.length;i++){
+        const event=eventRows[i],urls=[];
+        for(let j=0;j<event.files.length;j++){
+            const file=event.files[j],ext=file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+            const path=ADMIN_UID+"/"+bookingId+"/"+Date.now()+"-"+i+"-"+j+"."+ext;
+            const upload=await supabase.storage.from("decoration-images").upload(path,file,{contentType:file.type,upsert:false});
+            if(upload.error) throw new Error("Decoration photo upload failed: "+upload.error.message);
+            const {data}=supabase.storage.from("decoration-images").getPublicUrl(path); urls.push(data.publicUrl);
+        }
+        rows.push({booking_id:Number(bookingId),event_name:event.event_name,event_date:event.event_date,event_time:event.event_time,venue_address:event.venue_address,decoration_details:event.decoration_details,design_name:event.design_name,reference_image_urls:urls});
+    }
+    const {error}=await supabase.from("booking_events").insert(rows);
+    if(error) throw new Error("Booking save ho gayi, lekin event details save nahi ho sakin. Admin se booking number ke saath sampark karein. "+error.message);
+}
+
 // ADMIN AUTHORIZATION
 //
 // IMPORTANT:
@@ -1484,6 +1538,10 @@ async function saveBooking(event) {
 
 
     const decorationRequired = isAdminBooking ? !isBartanOnly : (!isBartanOnly && $("decorationRequired").checked);
+    const adminDecorationRows = isAdminBooking && decorationRequired ? getAdminDecorationEventRows() : [];
+    if (adminDecorationRows.some(e => !e.event_name || !e.event_date || !e.venue_address || !e.decoration_details)) { showToast("Har Decoration Event ka type, date, venue aur requirements bharein."); return; }
+    if (adminDecorationRows.some(e => e.event_date < (eventDate || new Date().toISOString().slice(0,10)))) { showToast("Decoration event ki date booking date se pehle nahi ho sakti."); return; }
+    if (adminDecorationRows.some(e => e.files.length > 3 || e.files.some(f => !["image/jpeg","image/png","image/webp","image/gif"].includes(f.type) || f.size > 2*1024*1024))) { showToast("Har event mein maximum 3 valid photos, 2 MB each allowed hain."); return; }
     if (decorationRequired && !$("decorationSelect")?.value) {
         showToast("Please select a Decoration Service.");
         $("decorationSelect")?.focus();
@@ -1737,6 +1795,9 @@ async function saveBooking(event) {
         }
 
 
+        // Save event-level details and reference photos for Decoration / Combined bookings.
+        if (adminDecorationRows.length) await saveAdminDecorationEvents(booking.id, adminDecorationRows);
+
         // =================================================
         // INSERT BARTAN ITEMS
         // =================================================
@@ -1957,6 +2018,9 @@ function resetBookingForm() {
 
     }
 
+
+    const eventList = $("adminDecorationEventsList");
+    if (eventList) { eventList.replaceChildren(); if (isAdminBooking && !isBartanOnly && $("adminDecorationEventsSection") && !$("adminDecorationEventsSection").hidden) addAdminDecorationEvent(); }
 
     if ($("bartanSelection")) {
 
@@ -2991,6 +3055,12 @@ async function initialize() {
     const bartanSection = document.querySelector(".form-section:has(#bartanSelection)");
     const decorationSection = document.querySelector(".form-section:has(#decorationRequired)");
     if (bartanSection) bartanSection.hidden = isDecorationOnly;
+    const eventSection = $("adminDecorationEventsSection");
+    if (eventSection) eventSection.hidden = !isAdminBooking || isBartanOnly;
+    const eventList = $("adminDecorationEventsList");
+    if (isAdminBooking && !isBartanOnly && eventList && !eventList.children.length) addAdminDecorationEvent();
+    $("adminAddDecorationEvent")?.addEventListener("click", addAdminDecorationEvent);
+
     if (decorationSection) {
         decorationSection.hidden = isBartanOnly;
         if (!isBartanOnly) {
