@@ -39,10 +39,11 @@ payments.forEach(p=>{
 });
 function resolvedBookingType(b){
  const stored=String(b.booking_type||"").toLowerCase();
- if(["bartan","decoration","both"].includes(stored)) return stored;
- const hasDecoration=!!b.decoration_required||Number(b.decoration_charge||0)>0;
- const hasBartan=Number(b.bartan_total||0)>0;
- return hasDecoration?(hasBartan?"both":"decoration"):"bartan";
+ const hasDecoration=!!b.decoration_required||Number(b.decoration_charge||0)>0||Number(b.decoration_count||0)>0;
+ const hasBartan=Number(b.bartan_total||0)>0||Number(b.bartan_count||0)>0;
+ if(hasDecoration) return hasBartan?"both":"decoration";
+ if(hasBartan) return "bartan";
+ return ["bartan","decoration","both"].includes(stored)?stored:"bartan";
 }
 function serviceMatch(b,type){return type==="all"||resolvedBookingType(b)===type;}
 function statusMatch(b,status){return status==="all"||String(b.status||"").toLowerCase()===status;}
