@@ -2082,3 +2082,14 @@ a {
 }
 
 #paymentProof{display:block;width:100%;max-width:100%;padding:10px;border:1px solid #d9dfd4;border-radius:10px;background:#fff}.view-payment-proof-btn{margin-top:5px;padding:6px 10px;border:1px solid #c7d9c8;border-radius:8px;background:#eef7ee;color:#215a42;font-weight:700;cursor:pointer}
+
+
+/* Finance panel responsive layout refinement */
+.money-main{width:min(1500px,calc(100% - 48px));margin:24px auto;min-width:0}
+.summary-section{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.summary-card{min-width:0;overflow-wrap:anywhere}
+.control-section{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:14px;align-items:center}
+.filter-group{display:flex;flex-wrap:wrap;gap:10px}
+.table-wrapper,.table-wrap,.collection-table-wrapper{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:1000px){.money-main{width:calc(100% - 32px)}.summary-section{grid-template-columns:repeat(2,minmax(0,1fr))}.control-section{grid-template-columns:1fr}.filter-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.money-main{width:calc(100% - 20px);margin:14px auto}.money-header{flex-wrap:wrap;gap:10px}.money-header-actions{width:100%;display:flex;gap:8px}.summary-section{grid-template-columns:1fr 1fr;gap:9px}.summary-card{padding:13px!important}.filter-group{grid-template-columns:1fr}.search-box,.search-box input{width:100%;min-width:0}.table-wrapper table,.table-wrap table{min-width:700px}}
