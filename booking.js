@@ -1913,13 +1913,17 @@ function resetBookingForm() {
     $("bookingForm").reset();
 
 
-    if ($("decorationBox")) {
-
-        $("decorationBox")
-            .hidden = true;
-
+    if ($("decorationRequired")) {
+        $("decorationRequired").checked = isDecorationOnly;
     }
 
+    if ($("decorationBox")) {
+        $("decorationBox").hidden = !isDecorationOnly;
+    }
+
+    if ($("decorationSelect")) {
+        $("decorationSelect").value = "";
+    }
 
     if ($("decorationCharge")) {
 
