@@ -1534,3 +1534,38 @@ tbody tr:hover {
  #adminDecorationEventsSection .admin-decoration-event .field{grid-column:1}
  #adminDecorationEventsSection #adminAddDecorationEvent{width:100%;min-height:46px}
 }
+
+
+/* Admin New Booking: keep service-specific fields clean and responsive. */
+body:has(#adminDecorationEventsSection) #bookingHistoryCard[hidden]{display:none!important}
+body:has(#adminDecorationEventsSection) .form-section[hidden]{display:none!important}
+body:has(#adminDecorationEventsSection) #decorationBox[hidden]{display:none!important}
+body:has(#adminDecorationEventsSection) #adminDecorationEventsSection:not([hidden]){
+  border:1px solid #d8e6d9;
+  background:linear-gradient(145deg,#fffefa,#f3f8f1);
+  box-shadow:0 12px 30px rgba(18,63,45,.08);
+}
+body:has(#adminDecorationEventsSection) #adminDecorationEventsSection .admin-decoration-event{
+  border:1px solid #dce8dc!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:0 5px 18px rgba(18,63,45,.06);
+}
+body:has(#adminDecorationEventsSection) #adminDecorationEventsSection .admin-decoration-event-title{
+  color:#174b35;
+  font-size:1rem;
+}
+body:has(#adminDecorationEventsSection) #adminDecorationEventsSection .admin-event-images{
+  min-height:46px;
+}
+body:has(#adminDecorationEventsSection) #bookingFormCard .form-actions{
+  gap:12px;
+}
+@media(max-width:760px){
+ body:has(#adminDecorationEventsSection) #adminDecorationEventsSection .admin-decoration-event{
+  grid-template-columns:minmax(0,1fr);
+ }
+ body:has(#adminDecorationEventsSection) #adminDecorationEventsSection .admin-decoration-event>div:first-child{
+  grid-column:1;
+ }
+}
