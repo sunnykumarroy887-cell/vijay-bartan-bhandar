@@ -1514,3 +1514,23 @@ tbody tr:hover {
 .bartan-row{min-width:0}
 @media(max-width:760px){.page-container{width:calc(100% - 28px)}.form-grid{grid-template-columns:1fr}.form-grid .field.full{grid-column:auto}.form-section{padding:16px;margin:12px 0}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .btn{width:100%;min-height:46px}}
 @media(max-width:420px){.page-container{width:calc(100% - 18px)}.card{padding:13px!important}.bartan-row{grid-template-columns:1fr}.bartan-row .item-select{grid-column:auto}.topbar{align-items:center}.top-actions{flex-direction:row;flex-wrap:wrap}}
+
+
+/* Admin event-detail cards: responsive mobile + desktop */
+#adminDecorationEventsSection .admin-decoration-event{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#adminDecorationEventsSection .admin-decoration-event>div:first-child{grid-column:1/-1}
+#adminDecorationEventsSection .admin-decoration-event .field{min-width:0}
+#adminDecorationEventsSection .admin-decoration-event input,
+#adminDecorationEventsSection .admin-decoration-event select,
+#adminDecorationEventsSection .admin-decoration-event textarea{width:100%;min-width:0}
+#adminDecorationEventsSection .admin-event-venue,
+#adminDecorationEventsSection .admin-event-details,
+#adminDecorationEventsSection .admin-event-images{grid-column:auto}
+#adminDecorationEventsSection .admin-event-preview img{max-width:100%}
+#adminDecorationEventsSection [hidden]{display:none!important}
+@media(max-width:640px){
+ #adminDecorationEventsSection .admin-decoration-event{grid-template-columns:minmax(0,1fr);padding:13px!important}
+ #adminDecorationEventsSection .admin-decoration-event>div:first-child{grid-column:1}
+ #adminDecorationEventsSection .admin-decoration-event .field{grid-column:1}
+ #adminDecorationEventsSection #adminAddDecorationEvent{width:100%;min-height:46px}
+}
