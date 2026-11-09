@@ -40,6 +40,7 @@ let selectedBookingId = null;
 const bookingMode = new URLSearchParams(location.search).get("type") || "both";
 const isDecorationOnly = bookingMode === "decoration";
 const isBartanOnly = bookingMode === "bartan";
+const isAdminBooking = new URLSearchParams(location.search).get("admin") === "1";
 
 
 // =========================================================
@@ -1482,7 +1483,7 @@ async function saveBooking(event) {
         null;
 
 
-    const decorationRequired = isDecorationOnly || (!isBartanOnly && $("decorationRequired").checked);
+    const decorationRequired = !isBartanOnly;
     if (decorationRequired && !$("decorationSelect")?.value) {
         showToast("Please select a Decoration Service.");
         $("decorationSelect")?.focus();
@@ -1914,11 +1915,11 @@ function resetBookingForm() {
 
 
     if ($("decorationRequired")) {
-        $("decorationRequired").checked = isDecorationOnly;
+        $("decorationRequired").checked = !isBartanOnly;
     }
 
     if ($("decorationBox")) {
-        $("decorationBox").hidden = !isDecorationOnly;
+        $("decorationBox").hidden = isBartanOnly;
     }
 
     if ($("decorationSelect")) {
@@ -2974,13 +2975,25 @@ async function initialize() {
     ]);
 
 
+    // Admin New Booking is a focused form. Existing booking history remains
+    // in the single dedicated All Bookings management page.
+    const historyCard = $("bookingHistoryCard");
+    if (isAdminBooking && historyCard) historyCard.hidden = true;
+
+    // Booking type is selected on the previous screen, so the decoration
+    // toggle is not needed. Decoration-only and Combined always include it.
+    const decorationToggle = document.querySelector(".decoration-toggle");
+    if (decorationToggle) decorationToggle.hidden = true;
+    if ($("decorationRequired")) $("decorationRequired").checked = !isBartanOnly;
+    if ($("decorationBox")) $("decorationBox").hidden = isBartanOnly;
+
     // Match the selected admin booking type before showing the form.
     const bartanSection = document.querySelector(".form-section:has(#bartanSelection)");
     const decorationSection = document.querySelector(".form-section:has(#decorationRequired)");
     if (bartanSection) bartanSection.hidden = isDecorationOnly;
     if (decorationSection) {
         decorationSection.hidden = isBartanOnly;
-        if (isDecorationOnly) {
+        if (!isBartanOnly) {
             $("decorationRequired").checked = true;
             $("decorationBox").hidden = false;
         }
