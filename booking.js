@@ -1483,7 +1483,7 @@ async function saveBooking(event) {
         null;
 
 
-    const decorationRequired = !isBartanOnly;
+    const decorationRequired = isAdminBooking ? !isBartanOnly : (!isBartanOnly && $("decorationRequired").checked);
     if (decorationRequired && !$("decorationSelect")?.value) {
         showToast("Please select a Decoration Service.");
         $("decorationSelect")?.focus();
@@ -1915,11 +1915,11 @@ function resetBookingForm() {
 
 
     if ($("decorationRequired")) {
-        $("decorationRequired").checked = !isBartanOnly;
+        $("decorationRequired").checked = isAdminBooking ? !isBartanOnly : isDecorationOnly;
     }
 
     if ($("decorationBox")) {
-        $("decorationBox").hidden = isBartanOnly;
+        $("decorationBox").hidden = isAdminBooking ? isBartanOnly : !isDecorationOnly;
     }
 
     if ($("decorationSelect")) {
@@ -2983,9 +2983,9 @@ async function initialize() {
     // Booking type is selected on the previous screen, so the decoration
     // toggle is not needed. Decoration-only and Combined always include it.
     const decorationToggle = document.querySelector(".decoration-toggle");
-    if (decorationToggle) decorationToggle.hidden = true;
-    if ($("decorationRequired")) $("decorationRequired").checked = !isBartanOnly;
-    if ($("decorationBox")) $("decorationBox").hidden = isBartanOnly;
+    if (decorationToggle) decorationToggle.hidden = isAdminBooking;
+    if ($("decorationRequired")) $("decorationRequired").checked = isAdminBooking ? !isBartanOnly : isDecorationOnly;
+    if ($("decorationBox")) $("decorationBox").hidden = isAdminBooking ? isBartanOnly : !isDecorationOnly;
 
     // Match the selected admin booking type before showing the form.
     const bartanSection = document.querySelector(".form-section:has(#bartanSelection)");
