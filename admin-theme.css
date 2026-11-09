@@ -35,7 +35,7 @@ tbody tr:nth-child(even){background:rgba(239,245,236,.62)!important}tbody tr:hov
 td,th{border-color:rgba(26,74,52,.09)!important}
 .modal-box,.modal-card{border-top:4px solid var(--gold)!important}
 .toast,.notice{border-radius:14px!important}
-.brand-small:before,.brand-title:before,.brand:before{content:"";display:inline-block;vertical-align:middle;width:32px;height:32px;margin-right:10px;background:url("./assets/vijay-logo.svg") center/contain no-repeat}
+.brand-small:before,.brand-title:before{content:"";display:inline-block;vertical-align:middle;width:32px;height:32px;margin-right:10px;background:url("./assets/vijay-logo.svg") center/contain no-repeat}
 .top-header .brand .logo{background:url("./assets/vijay-logo.svg") center/contain no-repeat!important;font-size:0!important}
 .login-page{min-height:100vh!important;display:grid!important;place-items:center!important;padding:24px!important;background:radial-gradient(circle at 18% 12%,rgba(213,181,99,.24),transparent 32%),linear-gradient(135deg,#092e21,#174b35 52%,#e8efe4)!important}
 .login-card{width:min(460px,100%)!important;padding:clamp(24px,5vw,42px)!important;border-top:5px solid var(--gold)!important}
