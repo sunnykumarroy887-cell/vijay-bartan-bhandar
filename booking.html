@@ -397,6 +397,42 @@
             </div>
 
 
+            <!-- DECORATION EVENT DETAILS: available for Decoration-only and Combined admin bookings -->
+            <div class="form-section" id="adminDecorationEventsSection" hidden>
+                <div class="section-title">🌸 Decoration Event Details</div>
+                <p class="field-hint">Har event ki date, time, venue aur reference photos add karein. Ek booking mein maximum 10 events.</p>
+                <div id="adminDecorationEventsList"></div>
+                <button type="button" class="btn btn-secondary" id="adminAddDecorationEvent">＋ Add another Decoration Event</button>
+            </div>
+
+            <template id="adminDecorationEventTemplate">
+                <article class="form-section admin-decoration-event" style="border:1px solid #d7e3d8;border-radius:16px;padding:16px;margin:12px 0;background:#fffdf7">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                        <strong class="admin-decoration-event-title">Decoration Event 1</strong>
+                        <button type="button" class="btn btn-secondary admin-remove-decoration-event">Remove</button>
+                    </div>
+                    <div class="field">
+                        <label>Event type *</label>
+                        <select class="admin-event-name" required>
+                            <option value="">Select event</option>
+                            <option>Haldi + Mehndi Combo</option><option>Haldi</option><option>Mehndi</option>
+                            <option>Engagement</option><option>Wedding</option><option>Reception</option><option>Birthday</option>
+                            <option>Wedding Stage Decoration</option><option>Saraswati Puja Decoration</option>
+                            <option>Bed Decoration</option><option>Gate Decoration</option><option>Marwa / मंडप Decoration</option>
+                            <option>कोहबर Decoration</option><option>गाड़ी Decoration</option><option>तिलक Stage Decoration</option>
+                            <option>कमल फूल Stage Decoration</option><option>Other (Custom)</option>
+                        </select>
+                    </div>
+                    <div class="field admin-event-custom-wrap" hidden><label>Custom event name *</label><input class="admin-event-custom" maxlength="120"></div>
+                    <div class="field"><label>Event date *</label><input class="admin-event-date" type="date" required></div>
+                    <div class="field"><label>Event time</label><input class="admin-event-time" type="time"></div>
+                    <div class="field"><label>Design / package name (optional)</label><input class="admin-event-design" maxlength="150" placeholder="Selected design/package"></div>
+                    <div class="field"><label>Venue / address *</label><textarea class="admin-event-venue" rows="2" maxlength="500" required></textarea></div>
+                    <div class="field"><label>Decoration requirements *</label><textarea class="admin-event-details" rows="3" maxlength="1200" required placeholder="Flowers, colours, stage, lights, seating etc."></textarea></div>
+                    <div class="field"><label>Reference photos (optional; max 3 images, 2 MB each)</label><input class="admin-event-images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple><div class="admin-event-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div></div>
+                </article>
+            </template>
+
             <!-- OTHER CHARGES -->
 
             <div class="form-section">
