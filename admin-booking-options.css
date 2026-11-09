@@ -1,1 +1,21 @@
 body.admin-booking-choice{background:linear-gradient(120deg,rgba(8,42,29,.78),rgba(19,75,49,.56)),url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1900&q=85') center/cover fixed!important}.admin-booking-choice .topbar{position:sticky;top:0;z-index:30}.admin-booking-choice .service-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-booking-choice .service-card{min-height:320px}.admin-booking-choice .hero{background:linear-gradient(110deg,rgba(9,48,31,.97),rgba(24,99,63,.84)),url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1400&q=85') center/cover}.admin-booking-choice .service-card{border:1px solid rgba(202,168,91,.48);box-shadow:0 18px 40px #0002}.admin-booking-choice footer{background:#0d3828;color:#e8eee8;border:0}.admin-booking-choice footer strong{color:#f0d18b}@media(max-width:820px){.admin-booking-choice .service-grid{grid-template-columns:1fr}.admin-booking-choice .service-card{min-height:230px}.admin-booking-choice body{background-attachment:scroll!important}}@media(max-width:560px){.admin-booking-choice .shell{width:calc(100% - 24px)}.admin-booking-choice .hero{margin:16px 0 22px;padding:25px 20px}.admin-booking-choice .topbar{padding:12px}.admin-booking-choice .brand strong{font-size:16px}}
+
+/* Readability fix: booking-type heading sits on a busy photographic background. */
+.admin-booking-choice .section-intro{
+ position:relative;isolation:isolate;max-width:860px;
+ padding:22px clamp(14px,3vw,30px);margin:8px auto 26px;
+ border:1px solid rgba(235,210,151,.42);border-radius:22px;
+ background:linear-gradient(120deg,rgba(8,43,30,.94),rgba(20,77,53,.88));
+ box-shadow:0 16px 38px rgba(0,0,0,.18);
+}
+.admin-booking-choice .section-intro>span{color:#f0d18a!important}
+.admin-booking-choice .section-intro h2{color:#fff!important;text-shadow:0 2px 10px rgba(0,0,0,.22)}
+.admin-booking-choice .section-intro p{color:#f1f5ef!important}
+.admin-booking-choice .service-card h3{color:#153f30!important}
+.admin-booking-choice .service-card p{color:#53675d!important}
+.admin-booking-choice .card-link{color:#174d38!important}
+@media(max-width:520px){
+ .admin-booking-choice .section-intro{padding:18px 14px;margin:4px auto 18px;border-radius:17px}
+ .admin-booking-choice .section-intro h2{font-size:1.65rem;line-height:1.25}
+ .admin-booking-choice .section-intro p{font-size:.92rem}
+}
