@@ -37,7 +37,14 @@ payments.forEach(p=>{
  const amount=Number(p.amount||0)*(String(p.payment_type||"").toLowerCase()==="refund"?-1:1);
  paymentTotals.set(key,(paymentTotals.get(key)||0)+amount);
 });
-function serviceMatch(b,type){return type==="all"||(type==="decoration"?!!b.decoration_required:!b.decoration_required);}
+function resolvedBookingType(b){
+ const stored=String(b.booking_type||"").toLowerCase();
+ if(["bartan","decoration","both"].includes(stored)) return stored;
+ const hasDecoration=!!b.decoration_required||Number(b.decoration_charge||0)>0;
+ const hasBartan=Number(b.bartan_total||0)>0;
+ return hasDecoration?(hasBartan?"both":"decoration"):"bartan";
+}
+function serviceMatch(b,type){return type==="all"||resolvedBookingType(b)===type;}
 function statusMatch(b,status){return status==="all"||String(b.status||"").toLowerCase()===status;}
 function bookingLabel(b){return b.booking_number||("Booking #"+b.id);}
 function statCards(target,items){$(target).innerHTML=items.map(([label,value])=>'<article class="item"><span class="meta">'+esc(label)+'</span><h2>'+esc(value)+'</h2></article>').join("");}
@@ -136,20 +143,19 @@ function renderReportCharts(rows){
  const serviceCounts={bartan:0,decoration:0,both:0};
  rows.forEach(b=>{
   const type=String(b.booking_type||"").toLowerCase();
-  if(type==="both" || (b.decoration_required && Number(b.bartan_total||0)>0)) serviceCounts.both++;
-  else if(type==="decoration" || (b.decoration_required && Number(b.bartan_total||0)===0)) serviceCounts.decoration++;
-  else serviceCounts.bartan++;
+  const resolved=resolvedBookingType(b);
+  serviceCounts[resolved]++;
  });
  const serviceCanvas=$("serviceMixChart"),statusCanvas=$("bookingStatusChart");
  if(serviceCanvas){
   if(serviceMixChartInstance)serviceMixChartInstance.destroy();
-  serviceMixChartInstance=new Chart(serviceCanvas,{type:"pie",data:{labels:["Bartan Only","Decoration Only","Combined"],datasets:[{data:[serviceCounts.bartan,serviceCounts.decoration,serviceCounts.both],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:ctx=>ctx.label+": "+ctx.raw+" bookings"}}}}});
+  serviceMixChartInstance=new Chart(serviceCanvas,{type:"pie",data:{labels:["Bartan Only","Decoration Only","Combined"],datasets:[{data:[serviceCounts.bartan,serviceCounts.decoration,serviceCounts.both],backgroundColor:["#176b4b","#d9a441","#d9798b"],hoverBackgroundColor:["#0f5037","#bf8b2c","#bd5b70"],borderWidth:3,borderColor:"#fff",hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:ctx=>ctx.label+": "+ctx.raw+" bookings"}}}}});
  }
  if(statusCanvas){
   const statuses=["pending","confirmed","issued","return_pending","completed","cancelled"];
   const counts=statuses.map(s=>rows.filter(b=>String(b.status||"").toLowerCase()===s).length);
   if(bookingStatusChartInstance)bookingStatusChartInstance.destroy();
-  bookingStatusChartInstance=new Chart(statusCanvas,{type:"bar",data:{labels:["Pending","Confirmed","Issued","Return Pending","Completed","Cancelled"],datasets:[{label:"Bookings",data:counts,borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  bookingStatusChartInstance=new Chart(statusCanvas,{type:"bar",data:{labels:["Pending","Confirmed","Issued","Return Pending","Completed","Cancelled"],datasets:[{label:"Bookings",data:counts,backgroundColor:["#d9a441","#2b8a62","#4e9cc5","#e28b42","#24734f","#c75b55"],hoverBackgroundColor:["#bd8b2e","#216f4e","#397fa2","#c87530","#185a3b","#a9443f"],borderRadius:9,borderSkipped:false,borderWidth:0,maxBarThickness:46}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
  }
 }
 function renderReport(){
