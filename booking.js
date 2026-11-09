@@ -1795,9 +1795,6 @@ async function saveBooking(event) {
         }
 
 
-        // Save event-level details and reference photos for Decoration / Combined bookings.
-        if (adminDecorationRows.length) await saveAdminDecorationEvents(booking.id, adminDecorationRows);
-
         // =================================================
         // INSERT BARTAN ITEMS
         // =================================================
@@ -1893,6 +1890,10 @@ async function saveBooking(event) {
 
         }
 
+
+        // Save event-level details only after the parent booking, bartan
+        // item rows and initial payment have been recorded.
+        if (adminDecorationRows.length) await saveAdminDecorationEvents(booking.id, adminDecorationRows);
 
         showToast(
             "Booking " +
